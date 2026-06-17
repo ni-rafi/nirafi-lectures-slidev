@@ -86,6 +86,30 @@ export const DrawingBoard: React.FC<DrawingBoardProps> = ({
     }
   }, [storageKey]);
 
+  // Listen to storage events to sync drawing strokes across windows in real-time
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === storageKey) {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        if (e.newValue) {
+          try {
+            const parsedStrokes = JSON.parse(e.newValue) as DrawingStroke[];
+            setStrokes(parsedStrokes);
+            redraw(canvas, parsedStrokes);
+          } catch (err) {
+            console.warn('Failed to parse storage drawing sync:', err);
+          }
+        } else {
+          setStrokes([]);
+          redraw(canvas, []);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [storageKey]);
+
   // Handle Clear trigger
   useEffect(() => {
     if (clearTrigger > 0) {

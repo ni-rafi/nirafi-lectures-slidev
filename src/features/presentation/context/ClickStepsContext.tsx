@@ -9,7 +9,7 @@ interface ClickStepsContextType {
   resetClicks: () => void;
 }
 
-const ClickStepsContext = createContext<ClickStepsContextType | null>(null);
+export const ClickStepsContext = createContext<ClickStepsContextType | null>(null);
 
 /**
  * Hook to consume active click counts and register click-reveal offsets.
@@ -24,14 +24,19 @@ export const useClickStepsContext = (): ClickStepsContextType => {
 
 interface ClickStepsProviderProps {
   children: React.ReactNode;
+  currentClickOverride?: number;
 }
 
 /**
  * ClickStepsProvider maintains a reactive registry of all click-reveal elements,
  * calculating total slide clicks and relative thresholds dynamically.
  */
-export const ClickStepsProvider: React.FC<ClickStepsProviderProps> = ({ children }) => {
-  const [currentClick, setCurrentClick] = useState(0);
+export const ClickStepsProvider: React.FC<ClickStepsProviderProps> = ({
+  children,
+  currentClickOverride,
+}) => {
+  const [currentClickState, setCurrentClick] = useState(0);
+  const currentClick = currentClickOverride !== undefined ? currentClickOverride : currentClickState;
   const [totalClicks, setTotalClicks] = useState(0);
 
   // Use refs to track registry state to prevent context refresh loops during mounts
