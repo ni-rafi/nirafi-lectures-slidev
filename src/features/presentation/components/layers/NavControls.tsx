@@ -49,8 +49,8 @@ interface NavControlsProps {
   onPenColorChange: (color: string) => void;
   penWidth: number;
   onPenWidthChange: (width: number) => void;
-  isEraser: boolean;
-  onEraserChange: (eraser: boolean) => void;
+  activeTool: 'select' | 'pencil' | 'eraser' | 'line' | 'arrow' | 'rect' | 'circle';
+  onActiveToolChange: (tool: 'select' | 'pencil' | 'eraser' | 'line' | 'arrow' | 'rect' | 'circle') => void;
   onClearDrawing: () => void;
 }
 
@@ -89,8 +89,8 @@ export const NavControls: React.FC<NavControlsProps> = ({
   onPenColorChange,
   penWidth,
   onPenWidthChange,
-  isEraser,
-  onEraserChange,
+  activeTool,
+  onActiveToolChange,
   onClearDrawing,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -141,8 +141,8 @@ export const NavControls: React.FC<NavControlsProps> = ({
             onPenColorChange={onPenColorChange}
             penWidth={penWidth}
             onPenWidthChange={onPenWidthChange}
-            isEraser={isEraser}
-            onEraserChange={onEraserChange}
+            activeTool={activeTool}
+            onActiveToolChange={onActiveToolChange}
             onClearDrawing={onClearDrawing}
           />
         )}

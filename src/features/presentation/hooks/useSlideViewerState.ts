@@ -35,7 +35,11 @@ export const useSlideViewerState = ({
   const [isPenActive, setIsPenActive] = useState(false);
   const [penColor, setPenColor] = useState('#ef4444');
   const [penWidth, setPenWidth] = useState(3);
-  const [isEraser, setIsEraser] = useState(false);
+  const [activeTool, setActiveTool] = useState<'select' | 'pencil' | 'eraser' | 'line' | 'arrow' | 'rect' | 'circle'>('pencil');
+  const isEraser = activeTool === 'eraser';
+  const setIsEraser = (eraser: boolean) => {
+    setActiveTool(eraser ? 'eraser' : 'pencil');
+  };
   const [clearTrigger, setClearTrigger] = useState(0);
 
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -180,6 +184,8 @@ export const useSlideViewerState = ({
     setPenWidth,
     isEraser,
     setIsEraser,
+    activeTool,
+    setActiveTool,
     clearTrigger,
     setClearTrigger,
     isCameraOpen,

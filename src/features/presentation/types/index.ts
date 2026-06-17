@@ -24,13 +24,14 @@ export interface Point {
   y: number;
 }
 
-/**
- * Represents a single drawn line stroke.
- */
-export interface DrawingStroke {
-  points: Point[];
+export type VectorElementType = 'pencil' | 'line' | 'arrow' | 'rect' | 'circle';
+
+export interface VectorElement {
+  id: string;
+  type: VectorElementType;
+  points: Point[]; // For pencil (polygon outline points), line/arrow (start/end), rect/circle (corners)
   color: string;
-  width: number;
-  isEraser?: boolean;
+  strokeWidth: number;
+  translate: Point;
 }
 
