@@ -21,12 +21,12 @@ This document outlines the presentation features to be migrated and implemented 
 ---
 
 ## 2. Animation & Interaction
-- [ ] **Click Steps (v-click)**
+- [x] **Click Steps (v-click)**
   - Reveal sub-elements on a slide incrementally before changing slide.
-  - Details: [click-marker.md](../../docs-slidev/features/click-marker.md)
-- [ ] **Draggable Elements**
+  - Details: [click-marker.md](../../docs-slidev/features/click-marker.md) (Implemented: `ClickStepsContext.tsx`, `useClickSteps.ts`, `ClickReveal.tsx`, and `ClickRevealGroup.tsx`)
+- [x] **Draggable Elements**
   - Interactive components that can be dragged on-screen (e.g. for drag-and-drop Estimator exercises).
-  - Details: [draggable.md](../../docs-slidev/features/draggable.md)
+  - Details: [draggable.md](../../docs-slidev/features/draggable.md) (Implemented: `Draggable.tsx` pointer coordinator & `DraggableArrow.tsx`)
 - [ ] **Drawing & Annotation Board**
   - Let presenters draw or highlight key slide areas with cursor/stylus.
   - Details: [drawing.md](../../docs-slidev/features/drawing.md)

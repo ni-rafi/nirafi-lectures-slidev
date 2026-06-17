@@ -15,3 +15,22 @@ export interface SlideConfig {
   /** Scaling factor override for this specific slide (e.g. 0.8) */
   zoom?: number;
 }
+
+/**
+ * Single coordinate point representation.
+ */
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/**
+ * Represents a single drawn line stroke.
+ */
+export interface DrawingStroke {
+  points: Point[];
+  color: string;
+  width: number;
+  isEraser?: boolean;
+}
+
