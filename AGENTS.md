@@ -4,6 +4,7 @@ A skill is a set of local instructions to follow that is stored in a `SKILL.md` 
 ### Available skills
 - math-engine: Guides extending the modular Quantity Surveying mathematical engine. (file: .agent/skills/math-engine/SKILL.md)
 - commit-message: Generates Conventional Commit messages following project rules. Use when creating git commits or preparing commit messages. (file: .agent/skills/commit-message/SKILL.md)
+- react-feature-standard: Standard structure and conventions for developing reusable React features and slide-deck lectures. (file: .agent/skills/react-feature-standard/SKILL.md)
 
 ### How to use skills
 - Discovery: The list above is the skills available in this repository (name + description + file path). Skill bodies live on disk at the listed paths.

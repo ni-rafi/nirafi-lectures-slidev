@@ -9,24 +9,28 @@ description: Core Architecture and File Size Rules
 - Keep files under 200 lines when possible. The absolute hard limit is 250 lines unless explicitly justified.
 
 ## 2. Directory Topology
-- `cores/`: Isolated, pure mathematics/business logic files. Absolutely no UI code or Vue imports here.
-- `features/`: Focuses on course materials (slides, custom page layouts, custom presentation components).
-- `services/`: Shared infrastructure models, authentication handlers, API connections, and DI orchestration.
-- `routes/`: Routing middleware and redirection hooks.
-- `shared/`: App-wide layouts and helper components.
+- `cores/`: Isolated, pure mathematics/business logic files. Absolutely no UI code, React, or framework imports here.
+- `services/`: Shared infrastructure models, authentication handlers, and database connections. Pure TypeScript, no UI components.
+- `features/`: Reusable, presentation-agnostic core application features (e.g., slideshow player mechanisms, identification gates, quiz templates, and estimation forms).
+- `lectures/`: Specific lecture slide decks (organized by subject and session) that compose layout templates and interactive components imported from `features/`.
+- `routes/`: React Router table configurations, middleware routing, and authorization guards.
+- `shared/`: App-wide cross-cutting layouts and layout utility components.
 
 ## 3. Dependency Injection (DI) & Coding Principles
-- Use Dependency Injection (DI) as the primary pattern to resolve service instances. Under Vue, register singletons inside `setup/main.ts` using Vue's native `provide()` context, and consume them inside components using Vue's `inject()`.
+- Use Dependency Injection (DI) via React Context Providers and custom hooks to resolve service instances. Register singletons at the app root context (e.g., `FirebaseContext.Provider`), and consume them inside components using dedicated hooks (e.g., `useFirebase()`).
 - Use TypeScript interfaces to define contracts. Never bind components directly to concrete service classes without an interface.
 - Adhere strictly to SOLID principles:
-  - Single Responsibility: Keep components and service classes small.
+  - Single Responsibility: Keep components, hooks, and service classes small and focused.
   - Open/Closed: Extend calculations or actions via polymorphism.
   - Liskov Substitution: Implement service interfaces consistently.
-  - Interface Segregation: Keep client/math interfaces focused.
+  - Interface Segregation: Keep interfaces focused.
   - Dependency Inversion: Depend on abstractions (tokens/interfaces), not concretions.
 
-## 4. File Naming Conventions
+## 4. Naming Conventions
 - **Services**: Name in `camelCase` with the `Service` suffix (e.g., `firebaseService.ts`, `qsService.ts`). Do NOT use dot-separated suffixes like `.service.ts`.
 - **Interfaces**: Begin with the letter `I` in PascalCase (e.g., `IFirebaseService.ts`, `IQSEngine.ts`).
+- **Components**: PascalCase (e.g. `RollNumberGate.tsx`, `SlideDeck.tsx`, `StepConcrete.tsx`).
+- **Hooks**: Name in `camelCase` with the `use` prefix (e.g. `useUserContext.ts`).
 - **Validation Schemas**: Put Zod schemas in `{serviceName}.schemas.ts` files, deriving types using `z.infer`.
+
 
