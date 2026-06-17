@@ -27,25 +27,25 @@ This document outlines the presentation features to be migrated and implemented 
 - [x] **Draggable Elements**
   - Interactive components that can be dragged on-screen (e.g. for drag-and-drop Estimator exercises).
   - Details: [draggable.md](../../docs-slidev/features/draggable.md) (Implemented: `Draggable.tsx` pointer coordinator & `DraggableArrow.tsx`)
-- [ ] **Drawing & Annotation Board**
+- [x] **Drawing & Annotation Board**
   - Let presenters draw or highlight key slide areas with cursor/stylus.
-  - Details: [drawing.md](../../docs-slidev/features/drawing.md)
+  - Details: [drawing.md](../../docs-slidev/features/drawing.md) (Implemented: `DrawingBoard.tsx` & `DrawingToolbar.tsx`)
 
 ---
 
 ## 3. High-Quality Code Display & Playground
-- [ ] **Code Block Line Numbering**
+- [x] **Code Block Line Numbering**
   - Display prefix numbers for raw code examples.
-  - Details: [code-block-line-numbers.md](../../docs-slidev/features/code-block-line-numbers.md)
-- [ ] **Line-level Highlighting**
+  - Details: [code-block-line-numbers.md](../../docs-slidev/features/code-block-line-numbers.md) (Implemented: `CodeBlock.tsx` startLine offsets)
+- [x] **Line-level Highlighting**
   - Focus attention on specific lines inside a code snippet.
-  - Details: [line-highlighting.md](../../docs-slidev/features/line-highlighting.md)
-- [ ] **Shiki Magic Move**
+  - Details: [line-highlighting.md](../../docs-slidev/features/line-highlighting.md) (Implemented: `CodeBlock.tsx` click-synced opacity focus states)
+- [x] **Shiki Magic Move**
   - Perform fluid morphing transitions between code iterations.
-  - Details: [shiki-magic-move.md](../../docs-slidev/features/shiki-magic-move.md)
-- [ ] **Monaco Run & Write Playground**
+  - Details: [shiki-magic-move.md](../../docs-slidev/features/shiki-magic-move.md) (Implemented: `CodeMagicMove.tsx` animations)
+- [x] **Monaco Run & Write Playground**
   - Embed dynamic execution terminals and text editors inside slides.
-  - Details: [monaco-editor.md](../../docs-slidev/features/monaco-editor.md), [monaco-run.md](../../docs-slidev/features/monaco-run.md), [monaco-write.md](../../docs-slidev/features/monaco-write.md)
+  - Details: [monaco-editor.md](../../docs-slidev/features/monaco-editor.md), [monaco-run.md](../../docs-slidev/features/monaco-run.md), [monaco-write.md](../../docs-slidev/features/monaco-write.md) (Implemented: `CodePlayground.tsx` runners & diff comparison grids)
 
 ---
 

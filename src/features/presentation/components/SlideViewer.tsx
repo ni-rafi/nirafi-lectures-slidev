@@ -8,11 +8,13 @@ import NavControls from './layers/NavControls';
 import PageMetadata from './PageMetadata';
 import { useClickStepsContext } from '../context/ClickStepsContext';
 import { useClickSteps } from '../hooks/useClickSteps';
-import ClickRevealGroup from './ClickRevealGroup';
-import Draggable from './Draggable';
-import DraggableArrow from './DraggableArrow';
 import DrawingBoard from './layers/DrawingBoard';
 import DrawingToolbar from './layers/DrawingToolbar';
+import SlideCover from './slides/SlideCover';
+import SlideConcepts from './slides/SlideConcepts';
+import SlideDraggable from './slides/SlideDraggable';
+import SlideCodeHighlighting from './slides/SlideCodeHighlighting';
+import SlideMonacoSandbox from './slides/SlideMonacoSandbox';
 
 /**
  * SlideViewer manages interactive slide deck presentation navigation,
@@ -119,76 +121,22 @@ export const SlideViewer: React.FC = () => {
   // Slide layouts renderer helper
   const renderSlideContent = () => {
     if (isCoverPage) {
-      return (
-        <div className="flex flex-col gap-3 animate-fade-in">
-          <span className="text-[10px] tracking-widest text-primary uppercase font-mono font-bold">
-            {activeSub.code} Lecture Series
-          </span>
-          <h2 className="text-3xl font-extrabold tracking-tight max-w-2xl text-foreground">
-            {activeLec.title}
-          </h2>
-          <p className="text-xs text-muted-foreground/90 max-w-md mx-auto">
-            {activeLec.description}
-          </p>
-          <div className="mt-4 text-[10px] font-semibold text-muted-foreground font-mono">
-            Session: {activeSession?.label}
-          </div>
-        </div>
-      );
+      return <SlideCover subject={activeSub} lecture={activeLec} session={activeSession} />;
     }
 
     if (currentSlideInt === 3) {
-      // Interactive Draggable sandbox elements slide layout
-      return (
-        <div className="relative w-full h-full flex flex-col justify-start text-left px-8 py-10">
-          <div className="max-w-md flex flex-col gap-1.5 mb-2">
-            <h3 className="text-xl font-bold text-foreground">
-              Slide 3: Interactive Positioning Elements
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Draggable widgets let presenters draw overlays, arrange structural diagrams, or nudge labels dynamically inside the canvas sandbox.
-            </p>
-          </div>
-
-          {/* Draggable demonstration cards */}
-          <DraggableArrow initialPos={{ x: 80, y: 220, w: 180, h: 40 }} />
-          
-          <Draggable
-            initialPos={{ x: 400, y: 160, w: 220, h: 100 }}
-            className="p-4 border bg-amber-500/10 border-amber-500/30 text-amber-500 rounded-xl text-xs flex flex-col justify-center items-center shadow-md select-none"
-          >
-            <span className="font-bold text-[10px] uppercase font-mono tracking-wider mb-1">
-              Draggable Box Widget
-            </span>
-            <span className="text-center leading-normal text-muted-foreground">
-              Grab me to slide, or double-click to select and nudge with Arrow keys!
-            </span>
-          </Draggable>
-        </div>
-      );
+      return <SlideDraggable />;
     }
 
-    // Default concept layout slide
-    return (
-      <div className="flex flex-col gap-4 animate-fade-in w-full text-left max-w-xl">
-        <h3 className="text-xl font-bold text-foreground">
-          Slide {currentSlideInt}: Core Concepts
-        </h3>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-        </p>
-        
-        {/* Sequential animations checklist */}
-        <ClickRevealGroup
-          preset="up"
-          className="list-disc pl-5 text-xs text-muted-foreground/90 flex flex-col gap-1.5"
-        >
-          <li>Volumetric estimation equations in meters</li>
-          <li>Allowance parameters for wastage coefficients</li>
-          <li>Interactive formulas testing</li>
-        </ClickRevealGroup>
-      </div>
-    );
+    if (currentSlideInt === 4) {
+      return <SlideCodeHighlighting />;
+    }
+
+    if (currentSlideInt === 5) {
+      return <SlideMonacoSandbox />;
+    }
+
+    return <SlideConcepts slideNo={currentSlideInt} />;
   };
 
   return (
