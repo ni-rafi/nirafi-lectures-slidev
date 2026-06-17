@@ -1,8 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Play, Sun, Moon } from 'lucide-react';
+import { ChevronLeft, Play, Sun, Moon, ChevronDown, Printer, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PageMetadata from './PageMetadata';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import TwoWayGridOrchestrator from './TwoWayGridOrchestrator';
 import { useSlideViewerOrchestrator } from '../../hooks/useSlideViewerOrchestrator';
 
@@ -65,6 +71,43 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
           >
             {presenterFeatures.isDark ? <Sun className="h-4 w-4 text-amber-500" /> : <Moon className="h-4 w-4" />}
           </Button>
+
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1.5 font-semibold shadow-xs"
+              >
+                <span>Export PDF</span>
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem asChild>
+                <a
+                  href={`/${subjectId}/${sessionId}/${lectureId}?print=true`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 cursor-pointer w-full text-xs"
+                >
+                  <Printer className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span>Export PDF (Normal)</span>
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a
+                  href={`/${subjectId}/${sessionId}/${lectureId}?print=true&annotations=true`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 cursor-pointer w-full text-xs"
+                >
+                  <FileDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span>Export with Annotations</span>
+                </a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Button
             size="sm"

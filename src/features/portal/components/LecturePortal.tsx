@@ -1,8 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Lock, Play, Sparkles } from 'lucide-react';
+import { Clock, Lock, Play, Sparkles, ChevronDown, Printer, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SUBJECTS } from '@/config/lectures';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 /**
  * LecturePortal renders the main student dashboard listing registered subjects,
@@ -104,17 +110,58 @@ export const LecturePortal: React.FC = () => {
                               LOCKED
                             </span>
                           ) : (
-                            <Button
-                              asChild
-                              size="sm"
-                              variant="default"
-                              className="h-8 text-[11px] font-semibold gap-1.5 px-3 shadow-xs"
-                            >
-                              <Link to={deckUrl}>
-                                <Play className="h-3 w-3 fill-current shrink-0" />
-                                <span>Launch Slides</span>
-                              </Link>
-                            </Button>
+                            <div className="flex items-center">
+                              {/* Main Launch Button */}
+                              <Button
+                                asChild
+                                size="sm"
+                                variant="default"
+                                className="h-8 text-[11px] font-semibold gap-1.5 px-3 shadow-xs rounded-r-none"
+                              >
+                                <Link to={deckUrl}>
+                                  <Play className="h-3 w-3 fill-current shrink-0" />
+                                  <span>Launch Slides</span>
+                                </Link>
+                              </Button>
+
+                              {/* Dropdown Menu Trigger Button */}
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="default"
+                                    className="h-8 px-1.5 shadow-xs rounded-l-none border-l border-primary-foreground/10"
+                                  >
+                                    <ChevronDown className="h-3.5 w-3.5" />
+                                    <span className="sr-only">Export Options</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                  <DropdownMenuItem asChild>
+                                    <a
+                                      href={`${deckUrl}?print=true`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-2 cursor-pointer w-full text-xs"
+                                    >
+                                      <Printer className="h-3.5 w-3.5 text-muted-foreground" />
+                                      <span>Export PDF (Normal)</span>
+                                    </a>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem asChild>
+                                    <a
+                                      href={`${deckUrl}?print=true&annotations=true`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center gap-2 cursor-pointer w-full text-xs"
+                                    >
+                                      <FileDown className="h-3.5 w-3.5 text-muted-foreground" />
+                                      <span>Export with Annotations</span>
+                                    </a>
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           )}
                         </div>
                       </div>
