@@ -72,111 +72,145 @@ export const LayoutsSection: React.FC = () => {
   const getCodeText = () => {
     switch (layoutType) {
       case 'title':
-        return `import { TitleLayout } from '@/shared/layouts/TitleLayout';
- 
-<TitleLayout
-  title="${title}"
-  subtitle="Course Session 2026-27"
-  description="Volumetric casting analysis and scheduling methodologies."
-  footer="Academic Department"
-/>`;
+        return `const slideSchema: SlideSchema = {
+  id: 1,
+  section: 'Introduction',
+  layout: 'title',
+  props: {
+    title: "${title}",
+    subtitle: "Course Session 2026-27",
+    description: "Volumetric casting analysis and scheduling methodologies.",
+    footer: "Academic Department"
+  }
+};`;
       case 'twocolumn':
-        return `import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
- 
-<TwoColumnLayout
-  title="${title}"
-  bgVariant="${bgVariant}"
-  leftWidth="50%"
-  leftContent={<p>Left-hand content parameters</p>}
-  rightContent={<p>Right-hand visualization output</p>}
-  footer="Volumetric Calculator Sandbox"
-/>`;
+        return `const slideSchema: SlideSchema = {
+  id: 2,
+  section: 'Calculations',
+  layout: 'twocolumn',
+  props: {
+    title: "${title}",
+    bgVariant: "${bgVariant}",
+    leftWidth: "50%",
+    leftElement: { type: 'rich-paragraph', data: { fragments: ['Left content...'] } },
+    rightElement: { type: 'latex', data: { formulaParts: ['W = \\\\frac{d^2}{162}'] } },
+    footer: "Volumetric Calculator Sandbox"
+  }
+};`;
       case 'fullwidth':
-        return `import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
- 
-<FullWidthLayout
-  title="${title}"
-  bgVariant="${bgVariant}"
-  footer="Spreadsheet Data View"
->
-  <p>Single wide block layout content goes here</p>
-</FullWidthLayout>`;
+        return `const slideSchema: SlideSchema = {
+  id: 3,
+  section: 'Analysis',
+  layout: 'fullwidth',
+  props: {
+    title: "${title}",
+    bgVariant: "${bgVariant}",
+    element: { type: 'rich-paragraph', data: { fragments: ['Full width paragraph...'] } },
+    footer: "Spreadsheet Data View"
+  }
+};`;
       case 'grid':
         return `import { GridLayout } from '@/shared/layouts/GridLayout';
  
-<GridLayout
-  title="${title}"
-  cols={2}
-  bgVariant="${bgVariant}"
->
+// Grid is not supported by SlideSchemaEngine yet. Implement via Hybrid Strategy:
+<GridLayout title="${title}" cols={2} bgVariant="${bgVariant}">
   <div>Card A</div>
   <div>Card B</div>
   <div>Card C</div>
   <div>Card D</div>
 </GridLayout>`;
       case 'thankyou':
-        return `import { ThankYouLayout } from '@/shared/layouts/ThankYouLayout';
- 
-<ThankYouLayout
-  title="Thank You"
-  subtitle="Questions & Answers session"
-/>`;
+        return `const slideSchema: SlideSchema = {
+  id: 4,
+  section: 'Summary',
+  layout: 'thankyou',
+  props: {
+    title: "Thank You",
+    subtitle: "Questions & Answers session"
+  }
+};`;
     }
   };
 
-  const editorContent = (
-    <div className="text-slate-300">
-      <span className="text-purple-400">import</span> <span className="text-teal-400">Layout</span> <span className="text-purple-400">from</span> <span className="text-amber-300">"@/shared/layouts/..."</span>;{"\n\n"}
-      <span className="text-muted-foreground">// Choose Layout Type:</span>{"\n"}
-      &lt;<span className="text-blue-400">LayoutSelector</span> <span className="text-teal-400">type</span>=<span className="text-amber-300">"</span>
-      <select
-        value={layoutType}
-        onChange={(e) => setLayoutType(e.target.value as LayoutType)}
-        className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-teal-400 focus:outline-none focus:border-primary/50 font-mono text-[11px] inline-block cursor-pointer font-bold"
-      >
-        <option value="title">TitleLayout</option>
-        <option value="twocolumn">TwoColumnLayout</option>
-        <option value="fullwidth">FullWidthLayout</option>
-        <option value="grid">GridLayout</option>
-        <option value="thankyou">ThankYouLayout</option>
-      </select>
-      <span className="text-amber-300">"</span> /&gt;{"\n\n"}
- 
-      <span className="text-muted-foreground">// Tweak Props:</span>{"\n"}
-      {"  "}<span className="text-teal-400">title</span>=<span className="text-amber-300">"</span>
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-slate-100 focus:outline-none focus:border-primary/50 w-40 font-mono text-[11px] inline-block font-bold"
-      />
-      <span className="text-amber-300">"</span>{"\n"}
-      {"  "}<span className="text-teal-400">bgVariant</span>=<span className="text-amber-300">"</span>
-      <select
-        value={bgVariant}
-        onChange={(e) => setBgVariant(e.target.value as any)}
-        className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-teal-400 focus:outline-none focus:border-primary/50 font-mono text-[11px] inline-block cursor-pointer"
-      >
-        <option value="default">default (grey)</option>
-        <option value="calculation">calculation (light primary)</option>
-        <option value="gallery">gallery (light slate)</option>
-      </select>
-      <span className="text-amber-300">"</span>
-    </div>
-  );
+  const renderEditorContent = () => {
+    if (layoutType === 'grid') {
+      return (
+        <div className="text-slate-300 font-mono text-[11px] leading-relaxed whitespace-pre select-text">
+          {getCodeText()}
+        </div>
+      );
+    }
+
+    return (
+      <div className="text-slate-300 font-mono text-[11px] select-text space-y-1 leading-relaxed">
+        <div><span className="text-purple-400">const</span> slideSchema: <span className="text-teal-400">SlideSchema</span> = <span className="text-pink-400">&#123;</span></div>
+        <div className="pl-4"><span className="text-teal-400">id</span>: <span className="text-orange-400">1</span>,</div>
+        <div className="pl-4"><span className="text-teal-400">section</span>: <span className="text-amber-300">'Docs'</span>,</div>
+        <div className="pl-4"><span className="text-teal-400">layout</span>: <span className="text-amber-300">'</span>
+          <select
+            value={layoutType}
+            onChange={(e) => setLayoutType(e.target.value as LayoutType)}
+            className="bg-slate-900 border border-white/10 rounded px-1 py-0.5 text-teal-400 focus:outline-none focus:border-primary/50 font-mono text-[10px] inline-block cursor-pointer font-bold"
+          >
+            <option value="title">title</option>
+            <option value="twocolumn">twocolumn</option>
+            <option value="fullwidth">fullwidth</option>
+            <option value="grid">grid</option>
+            <option value="thankyou">thankyou</option>
+          </select>
+          <span className="text-amber-300">'</span>,</div>
+        <div className="pl-4"><span className="text-teal-400">props</span>: <span className="text-pink-400">&#123;</span></div>
+        <div className="pl-8"><span className="text-teal-400">title</span>: <span className="text-amber-300">"</span>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-slate-100 focus:outline-none focus:border-primary/50 w-44 font-mono text-[10px] inline-block font-bold"
+          />
+          <span className="text-amber-300">"</span>,</div>
+        {layoutType !== 'title' && layoutType !== 'thankyou' && (
+          <div className="pl-8"><span className="text-teal-400">bgVariant</span>: <span className="text-amber-300">"</span>
+            <select
+              value={bgVariant}
+              onChange={(e) => setBgVariant(e.target.value as any)}
+              className="bg-slate-900 border border-white/10 rounded px-1 py-0.5 text-teal-400 focus:outline-none focus:border-primary/50 font-mono text-[10px] inline-block cursor-pointer font-bold"
+            >
+              <option value="default">default</option>
+              <option value="calculation">calculation</option>
+              <option value="gallery">gallery</option>
+            </select>
+            <span className="text-amber-300">"</span>,</div>
+        )}
+        <div className="pl-8"><span className="text-slate-400">... elements and footers ...</span></div>
+        <div className="pl-4"><span className="text-pink-400">&#125;</span></div>
+        <div><span className="text-pink-400">&#125;</span>;</div>
+      </div>
+    );
+  };
+
+  const getModeDescription = () => {
+    if (layoutType === 'grid') {
+      return (
+        <span>
+          <strong>GridLayout (Not Schema Native):</strong> Grid card layouts are not natively supported by the dynamic Slide Schema Engine. To build grids, apply the <strong>Hybrid Strategy</strong> by designing a raw React component slide and registering it in the slide registry.
+        </span>
+      );
+    }
+    return (
+      <span>
+        <strong>Declarative Layout Schema:</strong> Slide wireframe structures are driven by the <code>layout</code> string property in the schema (e.g. <code>title</code>, <code>twocolumn</code>, <code>fullwidth</code>, <code>thankyou</code>).
+      </span>
+    );
+  };
 
   return (
     <div className="flex flex-col gap-12">
       <PlaygroundSection
         title="Slide Layouts & Wireframes"
-        description={
-          <span>
-            Layouts under <code>src/shared/layouts/</code> arrange slide grids. They consume the presentation context to automatically switch styling between PowerPoint-style presentations and continuous vertical Blog Articles.
-          </span>
-        }
+        description={getModeDescription()}
         preview={renderWireframe()}
         codeText={getCodeText()}
-        editorContent={editorContent}
+        editorContent={renderEditorContent()}
       />
       <LayoutElementsSection />
     </div>

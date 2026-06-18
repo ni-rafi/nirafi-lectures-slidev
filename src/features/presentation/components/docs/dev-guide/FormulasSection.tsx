@@ -129,6 +129,10 @@ const steps = [
       description={
         <span>
           Use <code>&lt;FormulaBreakdown&gt;</code> to represent derivation or substitution sequences clearly. It renders a clean list containing labels, arrows, and LaTeX blocks using <code>Katex</code>.
+          <br />
+          <span className="mt-2 block text-muted-foreground italic border-l-2 border-primary/40 pl-2">
+            <strong>Note:</strong> Multiple-step staggered derivations like <code>&lt;FormulaBreakdown&gt;</code> are not natively supported by the Slide Schema Engine. Use the <strong>Hybrid Strategy</strong> to wrap these in a custom React slide component. For simple LaTeX blocks with highlights, you can use the native <code>latex</code> schema block type.
+          </span>
         </span>
       }
       preview={preview}

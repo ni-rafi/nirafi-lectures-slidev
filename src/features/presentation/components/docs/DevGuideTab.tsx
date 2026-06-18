@@ -20,6 +20,7 @@ import ComposingSection from './dev-guide/ComposingSection';
 import QuizzesSection from './dev-guide/QuizzesSection';
 import TimelineStepsSection from './dev-guide/TimelineStepsSection';
 import CompareAccentsSection from './dev-guide/CompareAccentsSection';
+import SchemaEngineSection from './dev-guide/SchemaEngineSection';
 
 type SubSection =
   | 'paragraphs'
@@ -39,7 +40,8 @@ type SubSection =
   | 'timelinesteps'
   | 'compareaccents'
   | 'layouts'
-  | 'composing';
+  | 'composing'
+  | 'schemaengine';
 
 export const DevGuideTab: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,7 +64,8 @@ export const DevGuideTab: React.FC = () => {
     'timelinesteps',
     'compareaccents',
     'layouts',
-    'composing'
+    'composing',
+    'schemaengine'
   ].includes(subParam)
     ? subParam
      : 'paragraphs') as SubSection;
@@ -94,6 +97,7 @@ export const DevGuideTab: React.FC = () => {
     { id: 'compareaccents' as SubSection, label: 'Comparisons & Accents', icon: Bookmark },
     { id: 'layouts' as SubSection, label: 'Slide Layouts', icon: Layout },
     { id: 'composing' as SubSection, label: 'Lecture Composition', icon: Layers },
+    { id: 'schemaengine' as SubSection, label: 'Schema Engine', icon: Code2 },
   ];
 
   const renderContent = () => {
@@ -134,15 +138,17 @@ export const DevGuideTab: React.FC = () => {
         return <LayoutsSection />;
       case 'composing':
         return <ComposingSection />;
+      case 'schemaengine':
+        return <SchemaEngineSection />;
       default:
         return <ParagraphsSection />;
     }
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start animate-in fade-in duration-300">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start animate-in fade-in duration-300 md:h-[calc(100vh-200px)] md:overflow-hidden">
       {/* Nested Left Navigation Menu */}
-      <aside className="md:col-span-3 flex flex-col gap-1.5 border-b md:border-b-0 md:border-r pb-4 md:pb-0 md:pr-6 border-border/80">
+      <aside className="md:col-span-3 flex flex-col gap-1.5 border-b md:border-b-0 md:border-r pb-4 md:pb-0 md:pr-6 border-border/80 md:h-full md:overflow-y-auto scrollbar-thin">
         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest pl-2 mb-2 select-none">
           Component Customization
         </span>
@@ -171,7 +177,7 @@ export const DevGuideTab: React.FC = () => {
       </aside>
 
       {/* Main Sub-Section content area */}
-      <main className="md:col-span-9 min-h-[300px] flex flex-col gap-6">
+      <main className="md:col-span-9 min-h-[300px] flex flex-col gap-6 md:h-full md:overflow-y-auto md:pr-4 pb-12 scrollbar-thin">
         <div>
           <h3 className="text-base font-extrabold text-foreground border-b pb-2 uppercase tracking-wide">
             {menuItems.find((m) => m.id === activeSubSection)?.label} Reference

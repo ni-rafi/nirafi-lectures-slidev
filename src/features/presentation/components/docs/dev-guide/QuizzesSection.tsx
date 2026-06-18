@@ -9,7 +9,7 @@ export const QuizzesSection: React.FC = () => {
   const [questionText, setQuestionText] = useState('What is the standard volume of a structural brick in cubic millimeters?');
   const [correctAnswer, setCorrectAnswer] = useState('1900000');
   const [quizType, setQuizType] = useState<'numeric-input' | 'multiple-choice'>('numeric-input');
-  const [optionsStr, setOptionsStr] = useState('1200000, 1500000, 1900000, 2200000');
+  const optionsStr = '1200000, 1500000, 1900000, 2200000';
   const [role, setRole] = useState<'student' | 'admin'>('student');
   const [status, setStatus] = useState<'placeholder' | 'active' | 'closed'>('active');
   const [studentAnswer, setStudentAnswer] = useState('');
@@ -148,64 +148,82 @@ export const QuizzesSection: React.FC = () => {
     }
   };
 
-  const codeText = `<QuizCardOrchestrator
-  quizId="${quizId}"
-  questionText="${questionText}"
-  correctAnswer="${correctAnswer}"
-  quizType="${quizType}"${quizType === 'multiple-choice' ? `\n  options={[${options.map(o => `"${o}"`).join(', ')}]}` : ''}
-/>`;
+  const codeText = `const slideSchema: SlideSchema = {
+  id: 1,
+  section: 'Evaluation',
+  layout: 'fullwidth',
+  props: {
+    title: "Classroom Quiz",
+    element: {
+      type: 'quiz',
+      config: {
+        quizId: "${quizId}",
+        quizType: "${quizType}"
+      },
+      data: {
+        question: "${questionText}",
+        correctAnswer: "${correctAnswer}"
+      }
+    }
+  }
+};`;
 
   const editorContent = (
-    <div className="text-slate-300 font-mono text-[11px] leading-relaxed">
-      <span className="text-purple-400">import</span> {'{ QuizCardOrchestrator }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/quiz"</span>;{"\n\n"}
-      <span className="text-blue-400">&lt;QuizCardOrchestrator</span>{"\n"}
-      {"  "}<span className="text-teal-400">quizId</span>=<span className="text-amber-300">"</span>
-      <input
-        type="text"
-        value={quizId}
-        onChange={(e) => setQuizId(e.target.value)}
-        className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-amber-300 focus:outline-none focus:border-primary/50 w-28 font-mono text-[11px] inline-block font-bold"
-      />
-      <span className="text-amber-300">"</span>{"\n"}
-      {"  "}<span className="text-teal-400">questionText</span>=<span className="text-amber-300">"</span>
-      <input
-        type="text"
-        value={questionText}
-        onChange={(e) => setQuestionText(e.target.value)}
-        className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-amber-300 focus:outline-none focus:border-primary/50 w-44 font-mono text-[11px] inline-block"
-      />
-      <span className="text-amber-300">"</span>{"\n"}
-      {"  "}<span className="text-teal-400">correctAnswer</span>=<span className="text-amber-300">"</span>
-      <input
-        type="text"
-        value={correctAnswer}
-        onChange={(e) => setCorrectAnswer(e.target.value)}
-        className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-amber-300 focus:outline-none focus:border-primary/50 w-20 font-mono text-[11px] inline-block"
-      />
-      <span className="text-amber-300">"</span>{"\n"}
-      {"  "}<span className="text-teal-400">quizType</span>=<span className="text-amber-300">"</span>
-      <select
-        value={quizType}
-        onChange={(e) => setQuizType(e.target.value as any)}
-        className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-teal-400 focus:outline-none focus:border-primary/50 font-mono text-[11px] inline-block cursor-pointer font-bold"
-      >
-        <option value="numeric-input">numeric-input</option>
-        <option value="multiple-choice">multiple-choice</option>
-      </select>
-      <span className="text-amber-300">"</span>{"\n"}
-      {quizType === 'multiple-choice' && (
-        <>
-          {"  "}<span className="text-teal-400">options</span>=<span className="text-pink-400">&#123;</span>[
-          <input
-            type="text"
-            value={optionsStr}
-            onChange={(e) => setOptionsStr(e.target.value)}
-            className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-amber-300 focus:outline-none focus:border-primary/50 w-48 font-mono text-[11px] inline-block"
-          />
-          ]<span className="text-pink-400">&#125;</span>{"\n"}
-        </>
-      )}
-      <span className="text-blue-400">/&gt;</span>
+    <div className="text-slate-300 font-mono text-[11px] leading-relaxed select-text space-y-2">
+      <div>
+        <span className="text-teal-400">quiz.config</span> = <span className="text-pink-400">&#123;</span>
+      </div>
+      <div className="pl-4">
+        <span className="text-teal-400">quizId</span>: "
+        <input
+          type="text"
+          value={quizId}
+          onChange={(e) => setQuizId(e.target.value)}
+          className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-amber-300 focus:outline-none focus:border-primary/50 w-28 font-mono text-[11px] inline-block font-bold"
+        />
+        ",
+      </div>
+      <div className="pl-4">
+        <span className="text-teal-400">quizType</span>: "
+        <select
+          value={quizType}
+          onChange={(e) => setQuizType(e.target.value as any)}
+          className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-teal-400 focus:outline-none focus:border-primary/50 font-mono text-[11px] inline-block cursor-pointer font-bold"
+        >
+          <option value="numeric-input">numeric-input</option>
+          <option value="multiple-choice">multiple-choice</option>
+        </select>
+        "
+      </div>
+      <div>
+        <span className="text-pink-400">&#125;</span>
+      </div>
+      <div>
+        <span className="text-teal-400">quiz.data</span> = <span className="text-pink-400">&#123;</span>
+      </div>
+      <div className="pl-4">
+        <span className="text-teal-400">question</span>: "
+        <input
+          type="text"
+          value={questionText}
+          onChange={(e) => setQuestionText(e.target.value)}
+          className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-amber-300 focus:outline-none focus:border-primary/50 w-44 font-mono text-[11px] inline-block"
+        />
+        ",
+      </div>
+      <div className="pl-4">
+        <span className="text-teal-400">correctAnswer</span>: "
+        <input
+          type="text"
+          value={correctAnswer}
+          onChange={(e) => setCorrectAnswer(e.target.value)}
+          className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-amber-300 focus:outline-none focus:border-primary/50 w-20 font-mono text-[11px] inline-block"
+        />
+        "
+      </div>
+      <div>
+        <span className="text-pink-400">&#125;</span>
+      </div>
     </div>
   );
 
