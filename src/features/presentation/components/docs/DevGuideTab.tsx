@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Type, List, Sliders, BarChart3, Binary, Table, Eye, Share2, Code2, Hexagon, Activity, Palette, Terminal, Layout, Layers, ClipboardCheck } from 'lucide-react';
+import { Type, List, Sliders, BarChart3, Binary, Table, Eye, Share2, Code2, Hexagon, Activity, Palette, Terminal, Layout, Layers, ClipboardCheck, Calendar, Bookmark } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ParagraphsSection from './dev-guide/ParagraphsSection';
 import ListsSection from './dev-guide/ListsSection';
@@ -18,6 +18,8 @@ import CodeplaySection from './dev-guide/CodeplaySection';
 import LayoutsSection from './dev-guide/LayoutsSection';
 import ComposingSection from './dev-guide/ComposingSection';
 import QuizzesSection from './dev-guide/QuizzesSection';
+import TimelineStepsSection from './dev-guide/TimelineStepsSection';
+import CompareAccentsSection from './dev-guide/CompareAccentsSection';
 
 type SubSection =
   | 'paragraphs'
@@ -34,6 +36,8 @@ type SubSection =
   | 'icons'
   | 'codeplay'
   | 'quizzes'
+  | 'timelinesteps'
+  | 'compareaccents'
   | 'layouts'
   | 'composing';
 
@@ -55,11 +59,13 @@ export const DevGuideTab: React.FC = () => {
     'icons',
     'codeplay',
     'quizzes',
+    'timelinesteps',
+    'compareaccents',
     'layouts',
     'composing'
   ].includes(subParam)
     ? subParam
-    : 'paragraphs') as SubSection;
+     : 'paragraphs') as SubSection;
 
   const setActiveSubSection = (sub: SubSection) => {
     setSearchParams(prev => {
@@ -84,6 +90,8 @@ export const DevGuideTab: React.FC = () => {
     { id: 'icons' as SubSection, label: 'Icons & Graphics', icon: Palette },
     { id: 'codeplay' as SubSection, label: 'Code & Playgrounds', icon: Terminal },
     { id: 'quizzes' as SubSection, label: 'Interactive Quizzes', icon: ClipboardCheck },
+    { id: 'timelinesteps' as SubSection, label: 'Timelines & Steps', icon: Calendar },
+    { id: 'compareaccents' as SubSection, label: 'Comparisons & Accents', icon: Bookmark },
     { id: 'layouts' as SubSection, label: 'Slide Layouts', icon: Layout },
     { id: 'composing' as SubSection, label: 'Lecture Composition', icon: Layers },
   ];
@@ -118,6 +126,10 @@ export const DevGuideTab: React.FC = () => {
         return <CodeplaySection />;
       case 'quizzes':
         return <QuizzesSection />;
+      case 'timelinesteps':
+        return <TimelineStepsSection />;
+      case 'compareaccents':
+        return <CompareAccentsSection />;
       case 'layouts':
         return <LayoutsSection />;
       case 'composing':

@@ -8,8 +8,28 @@ import { SlideTwoColumns } from './SlideTwoColumns';
 import { SlideGrid } from './SlideGrid';
 import { SlideQuote } from './SlideQuote';
 import { SlideImage } from './SlideImage';
+import { SlideTimeline } from './SlideTimeline';
+import { SlideStepProgress } from './SlideStepProgress';
+import { SlideCompare } from './SlideCompare';
+import { SlideBadge } from './SlideBadge';
+import { SlideCallout } from './SlideCallout';
 
-export { SlideParagraph, SlideBullet, SlideEquation, SlideTable, SlideList, SlideTwoColumns, SlideGrid, SlideQuote, SlideImage };
+export { 
+  SlideParagraph, 
+  SlideBullet, 
+  SlideEquation, 
+  SlideTable, 
+  SlideList, 
+  SlideTwoColumns, 
+  SlideGrid, 
+  SlideQuote, 
+  SlideImage,
+  SlideTimeline,
+  SlideStepProgress,
+  SlideCompare,
+  SlideBadge,
+  SlideCallout
+};
 
 export type ContentBlockType =
   | { type: 'paragraph'; title?: string; text: React.ReactNode; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none'; variant?: 'info' | 'warning' | 'error' | 'success' | 'callout' | 'plain' | 'default' }
