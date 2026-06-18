@@ -7,6 +7,8 @@ A skill is a set of local instructions to follow that is stored in a `SKILL.md` 
 - react-feature-standard: Standard structure and conventions for developing reusable React features and slide-deck lectures. (file: .agent/skills/react-feature-standard/SKILL.md)
 - slide-customization: Guides customizing and using interactive elements like paragraphs, bullets, equations, tables, and click highlights in slide decks. (file: .agent/skills/slide-customization/SKILL.md)
 - reusable-components: Guides creating and utilizing mode-aware reusable components for interactive slide controls, sliders, and outputs that adapt between Slide Mode and Blog Mode. (file: .agent/skills/reusable-components/SKILL.md)
+- lecture-activation-security: Guides managing real-time lecture activations, custom claims, and cryptographic signatures. (file: .agent/skills/lecture-activation-security/SKILL.md)
+
 
 ### How to use skills
 - Discovery: The list above is the skills available in this repository (name + description + file path). Skill bodies live on disk at the listed paths.

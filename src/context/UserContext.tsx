@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { getAuth } from 'firebase/auth';
 import { useFirebase } from './FirebaseContext';
 import { validateRegistration, validateSession, normalizeRegistration, normalizeSession } from '@/cores/user/userValidation';
 import type { UserPayload, ThemePreferences } from '@/services/firebase/IFirebaseService';
@@ -60,9 +61,34 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         try {
           const anonymousUid = await firebaseService.anonymousSignIn();
           const profile = await firebaseService.getUserProfile(anonymousUid);
+          
+          // Determine admin role based on claims or mock credentials
+          const auth = getAuth();
+          let finalRole: 'student' | 'admin' = profile?.role || 'student';
+          
+          const mockAdminReg = import.meta.env['VITE_MOCK_ADMIN_REGISTRATION'] || '0000000000';
+          const normalizedRoll = normalizeRegistration(storedRoll);
+          if (normalizedRoll === mockAdminReg) {
+            finalRole = 'admin';
+          } else if (auth.currentUser) {
+            try {
+              const tokenResult = await auth.currentUser.getIdTokenResult(true);
+              const is_admin = !!tokenResult.claims['is_admin'] || !!tokenResult.claims['isAdmin'] || tokenResult.claims['role'] === 'admin';
+              if (is_admin) {
+                finalRole = 'admin';
+              }
+            } catch (claimErr) {
+              console.warn('[UserProvider] Failed to fetch token claims on restore:', claimErr);
+            }
+          }
+
+          if (profile) {
+            profile.role = finalRole;
+          }
+
           setUid(anonymousUid);
           setUserProfile(profile);
-          setRollNumber(normalizeRegistration(storedRoll));
+          setRollNumber(normalizedRoll);
           setSession(normalizeSession(storedSession));
           setIsLoggedIn(true);
         } catch (err) {
@@ -103,13 +129,32 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         // Sign in anonymously
         const anonymousUid = await firebaseService.anonymousSignIn();
 
+        // Determine admin role based on claims or mock credentials
+        const auth = getAuth();
+        let role: 'student' | 'admin' = 'student';
+        
+        const mockAdminReg = import.meta.env['VITE_MOCK_ADMIN_REGISTRATION'] || '0000000000';
+        if (normalizedRoll === mockAdminReg) {
+          role = 'admin';
+        } else if (auth.currentUser) {
+          try {
+            const tokenResult = await auth.currentUser.getIdTokenResult(true);
+            const is_admin = !!tokenResult.claims['is_admin'] || !!tokenResult.claims['isAdmin'] || tokenResult.claims['role'] === 'admin';
+            if (is_admin) {
+              role = 'admin';
+            }
+          } catch (claimErr) {
+            console.warn('[UserProvider] Failed to fetch token claims on login:', claimErr);
+          }
+        }
+
         // Save or update profile in backend
         const profile = await firebaseService.setUserProfile(anonymousUid, {
-          name: `Student ${normalizedRoll}`,
+          name: role === 'admin' ? `Admin ${normalizedRoll}` : `Student ${normalizedRoll}`,
           registration: normalizedRoll,
           session: normalizedSession,
-          role: 'student',
-          isGuest: true,
+          role: role,
+          isGuest: role === 'student',
         });
 
         // Save session locally

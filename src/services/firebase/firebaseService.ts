@@ -1,10 +1,13 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, signInAnonymously, type Auth } from 'firebase/auth';
-import type { IFirebaseService, QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload } from './IFirebaseService';
+import type { IFirebaseService, QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, SessionStatusPayload } from './IFirebaseService';
 import { SubmissionsRepository } from './repositories/submissions/SubmissionsRepository';
 import { FeedbackRepository } from './repositories/feedback/FeedbackRepository';
 import { UsersRepository } from './repositories/users/UsersRepository';
 import { ThemesRepository } from './repositories/themes/ThemesRepository';
+import { SessionStatusRepository } from './repositories/lectures/SessionStatusRepository';
+import { firestoreService } from './firestoreService';
+import { SessionStatusDefinition } from './firebase.definitions';
 
 export class FirebaseService implements IFirebaseService {
   private app: FirebaseApp | null = null;
@@ -14,7 +17,9 @@ export class FirebaseService implements IFirebaseService {
   private feedbackRepository: FeedbackRepository | null = null;
   private usersRepository: UsersRepository | null = null;
   private themesRepository: ThemesRepository | null = null;
+  private sessionStatusRepository: SessionStatusRepository | null = null;
   private isOfflineMode = false;
+
 
   public initializeFirebase(): void {
     // Retrieve configuration from env variables, or default to mock fields if empty.
@@ -42,6 +47,7 @@ export class FirebaseService implements IFirebaseService {
       this.feedbackRepository = new FeedbackRepository();
       this.usersRepository = new UsersRepository();
       this.themesRepository = new ThemesRepository();
+      this.sessionStatusRepository = new SessionStatusRepository();
     } catch (e) {
       console.warn('[FirebaseService] Firebase failed to initialize. Running in mock/offline mode:', e);
       this.isOfflineMode = true;
@@ -189,5 +195,77 @@ export class FirebaseService implements IFirebaseService {
       console.warn('[FirebaseService] Failed to delete theme config in Firestore, deleting locally:', error);
       localStorage.removeItem(`offline_theme_${id}`);
     }
+  }
+
+  public async getSessionStatus(id: string): Promise<SessionStatusPayload | null> {
+    if (this.isOfflineMode || !this.sessionStatusRepository) {
+      console.warn('[FirebaseService] [Offline Mode] Loading session status locally:', id);
+      const saved = localStorage.getItem(`offline_status_${id}`);
+      if (saved) {
+        return { id, ...JSON.parse(saved) } as SessionStatusPayload;
+      }
+      return null;
+    }
+    try {
+      return await this.sessionStatusRepository.getById(id);
+    } catch (error) {
+      console.warn('[FirebaseService] Failed to load session status, trying offline cache:', error);
+      const saved = localStorage.getItem(`offline_status_${id}`);
+      if (saved) {
+        return { id, ...JSON.parse(saved) } as SessionStatusPayload;
+      }
+      return null;
+    }
+  }
+
+  public async setSessionStatus(id: string, payload: Omit<SessionStatusPayload, 'id'>): Promise<SessionStatusPayload> {
+    if (this.isOfflineMode || !this.sessionStatusRepository) {
+      console.warn('[FirebaseService] [Offline Mode] Saving session status locally:', id, payload);
+      localStorage.setItem(`offline_status_${id}`, JSON.stringify(payload));
+      return { id, ...payload };
+    }
+    try {
+      return await this.sessionStatusRepository.set(id, payload);
+    } catch (error) {
+      console.warn('[FirebaseService] Failed to save session status in Firestore, saving locally:', error);
+      localStorage.setItem(`offline_status_${id}`, JSON.stringify(payload));
+      return { id, ...payload };
+    }
+  }
+
+  public subscribeSessionStatuses(callback: (statuses: SessionStatusPayload[]) => void): () => void {
+    if (this.isOfflineMode) {
+      const getOfflineStatuses = (): SessionStatusPayload[] => {
+        const results: SessionStatusPayload[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith('offline_status_')) {
+            const docId = key.replace('offline_status_', '');
+            try {
+              const data = JSON.parse(localStorage.getItem(key) || '{}');
+              results.push({ id: docId, ...data });
+            } catch (e) {
+              console.warn('Failed to parse offline status:', key, e);
+            }
+          }
+        }
+        return results;
+      };
+
+      callback(getOfflineStatuses());
+
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key && e.key.startsWith('offline_status_')) {
+          callback(getOfflineStatuses());
+        }
+      };
+
+      window.addEventListener('storage', handleStorageChange);
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+      };
+    }
+
+    return firestoreService.subscribe(SessionStatusDefinition, callback);
   }
 }

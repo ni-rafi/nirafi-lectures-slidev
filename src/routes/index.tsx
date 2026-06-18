@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { ROUTE_PATHS } from './paths';
-import { useUserContext } from '@/context/UserContext';
+import { useUserContext, useLectureStatus } from '@/context';
 import { PageLayout } from '@/shared/components/Layout/PageLayout';
 import { ClickStepsProvider } from '@/features/presentation/context/ClickStepsContext';
 import LecturePortal from '@/features/portal';
@@ -16,6 +16,26 @@ const FlatSlideRedirect: React.FC = () => {
   const { slideNo } = useParams<{ slideNo: string }>();
   console.info(`Redirecting legacy flat slide request: P${slideNo}`);
   return <Navigate to={ROUTE_PATHS.PORTAL} replace />;
+};
+
+/**
+ * Guard component that redirects students back to the dashboard if the lecture is locked.
+ */
+const LectureRouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { subjectId, sessionId, lectureId } = useParams<{ subjectId: string; sessionId: string; lectureId: string }>();
+  const { isLectureLocked } = useLectureStatus();
+  const { userProfile } = useUserContext();
+
+  if (subjectId && sessionId && lectureId) {
+    const isLocked = isLectureLocked(subjectId, sessionId, lectureId);
+    const isAdmin = userProfile?.role === 'admin';
+    if (isLocked && !isAdmin) {
+      console.warn(`[LectureRouteGuard] Direct access denied to locked lecture: ${subjectId}/${sessionId}/${lectureId}`);
+      return <Navigate to={ROUTE_PATHS.PORTAL} state={{ alertMessage: 'This lecture is currently locked.' }} replace />;
+    }
+  }
+
+  return <>{children}</>;
 };
 
 /**
@@ -45,25 +65,31 @@ export const AppRoutes: React.FC = () => {
       <Route
         path={ROUTE_PATHS.SLIDE_NESTED}
         element={
-          <ClickStepsProvider>
-            <SlideViewer />
-          </ClickStepsProvider>
+          <LectureRouteGuard>
+            <ClickStepsProvider>
+              <SlideViewer />
+            </ClickStepsProvider>
+          </LectureRouteGuard>
         }
       />
       <Route
         path={ROUTE_PATHS.LECTURE_VIEW}
         element={
-          <ClickStepsProvider>
-            <SlideViewer />
-          </ClickStepsProvider>
+          <LectureRouteGuard>
+            <ClickStepsProvider>
+              <SlideViewer />
+            </ClickStepsProvider>
+          </LectureRouteGuard>
         }
       />
       <Route
         path={ROUTE_PATHS.BLOG_VIEW}
         element={
-          <ClickStepsProvider>
-            <SlideViewer />
-          </ClickStepsProvider>
+          <LectureRouteGuard>
+            <ClickStepsProvider>
+              <SlideViewer />
+            </ClickStepsProvider>
+          </LectureRouteGuard>
         }
       />
 

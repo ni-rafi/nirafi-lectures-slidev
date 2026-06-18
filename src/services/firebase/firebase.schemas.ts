@@ -74,3 +74,19 @@ export const ThemeConfigPayloadSchema = z.object({
 });
 
 export type ThemeConfigPayload = z.infer<typeof ThemeConfigPayloadSchema>;
+
+export const LectureStatusSchema = z.object({
+  locked: z.boolean(),
+  hash: z.string(),
+  updatedAt: z.number(),
+});
+
+export type LectureStatus = z.infer<typeof LectureStatusSchema>;
+
+export const SessionStatusPayloadSchema = z.object({
+  id: z.string().optional(),
+  lectures: z.record(z.string(), LectureStatusSchema),
+});
+
+export type SessionStatusPayload = z.infer<typeof SessionStatusPayloadSchema>;
+

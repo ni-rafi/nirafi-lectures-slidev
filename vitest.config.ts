@@ -4,7 +4,8 @@ import { resolve } from 'path';
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node'
+    environment: 'node',
+    exclude: ['**/node_modules/**', '**/dist/**', '**/bklit-ui-temp/**']
   },
   resolve: {
     alias: {

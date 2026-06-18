@@ -1,6 +1,6 @@
-import type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences } from './firebase.schemas';
+import type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload } from './firebase.schemas';
 
-export type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences };
+export type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload };
 
 export interface IFirebaseService {
   initializeFirebase(): void;
@@ -12,4 +12,7 @@ export interface IFirebaseService {
   getThemeConfig(id: string): Promise<ThemeConfigPayload | null>;
   setThemeConfig(id: string, config: Omit<ThemeConfigPayload, 'id'>): Promise<ThemeConfigPayload>;
   deleteThemeConfig(id: string): Promise<void>;
+  getSessionStatus(id: string): Promise<SessionStatusPayload | null>;
+  setSessionStatus(id: string, payload: Omit<SessionStatusPayload, 'id'>): Promise<SessionStatusPayload>;
+  subscribeSessionStatuses(callback: (statuses: SessionStatusPayload[]) => void): () => void;
 }

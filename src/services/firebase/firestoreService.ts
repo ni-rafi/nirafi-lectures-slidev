@@ -8,6 +8,7 @@ import {
   updateDoc,
   deleteDoc,
   setDoc,
+  onSnapshot,
   type Firestore,
   type DocumentData
 } from 'firebase/firestore';
@@ -159,5 +160,32 @@ export const firestoreService = {
 
     const db = this.getDb();
     await deleteDoc(doc(db, def.collectionPath, id));
+  },
+
+  /**
+   * Subscribes to collection snapshots in real-time.
+   */
+  subscribe<T extends { id?: string | undefined }>(def: FirestoreDefinition<T>, callback: (items: T[]) => void): () => void {
+    // Subscription requires read permission
+    this.checkGuard(def, 'read').catch((err) => {
+      console.error('[FirestoreService] Subscription unauthorized:', err);
+    });
+
+    const db = this.getDb();
+    return onSnapshot(collection(db, def.collectionPath), (querySnapshot) => {
+      const results: T[] = [];
+      querySnapshot.forEach((docSnap) => {
+        try {
+          const rawData = { id: docSnap.id, ...docSnap.data() };
+          results.push(def.schema.parse(rawData));
+        } catch (e) {
+          console.warn(`[FirestoreService] Failed to parse document ${docSnap.id}:`, e);
+        }
+      });
+      callback(results);
+    }, (error) => {
+      console.warn(`[FirestoreService] Real-time subscription failed for ${def.collectionPath}:`, error);
+    });
   }
 };
+

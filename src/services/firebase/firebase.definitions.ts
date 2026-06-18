@@ -4,10 +4,12 @@ import {
   FeedbackPayloadSchema,
   UserPayloadSchema,
   ThemeConfigPayloadSchema,
+  SessionStatusPayloadSchema,
   type QuizResponsePayload,
   type FeedbackPayload,
   type UserPayload,
-  type ThemeConfigPayload
+  type ThemeConfigPayload,
+  type SessionStatusPayload
 } from './firebase.schemas';
 
 export const SubmissionsDefinition: FirestoreDefinition<QuizResponsePayload> = {
@@ -45,5 +47,15 @@ export const ThemeConfigDefinition: FirestoreDefinition<ThemeConfigPayload> = {
     write: ['student', 'admin']
   }
 };
+
+export const SessionStatusDefinition: FirestoreDefinition<SessionStatusPayload> = {
+  collectionPath: 'lecture_status',
+  schema: SessionStatusPayloadSchema,
+  roles: {
+    read: ['student', 'admin'],
+    write: ['admin']
+  }
+};
+
 
 

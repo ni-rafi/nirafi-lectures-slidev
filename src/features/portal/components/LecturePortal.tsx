@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { SUBJECTS } from '@/config/lectures';
 import {
@@ -14,6 +15,17 @@ import LectureCard from './LectureCard';
  * academic sessions, and individual lecture decks.
  */
 export const LecturePortal: React.FC = () => {
+  const location = useLocation();
+  const [alertMessage, setAlertMessage] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (location.state && (location.state as { alertMessage?: string }).alertMessage) {
+      setAlertMessage((location.state as { alertMessage: string }).alertMessage);
+      // Clear location state so alert doesn't persist on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
   const latestSessionLabel = React.useMemo(() => {
     let latestYear = 0;
     let latestLabel = '';
@@ -36,6 +48,18 @@ export const LecturePortal: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 flex flex-col gap-8">
+      {/* Warning Alert Banner */}
+      {alertMessage && (
+        <div className="relative overflow-hidden rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-xs font-semibold text-destructive flex items-center justify-between gap-4 animate-in fade-in slide-in-from-top duration-300">
+          <span>{alertMessage}</span>
+          <button
+            onClick={() => setAlertMessage(null)}
+            className="text-[10px] font-bold tracking-wider uppercase bg-destructive/20 hover:bg-destructive/30 text-destructive px-2 py-1 rounded transition-colors"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       {/* Welcome Banner */}
       <div className="relative overflow-hidden rounded-2xl border bg-card p-6 shadow-xs sm:p-8">
         <div className="absolute top-0 right-0 h-40 w-40 rounded-full bg-primary/5 blur-3xl" />
@@ -114,6 +138,8 @@ export const LecturePortal: React.FC = () => {
                             lecture={lecture}
                             deckUrl={deckUrl}
                             subjectColor={subject.color}
+                            subjectId={subject.id}
+                            sessionId={session.id}
                           />
                         );
                       })}

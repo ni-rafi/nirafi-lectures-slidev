@@ -4,4 +4,6 @@ export * from './useTheme';
 export * from './FirebaseContext';
 export * from './QSEngineContext';
 export * from './UserContext';
+export * from './LectureStatusContext';
+
 
