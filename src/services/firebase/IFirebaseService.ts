@@ -1,6 +1,6 @@
-import type { QuizResponsePayload, FeedbackPayload, UserPayload } from './firebase.schemas';
+import type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences } from './firebase.schemas';
 
-export type { QuizResponsePayload, FeedbackPayload, UserPayload };
+export type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences };
 
 export interface IFirebaseService {
   initializeFirebase(): void;
@@ -9,4 +9,7 @@ export interface IFirebaseService {
   submitFeedback(payload: FeedbackPayload): Promise<void>;
   getUserProfile(uid: string): Promise<UserPayload | null>;
   setUserProfile(uid: string, profile: Omit<UserPayload, 'id'>): Promise<UserPayload>;
+  getThemeConfig(id: string): Promise<ThemeConfigPayload | null>;
+  setThemeConfig(id: string, config: Omit<ThemeConfigPayload, 'id'>): Promise<ThemeConfigPayload>;
+  deleteThemeConfig(id: string): Promise<void>;
 }

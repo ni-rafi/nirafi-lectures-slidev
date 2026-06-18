@@ -1,0 +1,69 @@
+/* Dynamic Slide Canvas Style Override mapping */
+[data-slide-canvas] {
+  /* Dynamic fonts and radius mapped */
+  font-family: var(--slide-font-sans), system-ui, -apple-system, sans-serif !important;
+  --radius: var(--slide-radius) !important;
+  border-radius: var(--slide-radius);
+
+  /* Light mode (default) derived variables */
+  --background: oklch(1 0 0); /* Pure white backdrop by default */
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.50 0.16 var(--slide-accent-hue));
+  --primary-foreground: oklch(0.99 0.01 var(--slide-accent-hue));
+  --secondary: oklch(0.95 0.02 var(--slide-accent-hue));
+  --secondary-foreground: oklch(0.25 0.04 var(--slide-accent-hue));
+  --muted: oklch(0.97 0.01 var(--slide-accent-hue));
+  --muted-foreground: oklch(0.48 0.04 var(--slide-accent-hue));
+  --accent: oklch(0.92 0.04 var(--slide-accent-hue));
+  --accent-foreground: oklch(0.25 0.04 var(--slide-accent-hue));
+  --border: oklch(0.90 0.02 var(--slide-accent-hue));
+  --input: oklch(0.90 0.02 var(--slide-accent-hue));
+  --ring: oklch(0.50 0.16 var(--slide-accent-hue));
+}
+
+/* Headers and titles font styling inside slides */
+[data-slide-canvas] h1,
+[data-slide-canvas] h2,
+[data-slide-canvas] h3,
+[data-slide-canvas] h4,
+[data-slide-canvas] h5,
+[data-slide-canvas] h6,
+[data-slide-canvas] .slide-header-title {
+  font-family: var(--slide-font-header), var(--slide-font-sans), system-ui, sans-serif !important;
+}
+
+[data-slide-canvas] .slide-header,
+[data-slide-canvas] header.slide-header-title {
+  font-size: var(--slide-header-size) !important;
+  line-height: 1.25 !important;
+}
+
+[data-slide-canvas] h1.slide-header-title {
+  font-size: calc(var(--slide-header-size) * 1.8) !important;
+  line-height: 1.15 !important;
+}
+
+/* Dark mode check */
+.dark [data-slide-canvas], [data-slide-canvas].dark {
+  --background: oklch(0.145 0 0); /* Dark gray backdrop by default */
+  --foreground: oklch(0.95 0.01 var(--slide-accent-hue));
+  --card: oklch(0.16 0.02 var(--slide-accent-hue));
+  --card-foreground: oklch(0.95 0.01 var(--slide-accent-hue));
+  --popover: oklch(0.16 0.02 var(--slide-accent-hue));
+  --popover-foreground: oklch(0.95 0.01 var(--slide-accent-hue));
+  --primary: oklch(0.60 0.18 var(--slide-accent-hue));
+  --primary-foreground: oklch(0.12 0.02 var(--slide-accent-hue));
+  --secondary: oklch(0.22 0.04 var(--slide-accent-hue));
+  --secondary-foreground: oklch(0.95 0.01 var(--slide-accent-hue));
+  --muted: oklch(0.22 0.04 var(--slide-accent-hue));
+  --muted-foreground: oklch(0.60 0.08 var(--slide-accent-hue));
+  --accent: oklch(0.30 0.08 var(--slide-accent-hue));
+  --accent-foreground: oklch(0.95 0.01 var(--slide-accent-hue));
+  --border: oklch(0.22 0.04 var(--slide-accent-hue));
+  --input: oklch(0.25 0.04 var(--slide-accent-hue));
+  --ring: oklch(0.60 0.18 var(--slide-accent-hue));
+}

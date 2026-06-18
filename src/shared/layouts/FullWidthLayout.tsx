@@ -37,7 +37,7 @@ export const FullWidthLayout: React.FC<FullWidthLayoutProps> = ({
   }
 
   return (
-    <div className="relative flex flex-col justify-between h-full w-full p-8 bg-transparent text-foreground overflow-hidden select-text">
+    <div className="relative flex flex-col justify-between h-full w-full px-2.5 py-1.5 bg-transparent text-foreground overflow-hidden select-text">
       <div className="relative z-10 flex flex-col h-full w-full min-h-0 flex-1">
         <LayoutHeader title={title} />
         

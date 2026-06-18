@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import type { SlideDimensions } from '../../types';
 import { useSlideScale } from '../../hooks/useSlideScale';
+import { useSlideTheme } from '../../context/SlideThemeContext';
 
 interface SlideContainerProps {
   children: React.ReactNode;
@@ -34,15 +35,43 @@ export const SlideContainer: React.FC<SlideContainerProps> = ({
   const fitScale = useSlideScale(containerRef, dimensions, zoom);
   const scale = scaleMode === '1:1' ? 1.0 : fitScale;
 
+  const { resolvedTheme } = useSlideTheme();
+
   const virtualHeight = dimensions.width / dimensions.aspectRatio;
 
-  const canvasStyle: React.CSSProperties = {
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  let customBackgroundValue: string | undefined = undefined;
+
+  if (resolvedTheme.bgType === 'gradient') {
+    customBackgroundValue = isDark
+      ? `linear-gradient(135deg, oklch(0.18 0.04 ${resolvedTheme.accentHue}) 0%, oklch(0.12 0.02 ${resolvedTheme.accentHue}) 100%)`
+      : `linear-gradient(135deg, oklch(0.95 0.05 ${resolvedTheme.accentHue}) 0%, oklch(0.99 0.01 ${resolvedTheme.accentHue}) 100%)`;
+  } else if (resolvedTheme.bgType === 'custom' && resolvedTheme.customBgValue) {
+    customBackgroundValue = resolvedTheme.customBgValue;
+  }
+
+  const canvasStyle: React.CSSProperties & Record<string, string | number> = {
     width: `${dimensions.width}px`,
     height: `${virtualHeight}px`,
     transform: `scale(${scale})`,
     transformOrigin: 'center center',
     flexShrink: 0,
+    '--slide-accent-hue': resolvedTheme.accentHue.toString(),
+    '--slide-radius': `${resolvedTheme.borderRadius}px`,
+    '--slide-font-sans': resolvedTheme.fontSans,
+    '--slide-font-header': resolvedTheme.fontHeader,
+    '--slide-bg-type': resolvedTheme.bgType,
+    '--slide-custom-bg': resolvedTheme.customBgValue,
+    '--slide-border-side': resolvedTheme.borderSide,
+    '--slide-header-size': `${resolvedTheme.headerFontSize}px`,
   };
+
+  if (customBackgroundValue) {
+    canvasStyle.background = customBackgroundValue;
+    canvasStyle['--background'] = customBackgroundValue;
+  }
+
+  const borderClass = 'rounded-2xl border border-border';
 
   return (
     <div
@@ -56,7 +85,7 @@ export const SlideContainer: React.FC<SlideContainerProps> = ({
       <div
         style={canvasStyle}
         className={`relative bg-background text-foreground overflow-hidden flex flex-col justify-between select-none ${
-          isThumbnail ? '' : 'rounded-2xl border'
+          isThumbnail ? '' : borderClass
         }`}
         data-slide-canvas
       >

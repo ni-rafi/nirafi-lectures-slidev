@@ -3,13 +3,13 @@ import { TitleLayout } from '@/shared/layouts/TitleLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { calculateConcreteVolume } from '../calculations/concrete';
-import { SlideContent, SlideTable } from '@/features/presentation';
+import { SlideContent, SlideTable, ClickHighlight, LatexFormula } from '@/features/presentation';
 
 // Slide 1: Cover Slide
 const Slide1: React.FC<any> = ({ subject, lecture }) => (
   <TitleLayout
     title={lecture.title}
-    subtitle={`${subject.code} Series • Session 2026-27`}
+    subtitle={`${subject.courseCode} Series • Session 2026-27`}
     description={lecture.description}
     footer="CE-QS Academic Department"
   />
@@ -27,12 +27,32 @@ const Slide2: React.FC = () => {
           blocks={[
             {
               type: 'paragraph',
-              text: 'Estimating structural concrete requires isolating total volumetric cubic meters from internal rebar steel displacement constants.',
+              text: (
+                <span>
+                  Estimating structural concrete requires{' '}
+                  <ClickHighlight at={1} variant="marker">isolating total volumetric cubic meters</ClickHighlight>{' '}
+                  from{' '}
+                  <ClickHighlight at={2} variant="rect">internal rebar steel displacement constants</ClickHighlight>.
+                </span>
+              ),
             },
             {
-              type: 'equation',
-              math: 'V = L \\times W \\times H \\times (1 + \\text{wastage})',
-              revealAt: 1,
+              type: 'paragraph',
+              variant: 'plain',
+              revealAt: 3,
+              text: (
+                <div className="flex flex-col items-center justify-center p-4 bg-card border border-border shadow-sm rounded-xl">
+                  <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2">
+                    Volumetric Concrete Equation
+                  </div>
+                  <div className="flex items-center gap-1.5 justify-center py-2 select-text">
+                    <LatexFormula math="V = L \times W \times H \times" />
+                    <ClickHighlight at={4} variant="text">
+                      <LatexFormula math="(1 + \text{wastage})" />
+                    </ClickHighlight>
+                  </div>
+                </div>
+              ),
             },
           ]}
         />
@@ -40,10 +60,37 @@ const Slide2: React.FC = () => {
       rightContent={
         <SlideContent
           blocks={[
-            { type: 'paragraph', text: 'Wastage Allowances:' },
-            { type: 'bullet', text: 'Standard structural members (beams/columns): 5% waste' },
-            { type: 'bullet', text: 'Slabs and massive casting elements: 8% waste' },
-            { type: 'bullet', text: 'Thin foundation blindings and overlays: 10% waste' },
+            {
+              type: 'list',
+              listTitle: 'Wastage Allowances',
+              description: 'Standard concrete estimations require structural wastage constants:',
+              items: [
+                {
+                  text: (
+                    <span>
+                      Standard structural members (beams/columns):{' '}
+                      <ClickHighlight at={5} variant="paint">5% waste</ClickHighlight>
+                    </span>
+                  ),
+                },
+                {
+                  text: (
+                    <span>
+                      Slabs and massive casting elements:{' '}
+                      <ClickHighlight at={6} variant="rect">8% waste</ClickHighlight>
+                    </span>
+                  ),
+                },
+                {
+                  text: (
+                    <span>
+                      Thin foundation blindings and overlays:{' '}
+                      <ClickHighlight at={7} variant="paint">10% waste</ClickHighlight>
+                    </span>
+                  ),
+                },
+              ],
+            },
           ]}
         />
       }
@@ -66,26 +113,37 @@ const Slide3: React.FC = () => {
       bgVariant="calculation"
       leftWidth="45%"
       leftContent={
-        <div className="space-y-3 text-xs">
-          <span className="font-semibold text-muted-foreground block uppercase text-[10px] tracking-wider">Parameters (SI Meters)</span>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground">Length: {length}m</label>
+        <div className="relative p-5 md:p-6 bg-muted/60 dark:bg-muted/20 border-l-[6px] border-primary rounded-r-xl text-foreground font-medium space-y-4 text-left before:absolute before:top-0 before:left-[-6px] before:w-10 before:h-[6px] before:bg-primary after:absolute after:bottom-0 after:left-[-6px] after:w-10 after:h-[6px] after:bg-primary">
+          <div className="font-extrabold text-xs md:text-sm text-primary tracking-wide mb-3 border-b border-border/40 pb-1.5 uppercase select-none">
+            Parameters (SI Meters)
+          </div>
+          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
+            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
+              <span>Length:</span>
+              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{length}m</span>
+            </label>
             <input
               type="range" min="1" max="50" step="0.5" value={length}
               onChange={(e) => setLength(parseFloat(e.target.value))}
               className="w-full accent-primary cursor-pointer"
             />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground">Width: {width}m</label>
+          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
+            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
+              <span>Width:</span>
+              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{width}m</span>
+            </label>
             <input
               type="range" min="0.1" max="2" step="0.05" value={width}
               onChange={(e) => setWidth(parseFloat(e.target.value))}
               className="w-full accent-primary cursor-pointer"
             />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground">Height: {height}m</label>
+          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
+            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
+              <span>Height:</span>
+              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{height}m</span>
+            </label>
             <input
               type="range" min="0.1" max="2" step="0.05" value={height}
               onChange={(e) => setHeight(parseFloat(e.target.value))}
@@ -126,18 +184,18 @@ const Slide4: React.FC = () => {
           [
             '1.1',
             'Concrete cast in situ for columns (SI metrics)',
-            '12.500',
+            <ClickHighlight at={1} variant="paint">12.500</ClickHighlight>,
             'm³',
             '$120.00',
-            <span className="text-foreground font-semibold">$1,500.00</span>
+            <ClickHighlight at={1} variant="rect"><span className="text-foreground font-semibold">$1,500.00</span></ClickHighlight>
           ],
           [
             '1.2',
             'Mild steel reinforcement D=12mm',
-            '920.000',
+            <ClickHighlight at={2} variant="paint">920.000</ClickHighlight>,
             'kg',
             '$1.50',
-            <span className="text-foreground font-semibold">$1,380.00</span>
+            <ClickHighlight at={2} variant="rect"><span className="text-foreground font-semibold">$1,380.00</span></ClickHighlight>
           ],
         ]}
       />

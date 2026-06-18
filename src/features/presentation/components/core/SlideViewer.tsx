@@ -4,6 +4,7 @@ import useSlideViewerOrchestrator from '../../hooks/useSlideViewerOrchestrator';
 import ScrollModeView from './ScrollModeView';
 import PresentationModeView from './PresentationModeView';
 import PrintView from './PrintView';
+import { SlideThemeProvider } from '../../context/SlideThemeContext';
 
 /**
  * SlideViewer manages the slide deck viewing lifecycle,
@@ -17,22 +18,25 @@ export const SlideViewer: React.FC = () => {
     return <div className="flex h-64 items-center justify-center text-sm text-destructive">Lecture deck not found.</div>;
   }
 
-  if (searchParams.get('print') === 'true') {
-    return (
-      <PrintView
-        subject={orchestrator.activeSub!}
-        lecture={orchestrator.activeLec!}
-        session={orchestrator.activeSession}
-        includeAnnotations={searchParams.get('annotations') === 'true'}
-      />
-    );
-  }
-
-  if (orchestrator.viewMode === 'scroll') {
-    return <ScrollModeView orchestrator={orchestrator} />;
-  }
-
-  return <PresentationModeView orchestrator={orchestrator} />;
+  return (
+    <SlideThemeProvider
+      subjectId={orchestrator.subjectId!}
+      lectureId={orchestrator.lectureId!}
+    >
+      {searchParams.get('print') === 'true' ? (
+        <PrintView
+          subject={orchestrator.activeSub!}
+          lecture={orchestrator.activeLec!}
+          session={orchestrator.activeSession}
+          includeAnnotations={searchParams.get('annotations') === 'true'}
+        />
+      ) : orchestrator.viewMode === 'scroll' ? (
+        <ScrollModeView orchestrator={orchestrator} />
+      ) : (
+        <PresentationModeView orchestrator={orchestrator} />
+      )}
+    </SlideThemeProvider>
+  );
 };
 
 export default SlideViewer;

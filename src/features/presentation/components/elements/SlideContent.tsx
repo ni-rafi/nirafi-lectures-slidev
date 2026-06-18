@@ -8,10 +8,11 @@ import { SlideList } from './SlideList';
 export { SlideParagraph, SlideBullet, SlideEquation, SlideTable, SlideList };
 
 export type ContentBlockType =
-  | { type: 'paragraph'; text: string; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none'; variant?: 'info' | 'warning' | 'error' | 'success' | 'callout' | 'default' }
-  | { type: 'bullet'; title?: string; text: string; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none'; icon?: React.ReactNode }
+  | { type: 'paragraph'; title?: string; text: React.ReactNode; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none'; variant?: 'info' | 'warning' | 'error' | 'success' | 'callout' | 'plain' | 'default' }
+  | { type: 'bullet'; title?: React.ReactNode; text: React.ReactNode; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none'; icon?: React.ReactNode }
   | { type: 'equation'; math: string; block?: boolean; label?: string; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none' }
-  | { type: 'table'; headers: Array<string | { label: string; align?: 'left' | 'center' | 'right' }>; rows: Array<Array<React.ReactNode>>; striped?: boolean; bordered?: boolean; hoverable?: boolean; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none' };
+  | { type: 'table'; headers: Array<string | { label: string; align?: 'left' | 'center' | 'right' }>; rows: Array<Array<React.ReactNode>>; striped?: boolean; bordered?: boolean; hoverable?: boolean; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none' }
+  | { type: 'list'; listTitle?: string; description?: string; items: Array<{ title?: React.ReactNode; text: React.ReactNode; revealAt?: number | string; revealPreset?: 'fade' | 'fade-in' | 'up' | 'down' | 'scale' | 'none'; icon?: React.ReactNode }>; variant?: 'default' | 'plain' };
 
 interface SlideContentProps {
   blocks: ContentBlockType[];
@@ -51,6 +52,7 @@ export const SlideContent: React.FC<SlideContentProps> = ({ blocks, className = 
         rendered.push(
           <SlideParagraph
             key={idx}
+            title={block.title}
             text={block.text}
             revealAt={block.revealAt}
             revealPreset={block.revealPreset}
@@ -79,6 +81,16 @@ export const SlideContent: React.FC<SlideContentProps> = ({ blocks, className = 
             hoverable={block.hoverable}
             revealAt={block.revealAt}
             revealPreset={block.revealPreset}
+          />
+        );
+      } else if (block.type === 'list') {
+        rendered.push(
+          <SlideList
+            key={idx}
+            title={block.listTitle}
+            description={block.description}
+            items={block.items}
+            variant={block.variant}
           />
         );
       }

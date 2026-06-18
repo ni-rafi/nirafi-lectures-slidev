@@ -72,7 +72,7 @@ export const AppSidebar: React.FC = () => {
           <SidebarGroup>
             <SidebarGroupLabel className="px-2 flex items-center justify-between">
               <span className="truncate max-w-[120px] uppercase font-mono font-bold">
-                {currentSubject?.code || 'Deck Slides'}
+                {currentSubject?.courseCode || 'Deck Slides'}
               </span>
               <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
                 {currentLecture?.title}
@@ -136,7 +136,7 @@ export const AppSidebar: React.FC = () => {
                     <SidebarMenuButton asChild className="hover:bg-accent text-xs">
                       <a href={`#subject-${sub.id}`}>
                         <BookOpen className="h-4 w-4 shrink-0" />
-                        <span className="truncate">{sub.title}</span>
+                        <span className="truncate">{sub.courseTitle}</span>
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Play, Sun, Moon, ChevronDown, Printer, FileDown } from 'lucide-react';
+import { ChevronLeft, Play, Sun, Moon, ChevronDown, Printer, FileDown, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PageMetadata from './PageMetadata';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import TwoWayGridOrchestrator from './TwoWayGridOrchestrator';
 import { useSlideViewerOrchestrator } from '../../hooks/useSlideViewerOrchestrator';
+import ThemePlaygroundPanel from '../tools/ThemePlaygroundPanel';
 
 interface ScrollModeViewProps {
   orchestrator: ReturnType<typeof useSlideViewerOrchestrator>;
@@ -18,6 +19,7 @@ interface ScrollModeViewProps {
 
 export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) => {
   const navigate = useNavigate();
+  const [isThemePlaygroundOpen, setIsThemePlaygroundOpen] = React.useState(false);
 
   const {
     activeSub,
@@ -37,7 +39,7 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background animate-in fade-in duration-300">
-      <PageMetadata title={activeLec.title} subjectCode={activeSub.code} slideNo={activeSlide} />
+      <PageMetadata title={activeLec.title} subjectCode={activeSub.courseCode} slideNo={activeSlide} />
       
       {/* Sticky blurred header panel */}
       <header className="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b bg-background/80 px-6 backdrop-blur-md">
@@ -57,12 +59,23 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
               {activeLec.title}
             </span>
             <span className="text-[10px] text-muted-foreground">
-              {activeSub.code} • {activeSub.title}
+              {activeSub.courseCode} • {activeSub.courseTitle}
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Theme customizer button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsThemePlaygroundOpen(true)}
+            className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground"
+            title="Customize Theme"
+          >
+            <Palette className="h-4 w-4" />
+          </Button>
+
           <Button
             variant="ghost"
             size="icon"
@@ -136,6 +149,11 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
           currentSlide={activeSlide}
         />
       </main>
+
+      <ThemePlaygroundPanel
+        isOpen={isThemePlaygroundOpen}
+        onClose={() => setIsThemePlaygroundOpen(false)}
+      />
     </div>
   );
 };

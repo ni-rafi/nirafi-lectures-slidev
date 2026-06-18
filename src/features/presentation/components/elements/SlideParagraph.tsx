@@ -8,12 +8,14 @@ export interface SlideElementProps {
 }
 
 interface SlideParagraphProps extends SlideElementProps {
-  text?: string;
+  title?: string;
+  text?: React.ReactNode;
   children?: React.ReactNode;
-  variant?: 'info' | 'warning' | 'error' | 'success' | 'callout' | 'default';
+  variant?: 'info' | 'warning' | 'error' | 'success' | 'callout' | 'plain' | 'default';
 }
 
 export const SlideParagraph: React.FC<SlideParagraphProps> = ({
+  title,
   text,
   children,
   revealAt,
@@ -32,14 +34,28 @@ export const SlideParagraph: React.FC<SlideParagraphProps> = ({
     variantClasses = 'p-3 bg-emerald-500/5 border-l-2 border-emerald-500 rounded text-emerald-700 dark:text-emerald-300';
   } else if (variant === 'callout') {
     variantClasses = 'p-3 bg-primary/5 border-l-2 border-primary rounded text-foreground';
-  } else {
+  } else if (variant === 'plain') {
     variantClasses = 'text-muted-foreground';
+  } else {
+    // default premium PowerPoint ash card with blue hooks
+    variantClasses = 'relative p-5 md:p-6 bg-muted/60 dark:bg-muted/20 border-l-[6px] border-primary rounded-r-xl text-foreground font-medium before:absolute before:top-0 before:left-[-6px] before:w-10 before:h-[6px] before:bg-primary after:absolute after:bottom-0 after:left-[-6px] after:w-10 after:h-[6px] after:bg-primary';
   }
 
+  const isCard = variant !== 'plain' && variant !== 'info' && variant !== 'warning' && variant !== 'error' && variant !== 'success';
+
   const content = (
-    <p className={`text-xs md:text-sm leading-relaxed select-text ${variantClasses} ${className}`}>
-      {text || children}
-    </p>
+    <div className={`text-xs md:text-sm leading-relaxed select-text ${variantClasses} ${className}`}>
+      {title && (
+        <div className={`font-extrabold text-xs md:text-sm text-primary tracking-wide mb-3 select-none ${
+          isCard ? 'border-b border-border/40 pb-1.5 uppercase' : ''
+        }`}>
+          {title}
+        </div>
+      )}
+      <div className={title ? 'mt-1 text-foreground/90 font-medium' : ''}>
+        {text || children}
+      </div>
+    </div>
   );
 
   if (revealAt !== undefined) {

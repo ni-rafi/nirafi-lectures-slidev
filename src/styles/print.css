@@ -1,0 +1,54 @@
+/* Print styles for slide export */
+@media print {
+  @page {
+    size: 980px 551.25px;
+    margin: 0;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    height: auto !important;
+    min-height: initial !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Hide app-wide UI elements */
+  header, footer, nav, aside, [data-sidebar], .no-print, [role="navigation"] {
+    display: none !important;
+  }
+
+  .print-layout {
+    display: block !important;
+    background: white !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: initial !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-slide-page {
+    page-break-after: always;
+    break-after: page;
+    width: 980px;
+    height: 551.25px;
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto !important;
+    background: white;
+  }
+
+  .print-slide-page:last-of-type,
+  .print-slide-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  svg {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

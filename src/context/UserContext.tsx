@@ -1,17 +1,20 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useFirebase } from './FirebaseContext';
 import { validateRegistration, validateSession, normalizeRegistration, normalizeSession } from '@/cores/user/userValidation';
+import type { UserPayload, ThemePreferences } from '@/services/firebase/IFirebaseService';
 
 interface UserContextType {
   rollNumber: string | null;
   session: string | null;
   uid: string | null;
+  userProfile: UserPayload | null;
   isLoggedIn: boolean;
   isLoading: boolean;
   error: string | null;
   login: (rollNumber: string, session: string) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
+  updateThemePreferences: (key: string, preferences: ThemePreferences | null) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -42,6 +45,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [rollNumber, setRollNumber] = useState<string | null>(null);
   const [session, setSession] = useState<string | null>(null);
   const [uid, setUid] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<UserPayload | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +59,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       if (storedRoll && storedSession && validateRegistration(storedRoll) && validateSession(storedSession)) {
         try {
           const anonymousUid = await firebaseService.anonymousSignIn();
+          const profile = await firebaseService.getUserProfile(anonymousUid);
           setUid(anonymousUid);
+          setUserProfile(profile);
           setRollNumber(normalizeRegistration(storedRoll));
           setSession(normalizeSession(storedSession));
           setIsLoggedIn(true);
@@ -98,7 +104,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         const anonymousUid = await firebaseService.anonymousSignIn();
 
         // Save or update profile in backend
-        await firebaseService.setUserProfile(anonymousUid, {
+        const profile = await firebaseService.setUserProfile(anonymousUid, {
           name: `Student ${normalizedRoll}`,
           registration: normalizedRoll,
           session: normalizedSession,
@@ -113,6 +119,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setRollNumber(normalizedRoll);
         setSession(normalizedSession);
         setUid(anonymousUid);
+        setUserProfile(profile);
         setIsLoggedIn(true);
         setIsLoading(false);
         return true;
@@ -132,6 +139,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     setRollNumber(null);
     setSession(null);
     setUid(null);
+    setUserProfile(null);
     setIsLoggedIn(false);
     setError(null);
   }, []);
@@ -140,19 +148,61 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     setError(null);
   }, []);
 
+  const updateThemePreferences = useCallback(
+    async (key: string, preferences: ThemePreferences | null) => {
+      if (!uid || !userProfile) return;
+      try {
+        const updatedPreferences = {
+          ...(userProfile.themePreferences || {}),
+        };
+        if (preferences === null) {
+          delete updatedPreferences[key];
+        } else {
+          updatedPreferences[key] = preferences;
+        }
+        const updatedProfile = await firebaseService.setUserProfile(uid, {
+          name: userProfile.name,
+          registration: userProfile.registration || null,
+          session: userProfile.session || null,
+          role: userProfile.role,
+          isGuest: userProfile.isGuest,
+          themePreferences: updatedPreferences,
+        });
+        setUserProfile(updatedProfile);
+      } catch (err) {
+        console.error('[UserProvider] Failed to update theme preferences:', err);
+      }
+    },
+    [uid, userProfile, firebaseService]
+  );
+
   const contextValue = React.useMemo(
     () => ({
       rollNumber,
       session,
       uid,
+      userProfile,
       isLoggedIn,
       isLoading,
       error,
       login,
       logout,
       clearError,
+      updateThemePreferences,
     }),
-    [rollNumber, session, uid, isLoggedIn, isLoading, error, login, logout, clearError]
+    [
+      rollNumber,
+      session,
+      uid,
+      userProfile,
+      isLoggedIn,
+      isLoading,
+      error,
+      login,
+      logout,
+      clearError,
+      updateThemePreferences,
+    ]
   );
 
   return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>;

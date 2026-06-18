@@ -46,6 +46,9 @@ interface PresentationOverlaysProps {
   activeSub: Subject;
   activeLec: Lecture;
   activeSession?: Session;
+
+  isThemePlaygroundOpen: boolean;
+  onToggleThemePlayground: () => void;
 }
 
 export const PresentationOverlays: React.FC<PresentationOverlaysProps> = ({
@@ -84,6 +87,7 @@ export const PresentationOverlays: React.FC<PresentationOverlaysProps> = ({
   activeSub,
   activeLec,
   activeSession,
+  onToggleThemePlayground,
 }) => {
   if (isProjectionView) {
     return <LaserPointer active={isLaserActive} />;
@@ -122,7 +126,12 @@ export const PresentationOverlays: React.FC<PresentationOverlaysProps> = ({
       )}
 
       {isSettingsOpen && (
-        <SettingsPopover settings={settings} onSettingsChange={onSettingsChange} onClose={onCloseSettings} />
+        <SettingsPopover
+          settings={settings}
+          onSettingsChange={onSettingsChange}
+          onClose={onCloseSettings}
+          onOpenThemePlayground={onToggleThemePlayground}
+        />
       )}
 
       <OverviewModal

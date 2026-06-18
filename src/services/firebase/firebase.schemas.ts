@@ -27,6 +27,23 @@ export const FeedbackPayloadSchema = z.object({
 
 export type FeedbackPayload = z.infer<typeof FeedbackPayloadSchema>;
 
+export const ThemePreferencesSchema = z.object({
+  accentHue: z.number().min(0).max(360),
+  fontSans: z.string(),
+  fontHeader: z.string(),
+  borderRadius: z.number().int().min(0).max(24),
+  bulletStyle: z.enum(['dot', 'square', 'check', 'chevron', 'arrow', 'dash']),
+  equationBg: z.enum(['default', 'none', 'tinted', 'bordered']),
+  footerStyle: z.enum(['fraction', 'prefixed', 'progress-bar', 'hidden']),
+  updatedAt: z.number(),
+  bgType: z.enum(['solid', 'gradient', 'custom']).optional().default('solid'),
+  customBgValue: z.string().optional().default(''),
+  borderSide: z.enum(['all', 'left', 'top']).optional().default('all'),
+  headerFontSize: z.number().int().min(12).max(32).optional().default(20),
+});
+
+export type ThemePreferences = z.infer<typeof ThemePreferencesSchema>;
+
 export const UserPayloadSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Name is required'),
@@ -34,8 +51,26 @@ export const UserPayloadSchema = z.object({
   session: z.string().optional().nullable(),
   role: z.enum(['student', 'admin']),
   isGuest: z.boolean().optional(),
+  themePreferences: z.record(z.string(), ThemePreferencesSchema).optional().nullable(),
 });
 
 export type UserPayload = z.infer<typeof UserPayloadSchema>;
 
+export const ThemeConfigPayloadSchema = z.object({
+  id: z.string().optional(),
+  isLocked: z.boolean().optional().default(false),
+  accentHue: z.number().min(0).max(360),
+  fontSans: z.string(),
+  fontHeader: z.string(),
+  borderRadius: z.number().int().min(0).max(24),
+  bulletStyle: z.enum(['dot', 'square', 'check', 'chevron', 'arrow', 'dash']),
+  equationBg: z.enum(['default', 'none', 'tinted', 'bordered']),
+  footerStyle: z.enum(['fraction', 'prefixed', 'progress-bar', 'hidden']),
+  updatedAt: z.union([z.date(), z.number()]),
+  bgType: z.enum(['solid', 'gradient', 'custom']).optional().default('solid'),
+  customBgValue: z.string().optional().default(''),
+  borderSide: z.enum(['all', 'left', 'top']).optional().default('all'),
+  headerFontSize: z.number().int().min(12).max(32).optional().default(20),
+});
 
+export type ThemeConfigPayload = z.infer<typeof ThemeConfigPayloadSchema>;

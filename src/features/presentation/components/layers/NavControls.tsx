@@ -11,6 +11,7 @@ import {
   Presentation,
   SlidersHorizontal,
   PenTool,
+  Palette,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DrawingDrawer from './DrawingDrawer';
@@ -54,6 +55,9 @@ interface NavControlsProps {
   onClearDrawing: () => void;
   areDrawingsHidden: boolean;
   onToggleDrawingsHidden: () => void;
+
+  isThemePlaygroundOpen?: boolean;
+  onToggleThemePlayground?: () => void;
 }
 
 /**
@@ -96,6 +100,8 @@ export const NavControls: React.FC<NavControlsProps> = ({
   onClearDrawing,
   areDrawingsHidden,
   onToggleDrawingsHidden,
+  isThemePlaygroundOpen = false,
+  onToggleThemePlayground,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isHoveredSensor, setIsHoveredSensor] = useState(false);
@@ -245,6 +251,19 @@ export const NavControls: React.FC<NavControlsProps> = ({
           >
             <Presentation className="h-4 w-4" />
           </Button>
+
+          {/* Theme Playground Toggle */}
+          {onToggleThemePlayground && (
+            <Button
+              variant={isThemePlaygroundOpen ? 'secondary' : 'ghost'}
+              size="icon"
+              onClick={onToggleThemePlayground}
+              className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground"
+              title="Customize Theme"
+            >
+              <Palette className="h-4 w-4" />
+            </Button>
+          )}
 
           {/* Settings */}
           <Button

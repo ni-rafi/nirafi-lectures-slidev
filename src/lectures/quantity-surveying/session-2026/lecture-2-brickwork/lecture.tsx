@@ -3,13 +3,13 @@ import { TitleLayout } from '@/shared/layouts/TitleLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { calculateBrickwork } from '../calculations/brickwork';
-import { SlideContent, SlideTable } from '@/features/presentation';
+import { SlideContent, SlideTable, ClickHighlight, LatexFormula } from '@/features/presentation';
 
 // Slide 1: Cover Slide
 const Slide1: React.FC<any> = ({ subject, lecture }) => (
   <TitleLayout
     title={lecture.title}
-    subtitle={`${subject.code} Series • Session 2026-27`}
+    subtitle={`${subject.courseCode} Series • Session 2026-27`}
     description={lecture.description}
     footer="CE-QS Academic Department"
   />
@@ -27,12 +27,32 @@ const Slide2: React.FC = () => {
           blocks={[
             {
               type: 'paragraph',
-              text: 'Brickwork estimation determines the number of raw bricks and the volume of wet mortar joint filling needed.',
+              text: (
+                <span>
+                  Brickwork estimation determines the{' '}
+                  <ClickHighlight at={1} variant="marker">number of raw bricks</ClickHighlight>{' '}
+                  and the{' '}
+                  <ClickHighlight at={2} variant="rect">volume of wet mortar joint filling</ClickHighlight> needed.
+                </span>
+              ),
             },
             {
-              type: 'equation',
-              math: '\\text{Mortar Vol} = \\text{Wall Vol} - (\\text{Bricks} \\times \\text{Brick Vol})',
-              revealAt: 1,
+              type: 'paragraph',
+              variant: 'plain',
+              revealAt: 3,
+              text: (
+                <div className="flex flex-col items-center justify-center p-4 bg-card border border-border shadow-sm rounded-xl">
+                  <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2">
+                    Volumetric Mortar Equation
+                  </div>
+                  <div className="flex items-center gap-1.5 justify-center py-2 select-text">
+                    <LatexFormula math="\text{Mortar Vol} = \text{Wall Vol} -" />
+                    <ClickHighlight at={4} variant="text">
+                      <LatexFormula math="(\text{Bricks} \times \text{Brick Vol})" />
+                    </ClickHighlight>
+                  </div>
+                </div>
+              ),
             },
           ]}
         />
@@ -40,11 +60,45 @@ const Slide2: React.FC = () => {
       rightContent={
         <SlideContent
           blocks={[
-            { type: 'paragraph', text: 'Standard brick dimensions in SI metrics:' },
-            { type: 'bullet', text: 'Length: 0.240m (240mm)' },
-            { type: 'bullet', text: 'Width: 0.115m (115mm)' },
-            { type: 'bullet', text: 'Height: 0.070m (70mm)' },
-            { type: 'bullet', text: 'Standard mortar joint width: 0.010m (10mm)' },
+            {
+              type: 'list',
+              listTitle: 'Standard Brick Dimensions',
+              description: 'Typical sizes used in masonry work calculations:',
+              items: [
+                {
+                  text: (
+                    <span>
+                      Length:{' '}
+                      <ClickHighlight at={5} variant="paint">0.240m (240mm)</ClickHighlight>
+                    </span>
+                  ),
+                },
+                {
+                  text: (
+                    <span>
+                      Width:{' '}
+                      <ClickHighlight at={6} variant="rect">0.115m (115mm)</ClickHighlight>
+                    </span>
+                  ),
+                },
+                {
+                  text: (
+                    <span>
+                      Height:{' '}
+                      <ClickHighlight at={7} variant="paint">0.070m (70mm)</ClickHighlight>
+                    </span>
+                  ),
+                },
+                {
+                  text: (
+                    <span>
+                      Standard mortar joint width:{' '}
+                      <ClickHighlight at={8} variant="text">0.010m (10mm)</ClickHighlight>
+                    </span>
+                  ),
+                },
+              ],
+            },
           ]}
         />
       }
@@ -66,26 +120,37 @@ const Slide3: React.FC = () => {
       bgVariant="calculation"
       leftWidth="45%"
       leftContent={
-        <div className="space-y-3 text-xs">
-          <span className="font-semibold text-muted-foreground block uppercase text-[10px] tracking-wider">Parameters (SI Meters)</span>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground">Wall Surface Area: {area}m²</label>
+        <div className="relative p-5 md:p-6 bg-muted/60 dark:bg-muted/20 border-l-[6px] border-primary rounded-r-xl text-foreground font-medium space-y-4 text-left before:absolute before:top-0 before:left-[-6px] before:w-10 before:h-[6px] before:bg-primary after:absolute after:bottom-0 after:left-[-6px] after:w-10 after:h-[6px] after:bg-primary">
+          <div className="font-extrabold text-xs md:text-sm text-primary tracking-wide mb-3 border-b border-border/40 pb-1.5 uppercase select-none">
+            Parameters (SI Meters)
+          </div>
+          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
+            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
+              <span>Wall Surface Area:</span>
+              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{area}m²</span>
+            </label>
             <input
               type="range" min="1" max="100" step="1" value={area}
               onChange={(e) => setArea(parseFloat(e.target.value))}
               className="w-full accent-primary cursor-pointer"
             />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground">Wall Thickness: {thickness}m</label>
+          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
+            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
+              <span>Wall Thickness:</span>
+              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{thickness}m</span>
+            </label>
             <input
               type="range" min="0.115" max="0.5" step="0.005" value={thickness}
               onChange={(e) => setThickness(parseFloat(e.target.value))}
               className="w-full accent-primary cursor-pointer"
             />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-muted-foreground">Mortar Joints: {Math.round(mortar * 1000)}mm</label>
+          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
+            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
+              <span>Mortar Joints:</span>
+              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{Math.round(mortar * 1000)}mm</span>
+            </label>
             <input
               type="range" min="0.005" max="0.02" step="0.001" value={mortar}
               onChange={(e) => setMortar(parseFloat(e.target.value))}
@@ -126,10 +191,10 @@ const Slide4: React.FC = () => {
           [
             '2.1',
             'First class brickwork in 1:4 cement sand mortar',
-            '15.000',
+            <ClickHighlight at={1} variant="paint">15.000</ClickHighlight>,
             'm³',
             '$150.00',
-            <span className="text-foreground font-semibold">$2,250.00</span>
+            <ClickHighlight at={1} variant="rect"><span className="text-foreground font-semibold">$2,250.00</span></ClickHighlight>
           ],
         ]}
       />

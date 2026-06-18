@@ -19,21 +19,23 @@ export interface Session {
   lectures: Lecture[];
 }
 
-export interface Subject {
+export interface Course {
   id: string;
-  title: string;
-  code: string;         // e.g. "CE-QS"
+  courseTitle: string;
+  courseCode: string;
   description: string;
   iconEmoji: string;
   color: string;        // tailwind-compatible hex or gradient string
   sessions: Session[];
 }
 
-export const SUBJECTS: Subject[] = [
+export type Subject = Course;
+
+export const SUBJECTS: Course[] = [
   {
     id: 'quantity-surveying',
-    title: 'Quantity Surveying',
-    code: 'CE-QS',
+    courseTitle: 'Quantity Surveying',
+    courseCode: 'CE-QS',
     description: 'Structural estimation, material take-off, and project costing for civil engineering works.',
     iconEmoji: '🏗️',
     color: '#f59e0b',
@@ -75,8 +77,8 @@ export const SUBJECTS: Subject[] = [
   },
   {
     id: 'web-development',
-    title: 'Web App Development',
-    code: 'CS-WAD',
+    courseTitle: 'Web App Development',
+    courseCode: 'CS-WAD',
     description: 'Modern web application development with Vue 3, TypeScript, Firebase, and Slidev.',
     iconEmoji: '💻',
     color: '#6366f1',

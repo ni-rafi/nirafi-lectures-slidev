@@ -3,9 +3,11 @@ import {
   QuizResponsePayloadSchema, 
   FeedbackPayloadSchema,
   UserPayloadSchema,
+  ThemeConfigPayloadSchema,
   type QuizResponsePayload,
   type FeedbackPayload,
-  type UserPayload
+  type UserPayload,
+  type ThemeConfigPayload
 } from './firebase.schemas';
 
 export const SubmissionsDefinition: FirestoreDefinition<QuizResponsePayload> = {
@@ -34,4 +36,14 @@ export const UsersDefinition: FirestoreDefinition<UserPayload> = {
     write: ['student', 'admin']
   }
 };
+
+export const ThemeConfigDefinition: FirestoreDefinition<ThemeConfigPayload> = {
+  collectionPath: 'themes',
+  schema: ThemeConfigPayloadSchema,
+  roles: {
+    read: ['student', 'admin'],
+    write: ['student', 'admin']
+  }
+};
+
 

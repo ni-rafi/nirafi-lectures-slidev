@@ -44,12 +44,12 @@ export const LecturePortal: React.FC = () => {
           >
             {/* Subject Info Header */}
             <div className="flex items-center gap-3 border-b pb-2">
-              <span className="text-2xl" role="img" aria-label={subject.title}>
+              <span className="text-2xl" role="img" aria-label={subject.courseTitle}>
                 {subject.iconEmoji}
               </span>
               <div className="flex flex-col">
                 <h2 className="text-lg font-bold text-foreground">
-                  {subject.title} ({subject.code})
+                  {subject.courseTitle} ({subject.courseCode})
                 </h2>
                 <p className="text-xs text-muted-foreground">{subject.description}</p>
               </div>

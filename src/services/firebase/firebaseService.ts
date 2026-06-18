@@ -1,9 +1,10 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, signInAnonymously, type Auth } from 'firebase/auth';
-import type { IFirebaseService, QuizResponsePayload, FeedbackPayload, UserPayload } from './IFirebaseService';
+import type { IFirebaseService, QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload } from './IFirebaseService';
 import { SubmissionsRepository } from './repositories/submissions/SubmissionsRepository';
 import { FeedbackRepository } from './repositories/feedback/FeedbackRepository';
 import { UsersRepository } from './repositories/users/UsersRepository';
+import { ThemesRepository } from './repositories/themes/ThemesRepository';
 
 export class FirebaseService implements IFirebaseService {
   private app: FirebaseApp | null = null;
@@ -12,6 +13,7 @@ export class FirebaseService implements IFirebaseService {
   private submissionsRepository: SubmissionsRepository | null = null;
   private feedbackRepository: FeedbackRepository | null = null;
   private usersRepository: UsersRepository | null = null;
+  private themesRepository: ThemesRepository | null = null;
   private isOfflineMode = false;
 
   public initializeFirebase(): void {
@@ -39,6 +41,7 @@ export class FirebaseService implements IFirebaseService {
       this.submissionsRepository = new SubmissionsRepository();
       this.feedbackRepository = new FeedbackRepository();
       this.usersRepository = new UsersRepository();
+      this.themesRepository = new ThemesRepository();
     } catch (e) {
       console.warn('[FirebaseService] Firebase failed to initialize. Running in mock/offline mode:', e);
       this.isOfflineMode = true;
@@ -133,6 +136,58 @@ export class FirebaseService implements IFirebaseService {
       const userProfile = { id: uid, ...profile };
       localStorage.setItem('offline_student_profile', JSON.stringify(userProfile));
       return userProfile;
+    }
+  }
+
+  public async getThemeConfig(id: string): Promise<ThemeConfigPayload | null> {
+    if (this.isOfflineMode || !this.themesRepository) {
+      console.warn('[FirebaseService] [Offline Mode] Loading theme config locally:', id);
+      const saved = localStorage.getItem(`offline_theme_${id}`);
+      if (saved) {
+        return JSON.parse(saved) as ThemeConfigPayload;
+      }
+      return null;
+    }
+    try {
+      return await this.themesRepository.getById(id);
+    } catch (error) {
+      console.warn('[FirebaseService] Failed to load theme config, trying offline cache:', error);
+      const saved = localStorage.getItem(`offline_theme_${id}`);
+      if (saved) {
+        return JSON.parse(saved) as ThemeConfigPayload;
+      }
+      return null;
+    }
+  }
+
+  public async setThemeConfig(id: string, config: Omit<ThemeConfigPayload, 'id'>): Promise<ThemeConfigPayload> {
+    if (this.isOfflineMode || !this.themesRepository) {
+      console.warn('[FirebaseService] [Offline Mode] Saving theme config locally:', id, config);
+      const payload = { id, ...config };
+      localStorage.setItem(`offline_theme_${id}`, JSON.stringify(payload));
+      return payload;
+    }
+    try {
+      return await this.themesRepository.set(id, config);
+    } catch (error) {
+      console.warn('[FirebaseService] Failed to save theme config in Firestore, saving locally:', error);
+      const payload = { id, ...config };
+      localStorage.setItem(`offline_theme_${id}`, JSON.stringify(payload));
+      return payload;
+    }
+  }
+
+  public async deleteThemeConfig(id: string): Promise<void> {
+    if (this.isOfflineMode || !this.themesRepository) {
+      console.warn('[FirebaseService] [Offline Mode] Deleting theme config locally:', id);
+      localStorage.removeItem(`offline_theme_${id}`);
+      return;
+    }
+    try {
+      await this.themesRepository.delete(id);
+    } catch (error) {
+      console.warn('[FirebaseService] Failed to delete theme config in Firestore, deleting locally:', error);
+      localStorage.removeItem(`offline_theme_${id}`);
     }
   }
 }

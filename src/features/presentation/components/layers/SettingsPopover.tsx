@@ -18,6 +18,7 @@ interface SettingsPopoverProps {
   settings: SlideSettings;
   onSettingsChange: (settings: Partial<SlideSettings>) => void;
   onClose: () => void;
+  onOpenThemePlayground?: () => void;
 }
 
 export const DEFAULT_SETTINGS: SlideSettings = {
@@ -40,6 +41,7 @@ export const SettingsPopover: React.FC<SettingsPopoverProps> = ({
   settings,
   onSettingsChange,
   onClose,
+  onOpenThemePlayground,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -147,7 +149,7 @@ export const SettingsPopover: React.FC<SettingsPopoverProps> = ({
         </div>
 
         {/* Filter Sliders */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 border-b pb-2">
           {/* Brightness */}
           <div className="flex flex-col gap-1">
             <div className="flex justify-between text-[10px] text-muted-foreground">
@@ -228,6 +230,22 @@ export const SettingsPopover: React.FC<SettingsPopoverProps> = ({
           </label>
         </div>
       </div>
+
+      {/* Theme customization CTA */}
+      {onOpenThemePlayground && (
+        <div className="flex flex-col gap-1">
+          <Button
+            variant="outline"
+            onClick={() => {
+              onClose();
+              onOpenThemePlayground();
+            }}
+            className="w-full flex items-center justify-center gap-1.5 font-bold border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-200"
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" /> Customize Slide Theme
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

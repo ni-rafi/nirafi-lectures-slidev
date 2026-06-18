@@ -10,6 +10,7 @@ import GlobalBottom from '../layers/GlobalBottom';
 import PresenterLayout from '../layers/PresenterLayout';
 import NavControls from '../layers/NavControls';
 import PresentationOverlays from '../layers/PresentationOverlays';
+import ThemePlaygroundPanel from '../tools/ThemePlaygroundPanel';
 import { SPEAKER_NOTES } from '../../config/speakerNotes';
 import { useSlideViewerOrchestrator } from '../../hooks/useSlideViewerOrchestrator';
 
@@ -18,6 +19,7 @@ interface PresentationModeViewProps {
 }
 
 export const PresentationModeView: React.FC<PresentationModeViewProps> = ({ orchestrator }) => {
+  const [isThemePlaygroundOpen, setIsThemePlaygroundOpen] = React.useState(false);
   const {
     activeSub,
     activeSession,
@@ -48,8 +50,8 @@ export const PresentationModeView: React.FC<PresentationModeViewProps> = ({ orch
         <SlideContainer zoom={viewerState.isPresenterView ? 0.95 : 1} scaleMode={presenterFeatures.settings.scale}>
           <MorphingBackground variant={bgVariant} />
           
-          <GlobalTop subjectName={activeSub.title} subjectCode={activeSub.code} lectureTitle={activeLec.title} hide={isCoverPage} />
-          <div className="flex-1 flex flex-col justify-center items-center px-12 py-10 text-center select-text relative z-10">
+          <GlobalTop subjectName={activeSub.courseTitle} subjectCode={activeSub.courseCode} lectureTitle={activeLec.title} hide={isCoverPage} />
+          <div className="flex-1 flex flex-col justify-center items-center px-4 pt-[20px] pb-[22px] text-center select-text relative z-10">
             <SlideRenderer slideNo={activeSlide} subject={activeSub} lecture={activeLec} session={activeSession} />
           </div>
           <DrawingBoard
@@ -69,34 +71,48 @@ export const PresentationModeView: React.FC<PresentationModeViewProps> = ({ orch
     </PresentationContext.Provider>
   );
 
+  if (viewerState.isPresenterView) {
+    return (
+      <PresenterLayout
+        currentSlide={activeSlide}
+        totalSlides={totalSlidesCount}
+        elapsed={viewerState.elapsed}
+        timerRunning={viewerState.timerRunning}
+        onToggleTimer={() => viewerState.setTimerRunning(!viewerState.timerRunning)}
+        onResetTimer={() => viewerState.setElapsed(0)}
+        currentNotes={currentNotes}
+        activeSub={activeSub}
+        activeLec={activeLec}
+        activeSession={activeSession}
+        currentClick={clickSteps.currentClick}
+        totalClicks={clickSteps.totalClicks}
+      >
+        {mainSlideContent}
+      </PresenterLayout>
+    );
+  }
+
   return (
     <div
       ref={viewerState.outerRef}
       onContextMenu={viewerState.isProjectionView ? undefined : presenterFeatures.handleContextMenu}
-      className="relative flex h-screen w-full flex-col items-center justify-center bg-background"
+      className="relative flex h-screen w-screen flex-row overflow-hidden bg-background"
       data-slide-viewer
     >
-      <PageMetadata title={activeLec.title} subjectCode={activeSub.code} slideNo={activeSlide} />
+      <PageMetadata title={activeLec.title} subjectCode={activeSub.courseCode} slideNo={activeSlide} />
 
-      {viewerState.isPresenterView && !viewerState.isProjectionView ? (
-        <PresenterLayout
-          currentSlide={activeSlide}
-          totalSlides={totalSlidesCount}
-          elapsed={viewerState.elapsed}
-          timerRunning={viewerState.timerRunning}
-          onToggleTimer={() => viewerState.setTimerRunning(!viewerState.timerRunning)}
-          onResetTimer={() => viewerState.setElapsed(0)}
-          currentNotes={currentNotes}
-          activeSub={activeSub}
-          activeLec={activeLec}
-          activeSession={activeSession}
-          currentClick={clickSteps.currentClick}
-          totalClicks={clickSteps.totalClicks}
-        >
-          {mainSlideContent}
-        </PresenterLayout>
-      ) : (
-        <div className="flex-1 w-full h-full relative">{mainSlideContent}</div>
+      <div className="flex-1 h-full relative flex items-center justify-center overflow-hidden bg-background">
+        {mainSlideContent}
+      </div>
+
+      {isThemePlaygroundOpen && (
+        <div className="h-full w-[380px] shrink-0 border-l border-border bg-background z-40 animate-in slide-in-from-right duration-300">
+          <ThemePlaygroundPanel
+            isOpen={isThemePlaygroundOpen}
+            onClose={() => setIsThemePlaygroundOpen(false)}
+            isInline={true}
+          />
+        </div>
       )}
 
       {!viewerState.isProjectionView && (
@@ -135,6 +151,8 @@ export const PresentationModeView: React.FC<PresentationModeViewProps> = ({ orch
           onNextSection={handleNextSection}
           onPrevSection={handlePrevSection}
           onExit={() => navigateWithTransition(`/${activeSub.id}/${activeSession?.id}/${activeLec.id}`)}
+          isThemePlaygroundOpen={isThemePlaygroundOpen}
+          onToggleThemePlayground={() => setIsThemePlaygroundOpen(!isThemePlaygroundOpen)}
         />
       )}
 
@@ -177,6 +195,8 @@ export const PresentationModeView: React.FC<PresentationModeViewProps> = ({ orch
         activeSub={activeSub}
         activeLec={activeLec}
         activeSession={activeSession}
+        isThemePlaygroundOpen={isThemePlaygroundOpen}
+        onToggleThemePlayground={() => setIsThemePlaygroundOpen(!isThemePlaygroundOpen)}
       />
     </div>
   );

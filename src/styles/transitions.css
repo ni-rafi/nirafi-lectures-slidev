@@ -1,0 +1,47 @@
+/* View Transitions styling */
+.slide-bg-vector {
+  view-transition-name: slide-bg-vector;
+}
+
+.slide-header-title {
+  view-transition-name: slide-header-title;
+}
+
+.slide-layout-footer {
+  view-transition-name: slide-layout-footer;
+}
+
+.sust-logo-transition {
+  view-transition-name: sust-logo;
+}
+
+.presenter-name-transition {
+  view-transition-name: presenter-name;
+}
+
+/* View Transitions stacking order to prevent background from overlapping content */
+::view-transition-group(root) {
+  z-index: 10;
+}
+
+::view-transition-group(slide-bg-vector) {
+  z-index: 1;
+}
+
+::view-transition-group(slide-header-title) {
+  z-index: 11;
+}
+
+::view-transition-group(slide-layout-footer) {
+  z-index: 11;
+}
+
+::view-transition-group(sust-logo) {
+  z-index: 12;
+}
+
+::view-transition-group(presenter-name) {
+  z-index: 12;
+}
+
+

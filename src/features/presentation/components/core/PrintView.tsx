@@ -50,13 +50,13 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
         <MorphingBackground variant={bgVariant} />
         
         <GlobalTop
-          subjectName={subject.title}
-          subjectCode={subject.code}
+          subjectName={subject.courseTitle}
+          subjectCode={subject.courseCode}
           lectureTitle={lecture.title}
           hide={isCoverPage}
         />
         
-        <div className="flex-1 flex flex-col justify-center items-center px-12 py-10 text-center select-text relative z-10">
+        <div className="flex-1 flex flex-col justify-center items-center px-4 pt-[20px] pb-[22px] text-center select-text relative z-10">
           <SlideRenderer slideNo={slideNo} subject={subject} lecture={lecture} session={session} />
         </div>
 
