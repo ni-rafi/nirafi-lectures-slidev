@@ -27,6 +27,19 @@ export const TwoColumnLayout: React.FC<TwoColumnLayoutProps> = ({
   const viewMode = presentation?.viewMode || 'present';
   const rightWidth = `calc(100% - ${leftWidth})`;
 
+  if (viewMode === 'blog') {
+    return (
+      <div className="w-full flex flex-col gap-6 text-left">
+        <section className="left-column w-full">
+          {leftContent}
+        </section>
+        <section className="right-column w-full border-t pt-6 border-border/40">
+          {rightContent}
+        </section>
+      </div>
+    );
+  }
+
   if (viewMode === 'scroll') {
     return (
       <div className="relative flex flex-col w-full bg-transparent select-text text-foreground min-h-[200px] justify-between">

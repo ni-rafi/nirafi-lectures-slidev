@@ -35,6 +35,16 @@ export const GridLayout: React.FC<GridLayoutProps> = ({
     }
   };
 
+  if (viewMode === 'blog') {
+    return (
+      <div className="w-full">
+        <div className="grid gap-6 w-full grid-cols-1">
+          {children}
+        </div>
+      </div>
+    );
+  }
+
   if (viewMode === 'scroll') {
     return (
       <div className="relative flex flex-col w-full bg-transparent select-text text-foreground min-h-[200px] justify-between">

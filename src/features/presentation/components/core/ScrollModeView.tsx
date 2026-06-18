@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Play, Sun, Moon, ChevronDown, Printer, FileDown, Palette } from 'lucide-react';
+import { ChevronLeft, Play, Sun, Moon, ChevronDown, Printer, FileDown, Palette, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PageMetadata from './PageMetadata';
 import {
@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import TwoWayGridOrchestrator from './TwoWayGridOrchestrator';
+import BlogOrchestrator from './BlogOrchestrator';
 import { useSlideViewerOrchestrator } from '../../hooks/useSlideViewerOrchestrator';
 import ThemePlaygroundPanel from '../tools/ThemePlaygroundPanel';
 import OnThisPage from '../layers/OnThisPage';
@@ -88,6 +89,26 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
             {presenterFeatures.isDark ? <Sun className="h-4 w-4 text-amber-500" /> : <Moon className="h-4 w-4" />}
           </Button>
 
+          {/* Blog Mode Toggle */}
+          <Button
+            variant={orchestrator.viewMode === 'blog' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => {
+              if (orchestrator.viewMode === 'blog') {
+                navigateWithTransition(`/${subjectId}/${sessionId}/${lectureId}`);
+              } else {
+                navigateWithTransition(`/${subjectId}/${sessionId}/${lectureId}/blog`);
+              }
+            }}
+            className="flex items-center gap-1.5 font-semibold shadow-xs"
+            title={orchestrator.viewMode === 'blog' ? 'Switch to Slide View' : 'Switch to Blog Mode'}
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            <span>
+              {orchestrator.viewMode === 'blog' ? 'Slide View' : 'Blog Mode'}
+            </span>
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -140,20 +161,33 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
 
       <div className="flex-1 flex w-full min-h-0 overflow-hidden">
         <main ref={scrollContainerRef} className="flex-1 overflow-y-auto relative">
-          <TwoWayGridOrchestrator
-            subject={activeSub}
-            lecture={activeLec}
-            session={activeSession}
-            viewMode="scroll"
-            theme={activeTheme}
-            totalSlides={totalSlidesCount}
-            onSelectSlide={(num) => {
-              navigateWithTransition(`/${subjectId}/${sessionId}/${lectureId}/${num}`);
-            }}
-            currentSlide={activeSlide}
-            collapsedSections={collapsedSections}
-            setCollapsedSections={setCollapsedSections}
-          />
+          {orchestrator.viewMode === 'blog' ? (
+            <BlogOrchestrator
+              subject={activeSub}
+              lecture={activeLec}
+              session={activeSession}
+              viewMode="blog"
+              theme={activeTheme}
+              totalSlides={totalSlidesCount}
+              collapsedSections={collapsedSections}
+              setCollapsedSections={setCollapsedSections}
+            />
+          ) : (
+            <TwoWayGridOrchestrator
+              subject={activeSub}
+              lecture={activeLec}
+              session={activeSession}
+              viewMode="scroll"
+              theme={activeTheme}
+              totalSlides={totalSlidesCount}
+              onSelectSlide={(num) => {
+                navigateWithTransition(`/${subjectId}/${sessionId}/${lectureId}/${num}`);
+              }}
+              currentSlide={activeSlide}
+              collapsedSections={collapsedSections}
+              setCollapsedSections={setCollapsedSections}
+            />
+          )}
         </main>
         <aside className="hidden xl:block w-72 shrink-0 border-l border-border bg-card/30 p-6 flex flex-col min-h-0 overflow-hidden">
           <OnThisPage

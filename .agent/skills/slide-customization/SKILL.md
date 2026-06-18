@@ -90,13 +90,10 @@ Instead of editing mathematical strings in raw LaTeX (which breaks KaTeX parser)
 
 ## 3. Sandbox Parameter Panels
 
-Parameter adjusters (live sliders) must consistently follow a premium PowerPoint card aesthetic with an ash background and primary colored left border hook highlights:
-
-```tsx
-<div className="relative p-5 md:p-6 bg-muted/60 dark:bg-muted/20 border-l-[6px] border-primary rounded-r-xl text-foreground font-medium space-y-4 text-left before:absolute before:top-0 before:left-[-6px] before:w-10 before:h-[6px] before:bg-primary after:absolute after:bottom-0 after:left-[-6px] after:w-10 after:h-[6px] after:bg-primary">
-  <div className="font-extrabold text-xs md:text-sm text-primary tracking-wide mb-3 border-b border-border/40 pb-1.5 uppercase select-none">
-    Parameters (SI Meters)
-  </div>
-  {/* Sliders go here */}
-</div>
-```
+> [!IMPORTANT]
+> **Strict Reusability Rule**: Handcoding custom CSS, double card frames, or tailwind layouts (like `bg-card`, `bg-muted/60`, or absolute decorative hooks) directly inside slide files is strictly prohibited. To support Blog Mode natively, all parameter panel containers, inputs, and outputs must be rendered using unified reusable components:
+> * Use `<InteractiveCard>` for wrapping parameter adjustment inputs.
+> * Use `<ParameterSlider>` for slider controls and values formatting.
+> * Use `<CalculationOutput>` for rendering the calculation results.
+>
+> Refer to the [reusable-components skill guide](file:///.agent/skills/reusable-components/SKILL.md) for detailed components interfaces and mode adaptation patterns.

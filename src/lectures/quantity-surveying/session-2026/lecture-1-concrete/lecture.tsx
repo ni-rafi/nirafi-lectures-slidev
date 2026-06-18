@@ -4,7 +4,7 @@ import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { ThankYouLayout } from '@/shared/layouts/ThankYouLayout';
 import { calculateConcreteVolume } from '../calculations/concrete';
-import { SlideContent, SlideTable, ClickHighlight, LatexFormula } from '@/features/presentation';
+import { SlideContent, SlideTable, ClickHighlight, LatexFormula, InteractiveCard, ParameterSlider, CalculationOutput } from '@/features/presentation';
 
 // Slide 1: Cover Slide
 const Slide1: React.FC<any> = ({ subject, lecture }) => (
@@ -42,17 +42,14 @@ const Slide2: React.FC = () => {
               variant: 'plain',
               revealAt: 3,
               text: (
-                <div className="flex flex-col items-center justify-center p-4 bg-card border border-border shadow-sm rounded-xl">
-                  <div className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2">
-                    Volumetric Concrete Equation
-                  </div>
+                <InteractiveCard variant="plain" title="Volumetric Concrete Equation">
                   <div className="flex items-center gap-1.5 justify-center py-2 select-text">
                     <LatexFormula math="V = L \times W \times H \times" />
                     <ClickHighlight at={4} variant="text">
                       <LatexFormula math="(1 + \text{wastage})" />
                     </ClickHighlight>
                   </div>
-                </div>
+                </InteractiveCard>
               ),
             },
           ]}
@@ -114,55 +111,43 @@ const Slide3: React.FC = () => {
       bgVariant="calculation"
       leftWidth="45%"
       leftContent={
-        <div className="relative p-5 md:p-6 bg-muted/60 dark:bg-muted/20 border-l-[6px] border-primary rounded-r-xl text-foreground font-medium space-y-4 text-left before:absolute before:top-0 before:left-[-6px] before:w-10 before:h-[6px] before:bg-primary after:absolute after:bottom-0 after:left-[-6px] after:w-10 after:h-[6px] after:bg-primary">
-          <div className="font-extrabold text-xs md:text-sm text-primary tracking-wide mb-3 border-b border-border/40 pb-1.5 uppercase select-none">
-            Parameters (SI Meters)
-          </div>
-          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
-            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
-              <span>Length:</span>
-              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{length}m</span>
-            </label>
-            <input
-              type="range" min="1" max="50" step="0.5" value={length}
-              onChange={(e) => setLength(parseFloat(e.target.value))}
-              className="w-full accent-primary cursor-pointer"
-            />
-          </div>
-          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
-            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
-              <span>Width:</span>
-              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{width}m</span>
-            </label>
-            <input
-              type="range" min="0.1" max="2" step="0.05" value={width}
-              onChange={(e) => setWidth(parseFloat(e.target.value))}
-              className="w-full accent-primary cursor-pointer"
-            />
-          </div>
-          <div className="p-3 bg-card dark:bg-card/40 border border-border/60 rounded-xl space-y-1.5 shadow-sm">
-            <label className="text-muted-foreground font-sans text-xs flex justify-between items-center">
-              <span>Height:</span>
-              <span className="font-bold text-foreground bg-muted/80 px-1.5 py-0.5 rounded text-[11px]">{height}m</span>
-            </label>
-            <input
-              type="range" min="0.1" max="2" step="0.05" value={height}
-              onChange={(e) => setHeight(parseFloat(e.target.value))}
-              className="w-full accent-primary cursor-pointer"
-            />
-          </div>
-        </div>
+        <InteractiveCard title="Parameters (SI Meters)">
+          <ParameterSlider
+            label="Length:"
+            value={length}
+            unit="m"
+            min={1}
+            max={50}
+            step={0.5}
+            onChange={setLength}
+          />
+          <ParameterSlider
+            label="Width:"
+            value={width}
+            unit="m"
+            min={0.1}
+            max={2}
+            step={0.05}
+            onChange={setWidth}
+          />
+          <ParameterSlider
+            label="Height:"
+            value={height}
+            unit="m"
+            min={0.1}
+            max={2}
+            step={0.05}
+            onChange={setHeight}
+          />
+        </InteractiveCard>
       }
       rightContent={
-        <div className="flex flex-col items-center justify-center h-full border rounded-xl bg-card p-6 shadow-sm">
-          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Casting Volume Output</span>
-          <span className="text-3xl font-extrabold text-primary select-all">
-            {result.volume.toFixed(3)} m³
-          </span>
-          <div className="mt-4 text-[10px] text-muted-foreground text-center">
-            Automatic wastage factor multiplier: {Math.round(wastage * 100)}%
-          </div>
-        </div>
+        <CalculationOutput
+          title="Casting Volume Output"
+          value={result.volume.toFixed(3)}
+          unit="m³"
+          subtitle={`Automatic wastage factor multiplier: ${Math.round(wastage * 100)}%`}
+        />
       }
     />
   );

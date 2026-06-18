@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { ClickReveal } from './ClickReveal';
 import { SlideElementProps } from './SlideParagraph';
+import { PresentationContext } from '../../context/PresentationContext';
 
 interface SlideTableProps extends SlideElementProps {
   headers: Array<string | { label: string; align?: 'left' | 'center' | 'right' }>;
@@ -20,11 +21,18 @@ export const SlideTable: React.FC<SlideTableProps> = ({
   revealPreset,
   className = '',
 }) => {
+  const presentation = useContext(PresentationContext);
+  const isBlog = presentation?.viewMode === 'blog';
+
+  const containerClass = isBlog
+    ? `border border-border/50 rounded-xl overflow-hidden w-full text-left text-xs bg-transparent ${className}`
+    : `border rounded-xl overflow-hidden w-full text-left text-xs bg-card shadow-sm transition-all duration-300 hover:shadow-md ${className}`;
+
   const content = (
-    <div className={`border rounded-xl overflow-hidden w-full text-left text-xs bg-card shadow-sm transition-all duration-300 hover:shadow-md ${className}`}>
+    <div className={containerClass}>
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-muted text-foreground border-b font-bold">
+          <tr className={`${isBlog ? 'bg-muted/20' : 'bg-muted'} text-foreground border-b font-bold`}>
             {headers.map((h, idx) => {
               const label = typeof h === 'string' ? h : h.label;
               const align = typeof h === 'string' ? 'left' : (h.align || 'left');

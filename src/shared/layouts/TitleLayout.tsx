@@ -25,6 +25,30 @@ export const TitleLayout: React.FC<TitleLayoutProps> = ({
     ? footer
     : presenter.name;
 
+  if (viewMode === 'blog') {
+    return (
+      <div className="flex flex-col items-start text-left max-w-3xl mx-auto py-2 gap-4 text-foreground w-full border-b border-border/40 pb-6 mb-4">
+        <div className="space-y-3 w-full">
+          {subtitle && (
+            <span className="text-xs md:text-sm tracking-wider text-primary font-mono font-bold block">
+              {subtitle}
+            </span>
+          )}
+          <h1 className="text-2xl md:text-3.5xl font-extrabold tracking-tight text-primary leading-tight">
+            {title}
+          </h1>
+        </div>
+
+        <div className="flex flex-col items-start gap-0.5 mt-1 text-muted-foreground w-full text-[11px]">
+          <span className="text-xs font-bold text-primary">{presenterName}</span>
+          <span className="font-semibold uppercase">{presenter.title}</span>
+          <span className="font-medium uppercase">{presenter.department}</span>
+          <span className="font-bold uppercase">{presenter.institution}</span>
+        </div>
+      </div>
+    );
+  }
+
   if (viewMode === 'scroll') {
     return (
       <div className="relative flex flex-col items-center justify-center text-center max-w-2xl mx-auto py-4 gap-6 bg-transparent text-foreground w-full overflow-hidden">

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { SlideBullet } from './SlideBullet';
+import { PresentationContext } from '../../context/PresentationContext';
 
 interface SlideListProps {
   title?: string;
@@ -22,18 +23,29 @@ export const SlideList: React.FC<SlideListProps> = ({
   variant = 'default',
   className = '',
 }) => {
+  const presentation = useContext(PresentationContext);
+  const isBlog = presentation?.viewMode === 'blog';
+
   let listClasses = '';
-  if (variant === 'plain') {
-    listClasses = `space-y-3 text-left ${className}`;
+  if (isBlog) {
+    if (variant === 'plain') {
+      listClasses = `space-y-3 text-left ${className}`;
+    } else {
+      listClasses = `border-l-4 border-primary pl-4 py-1.5 text-muted-foreground my-4 font-medium space-y-3 text-left ${className}`;
+    }
   } else {
-    listClasses = `relative p-5 md:p-6 bg-muted/60 dark:bg-muted/20 border-l-[6px] border-primary rounded-r-xl text-foreground font-medium space-y-3 text-left before:absolute before:top-0 before:left-[-6px] before:w-10 before:h-[6px] before:bg-primary after:absolute after:bottom-0 after:left-[-6px] after:w-10 after:h-[6px] after:bg-primary ${className}`;
+    if (variant === 'plain') {
+      listClasses = `space-y-3 text-left ${className}`;
+    } else {
+      listClasses = `relative p-5 md:p-6 bg-muted/60 dark:bg-muted/20 border-l-[6px] border-primary rounded-r-xl text-foreground font-medium space-y-3 text-left before:absolute before:top-0 before:left-[-6px] before:w-10 before:h-[6px] before:bg-primary after:absolute after:bottom-0 after:left-[-6px] after:w-10 after:h-[6px] after:bg-primary ${className}`;
+    }
   }
 
   return (
     <ul className={listClasses}>
       {title && (
         <li className={`list-none mb-3 font-extrabold text-xs md:text-sm tracking-wide select-none ${
-          variant === 'plain' ? 'text-primary' : 'text-primary border-b border-border/40 pb-1.5 uppercase'
+          (variant === 'plain' || isBlog) ? 'text-primary' : 'text-primary border-b border-border/40 pb-1.5 uppercase'
         }`}>
           {title}
         </li>

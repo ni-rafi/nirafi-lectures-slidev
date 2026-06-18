@@ -38,6 +38,21 @@ export const ThankYouLayout: React.FC<ThankYouLayoutProps> = ({
     );
   };
 
+  if (viewMode === 'blog') {
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-12 gap-4 text-foreground w-full border-t border-border/40 mt-8 pt-8">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-primary tracking-tight">
+          {title}
+        </h2>
+        {subtitle && (
+          <span className="text-base font-semibold text-muted-foreground">
+            {subtitle}
+          </span>
+        )}
+      </div>
+    );
+  }
+
   if (viewMode === 'scroll') {
     return (
       <div className="relative flex flex-col items-center justify-center py-6 bg-transparent text-foreground w-full overflow-hidden min-h-[200px]">

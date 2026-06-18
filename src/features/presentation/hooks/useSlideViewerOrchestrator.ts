@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { flushSync } from 'react-dom';
-import { useParams, useNavigate, NavigateOptions } from 'react-router-dom';
+import { useParams, useNavigate, NavigateOptions, useLocation } from 'react-router-dom';
 import { SUBJECTS } from '@/config/lectures';
 import { getSlideMetadata, getLectureSlideCount, getBgVariant } from '../components/slides/SlideRenderer';
 import { useSlideViewerState } from './useSlideViewerState';
@@ -92,9 +92,12 @@ export const useSlideViewerOrchestrator = () => {
     window.history.pushState(null, '', `/${subjectId}/${sessionId}/${lectureId}/${nextSlide}`);
   }, [subjectId, sessionId, lectureId, activeSub, activeLec]);
 
+  const { pathname } = useLocation();
+  const isBlogMode = pathname.endsWith('/blog');
+
   // Determine active viewMode and theme based on presentation states
   const isPresenting = slideNo !== undefined;
-  const viewMode: ViewMode = isPresenting ? 'present' : 'scroll';
+  const viewMode: ViewMode = isPresenting ? 'present' : (isBlogMode ? 'blog' : 'scroll');
 
   const viewerState = useSlideViewerState({ subjectId, sessionId, lectureId, currentSlideInt: activeSlide });
 

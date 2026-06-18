@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 
 export type Theme = 'light' | 'dark' | 'projection';
-export type ViewMode = 'scroll' | 'present';
+export type ViewMode = 'scroll' | 'present' | 'blog';
 
 export interface PresentationContextType {
   theme: Theme;

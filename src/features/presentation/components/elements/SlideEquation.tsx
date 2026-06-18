@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { LatexFormula } from './LatexFormula';
 import { ClickReveal } from './ClickReveal';
 import { SlideElementProps } from './SlideParagraph';
 import { useSlideTheme } from '../../context/SlideThemeContext';
+import { PresentationContext } from '../../context/PresentationContext';
 
 interface SlideEquationProps extends SlideElementProps {
   math: string;
@@ -18,6 +19,9 @@ export const SlideEquation: React.FC<SlideEquationProps> = ({
   revealPreset,
   className = '',
 }) => {
+  const presentation = useContext(PresentationContext);
+  const isBlog = presentation?.viewMode === 'blog';
+
   let theme;
   try {
     theme = useSlideTheme();
@@ -28,7 +32,9 @@ export const SlideEquation: React.FC<SlideEquationProps> = ({
   const equationBg = theme?.resolvedTheme?.equationBg || 'default';
 
   let bgClass = 'bg-muted/40 rounded-xl';
-  if (equationBg === 'none') {
+  if (isBlog) {
+    bgClass = 'bg-muted/20 border border-border/50 rounded-xl';
+  } else if (equationBg === 'none') {
     bgClass = 'bg-transparent p-2';
   } else if (equationBg === 'tinted') {
     bgClass = 'bg-primary/5 rounded-xl border border-primary/10';

@@ -30,7 +30,7 @@ export const SlideViewer: React.FC = () => {
           session={orchestrator.activeSession}
           includeAnnotations={searchParams.get('annotations') === 'true'}
         />
-      ) : orchestrator.viewMode === 'scroll' ? (
+      ) : (orchestrator.viewMode === 'scroll' || orchestrator.viewMode === 'blog') ? (
         <ScrollModeView orchestrator={orchestrator} />
       ) : (
         <PresentationModeView orchestrator={orchestrator} />

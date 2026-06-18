@@ -3,5 +3,6 @@ export const ROUTE_PATHS = {
   PORTAL_LEGACY: '/1',
   SLIDE_NESTED: '/:subjectId/:sessionId/:lectureId/:slideNo',
   LECTURE_VIEW: '/:subjectId/:sessionId/:lectureId',
+  BLOG_VIEW: '/:subjectId/:sessionId/:lectureId/blog',
   SLIDE_FLAT: '/:slideNo(\\d+)', // Matches a flat slide number
 };
