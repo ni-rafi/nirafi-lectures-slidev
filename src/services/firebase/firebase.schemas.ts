@@ -118,4 +118,25 @@ export const SubjectSubmissionsSchema = z.object({
 
 export type SubjectSubmissions = z.infer<typeof SubjectSubmissionsSchema>;
 
+export const PlaygroundPageSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  elements: z.array(z.any()),
+  scaleFactor: z.object({
+    pixelsPerUnit: z.number().int().positive(),
+    unit: z.enum(['m', 'cm', 'mm']),
+  }),
+});
+
+export type PlaygroundPage = z.infer<typeof PlaygroundPageSchema>;
+
+export const PlaygroundCanvasPayloadSchema = z.object({
+  id: z.string().optional(),
+  pages: z.array(PlaygroundPageSchema),
+  updatedAt: z.number(),
+});
+
+export type PlaygroundCanvasPayload = z.infer<typeof PlaygroundCanvasPayloadSchema>;
+
+
 

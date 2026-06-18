@@ -1,6 +1,6 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, signInAnonymously, type Auth } from 'firebase/auth';
-import type { IFirebaseService, QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, SessionStatusPayload, QuizState, SubjectSubmissions } from './IFirebaseService';
+import type { IFirebaseService, QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, SessionStatusPayload, QuizState, SubjectSubmissions, PlaygroundCanvasPayload } from './IFirebaseService';
 import { SubmissionsRepository } from './repositories/submissions/SubmissionsRepository';
 import { FeedbackRepository } from './repositories/feedback/FeedbackRepository';
 import { UsersRepository } from './repositories/users/UsersRepository';
@@ -8,6 +8,7 @@ import { ThemesRepository } from './repositories/themes/ThemesRepository';
 import { SessionStatusRepository } from './repositories/lectures/SessionStatusRepository';
 import { QuizStatesRepository } from './repositories/quiz-states/QuizStatesRepository';
 import { SubjectSubmissionsRepository } from './repositories/submissions/SubjectSubmissionsRepository';
+import { PlaygroundsRepository } from './repositories/playgrounds/PlaygroundsRepository';
 import { firestoreService } from './firestoreService';
 import { SessionStatusDefinition, QuizStatesDefinition } from './firebase.definitions';
 
@@ -22,6 +23,7 @@ export class FirebaseService implements IFirebaseService {
   private sessionStatusRepository: SessionStatusRepository | null = null;
   private quizStatesRepository: QuizStatesRepository | null = null;
   private subjectSubmissionsRepository: SubjectSubmissionsRepository | null = null;
+  private playgroundsRepository: PlaygroundsRepository | null = null;
   private isOfflineMode = false;
 
 
@@ -54,6 +56,7 @@ export class FirebaseService implements IFirebaseService {
       this.sessionStatusRepository = new SessionStatusRepository();
       this.quizStatesRepository = new QuizStatesRepository();
       this.subjectSubmissionsRepository = new SubjectSubmissionsRepository();
+      this.playgroundsRepository = new PlaygroundsRepository();
     } catch (e) {
       console.warn('[FirebaseService] Firebase failed to initialize. Running in mock/offline mode:', e);
       this.isOfflineMode = true;
@@ -438,6 +441,39 @@ export class FirebaseService implements IFirebaseService {
         }
       }
       return results;
+    }
+  }
+
+  public async getPlaygroundCanvas(id: string): Promise<PlaygroundCanvasPayload | null> {
+    if (this.isOfflineMode || !this.playgroundsRepository) {
+      const stored = localStorage.getItem(`offline_playground_${id}`);
+      return stored ? JSON.parse(stored) : null;
+    }
+    try {
+      return await this.playgroundsRepository.get(id);
+    } catch (error) {
+      console.warn(`[FirebaseService] Failed to fetch playground ${id}, falling back to local storage:`, error);
+      const stored = localStorage.getItem(`offline_playground_${id}`);
+      return stored ? JSON.parse(stored) : null;
+    }
+  }
+
+  public async setPlaygroundCanvas(
+    id: string,
+    payload: Omit<PlaygroundCanvasPayload, 'id'>
+  ): Promise<PlaygroundCanvasPayload> {
+    const document: PlaygroundCanvasPayload = { ...payload, id };
+    if (this.isOfflineMode || !this.playgroundsRepository) {
+      localStorage.setItem(`offline_playground_${id}`, JSON.stringify(document));
+      return document;
+    }
+    try {
+      await this.playgroundsRepository.set(id, payload);
+      return document;
+    } catch (error) {
+      console.warn(`[FirebaseService] Failed to set playground ${id} in Firestore, saving locally:`, error);
+      localStorage.setItem(`offline_playground_${id}`, JSON.stringify(document));
+      return document;
     }
   }
 }

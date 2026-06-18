@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { BookOpen, GraduationCap, LayoutDashboard, LogOut, Presentation, ChevronLeft } from 'lucide-react';
+import { BookOpen, GraduationCap, LayoutDashboard, LogOut, Presentation, ChevronLeft, Sparkles } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -17,6 +17,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { useUserContext } from '@/context/UserContext';
 import { SUBJECTS } from '@/config/lectures';
+import { ROUTE_PATHS } from '@/routes/paths';
 
 /**
  * AppSidebar displays navigation, subjects list, active lecture slide TOC, and student status.
@@ -30,8 +31,10 @@ export const AppSidebar: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { rollNumber, session, logout } = useUserContext();
+  const { rollNumber, session, logout, userProfile } = useUserContext();
   const { setOpenMobile } = useSidebar();
+
+  const isAdmin = userProfile?.role === 'admin';
 
   const isSlideMode = !!(subjectId && sessionId && lectureId);
   const currentSlideInt = slideNo ? parseInt(slideNo, 10) : 1;
@@ -40,6 +43,14 @@ export const AppSidebar: React.FC = () => {
   const currentSubject = SUBJECTS.find((sub) => sub.id === subjectId);
   const currentSession = currentSubject?.sessions.find((sess) => sess.id === sessionId);
   const currentLecture = currentSession?.lectures.find((lec) => lec.id === lectureId);
+
+  // Compute the visual designer playground link dynamically
+  const fallbackSub = SUBJECTS[0]?.id || 'quantity-surveying';
+  const fallbackSess = SUBJECTS[0]?.sessions[0]?.id || 'session-2026';
+  const fallbackLec = SUBJECTS[0]?.sessions[0]?.lectures[0]?.id || 'lecture-1-concrete';
+  const playgroundLink = isSlideMode
+    ? `/playground/${subjectId}/${sessionId}/${lectureId}/shapes`
+    : `/playground/${fallbackSub}/${fallbackSess}/${fallbackLec}/shapes`;
 
   // Helper to change slide
   const handleSlideClick = (slideIndex: number) => {
@@ -141,6 +152,20 @@ export const AppSidebar: React.FC = () => {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+
+                  {isAdmin && (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={location.pathname.startsWith('/playground')}
+                      >
+                        <Link to={playgroundLink} onClick={() => setOpenMobile(false)}>
+                          <Sparkles className="h-4 w-4 shrink-0" />
+                          <span>Canvas Designer</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

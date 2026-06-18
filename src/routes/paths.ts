@@ -7,4 +7,5 @@ export const ROUTE_PATHS = {
   SLIDE_FLAT: '/:slideNo(\\d+)', // Matches a flat slide number
   ADMIN_DASHBOARD: '/:subjectId/:sessionId/admin',
   DOCS: '/docs',
+  SHAPES_PLAYGROUND: '/playground/:subjectId/:sessionId/:lectureId/shapes',
 };

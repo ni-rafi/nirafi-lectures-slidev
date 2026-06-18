@@ -9,6 +9,7 @@ import SlideViewer from '@/features/presentation';
 import RollNumberGate from '@/features/gate/components/RollNumberGate';
 import AdminClassDashboard from '@/features/portal/components/AdminClassDashboard';
 import SlideCustomizationDocs from '@/features/presentation/components/docs/SlideCustomizationDocs';
+import ShapeBuilderPlayground from '@/features/presentation/components/tools/playground/ShapeBuilderPlayground';
 
 /**
  * Handles legacy Slidev flat slide number requests (e.g. /5) by
@@ -39,6 +40,22 @@ const LectureRouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }
 
   return <>{children}</>;
 };
+
+/**
+ * Guard component that restricts routes to administrators only.
+ */
+const AdminRouteGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { userProfile } = useUserContext();
+  const isAdmin = userProfile?.role === 'admin';
+
+  if (!isAdmin) {
+    console.warn('[AdminRouteGuard] Access denied to non-admin user.');
+    return <Navigate to={ROUTE_PATHS.PORTAL} replace />;
+  }
+
+  return <>{children}</>;
+};
+
 
 /**
  * AppRoutes renders the page-level route map using React Router.
@@ -103,6 +120,14 @@ export const AppRoutes: React.FC = () => {
         <Route path={ROUTE_PATHS.PORTAL_LEGACY} element={<Navigate to={ROUTE_PATHS.PORTAL} replace />} />
         <Route path={ROUTE_PATHS.SLIDE_FLAT} element={<FlatSlideRedirect />} />
         <Route path={ROUTE_PATHS.DOCS} element={<SlideCustomizationDocs />} />
+        <Route
+          path={ROUTE_PATHS.SHAPES_PLAYGROUND}
+          element={
+            <AdminRouteGuard>
+              <ShapeBuilderPlayground />
+            </AdminRouteGuard>
+          }
+        />
 
         {/* Global Fallback Redirect to Dashboard */}
         <Route path="*" element={<Navigate to={ROUTE_PATHS.PORTAL} replace />} />

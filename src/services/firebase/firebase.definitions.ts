@@ -7,13 +7,15 @@ import {
   SessionStatusPayloadSchema,
   QuizStateSchema,
   SubjectSubmissionsSchema,
+  PlaygroundCanvasPayloadSchema,
   type QuizResponsePayload,
   type FeedbackPayload,
   type UserPayload,
   type ThemeConfigPayload,
   type SessionStatusPayload,
   type QuizState,
-  type SubjectSubmissions
+  type SubjectSubmissions,
+  type PlaygroundCanvasPayload
 } from './firebase.schemas';
 
 export const SubmissionsDefinition: FirestoreDefinition<QuizResponsePayload> = {
@@ -78,6 +80,16 @@ export const SubjectSubmissionsDefinition: FirestoreDefinition<SubjectSubmission
     write: ['student', 'admin']
   }
 };
+
+export const PlaygroundCanvasDefinition: FirestoreDefinition<PlaygroundCanvasPayload> = {
+  collectionPath: 'playgrounds',
+  schema: PlaygroundCanvasPayloadSchema,
+  roles: {
+    read: ['student', 'admin'],
+    write: ['admin']
+  }
+};
+
 
 
 

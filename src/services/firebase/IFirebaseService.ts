@@ -1,6 +1,6 @@
-import type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload, QuizState, SubjectSubmissions } from './firebase.schemas';
+import type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload, QuizState, SubjectSubmissions, PlaygroundCanvasPayload } from './firebase.schemas';
 
-export type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload, QuizState, SubjectSubmissions };
+export type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload, QuizState, SubjectSubmissions, PlaygroundCanvasPayload };
 
 export interface IFirebaseService {
   initializeFirebase(): void;
@@ -21,5 +21,7 @@ export interface IFirebaseService {
   getSubjectSubmissions(subjectId: string, sessionId: string, studentUid: string): Promise<SubjectSubmissions | null>;
   submitQuizAnswer(subjectId: string, sessionId: string, studentUid: string, studentInfo: { name: string; reg: string }, questionId: string, answer: string, isCorrect: boolean): Promise<void>;
   getAllSubmissions(subjectId: string, sessionId: string): Promise<SubjectSubmissions[]>;
+  getPlaygroundCanvas(id: string): Promise<PlaygroundCanvasPayload | null>;
+  setPlaygroundCanvas(id: string, payload: Omit<PlaygroundCanvasPayload, 'id'>): Promise<PlaygroundCanvasPayload>;
 }
 

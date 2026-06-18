@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useFirebase } from '@/context/FirebaseContext';
 import { TitleLayout } from '@/shared/layouts/TitleLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
@@ -85,6 +87,33 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
   subject,
   lecture,
 }) => {
+  const { subjectId, sessionId, lectureId } = useParams<{
+    subjectId: string;
+    sessionId: string;
+    lectureId: string;
+  }>();
+  const firebaseService = useFirebase();
+  const [dbPages, setDbPages] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    if (!subjectId || !sessionId || !lectureId) return;
+    let active = true;
+    const load = async () => {
+      try {
+        const docId = `${subjectId}:${sessionId}:${lectureId}`;
+        const data = await firebaseService.getPlaygroundCanvas(docId);
+        if (active && data && data.pages) {
+          setDbPages(data.pages);
+        }
+      } catch (e) {
+        console.error('[SlideSchemaEngine] Live canvas fetch failed:', e);
+      }
+    };
+    load();
+    return () => {
+      active = false;
+    };
+  }, [subjectId, sessionId, lectureId, firebaseService]);
   const config = deck.find((s) => s.id === slideNo);
   if (!config) {
     return <div className="p-6 text-red-500 font-bold">Slide configuration not found for index {slideNo}</div>;
@@ -204,12 +233,17 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
       }
 
       case 'visual-canvas': {
-        const canvasData = elem.data as { elements: any[] };
-        const canvasConfig = elem.config as { scaleFactor?: any } | undefined;
+        const canvasConfig = elem.config as { pageIndex?: number; scaleFactor?: any } | undefined;
+        const pageIdx = canvasConfig?.pageIndex ?? 0;
+
+        const pageData = dbPages && dbPages[pageIdx] ? dbPages[pageIdx] : null;
+        const elements = pageData ? pageData.elements : (elem.data as { elements: any[] })?.elements || [];
+        const scaleFactor = pageData ? pageData.scaleFactor : canvasConfig?.scaleFactor;
+
         return (
           <SlideVisualCanvas
-            elements={canvasData.elements}
-            scaleFactor={canvasConfig?.scaleFactor}
+            elements={elements}
+            scaleFactor={scaleFactor}
           />
         );
       }
