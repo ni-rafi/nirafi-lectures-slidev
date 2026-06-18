@@ -11,7 +11,7 @@ export const SlideCover: React.FC<SlideCoverProps> = ({ subject, lecture, sessio
   return (
     <div className="flex flex-col gap-3 animate-fade-in">
       <span className="text-[10px] tracking-widest text-primary uppercase font-mono font-bold">
-        {subject.code} Lecture Series
+        {subject.courseCode} Lecture Series
       </span>
       <h2 className="text-3xl font-extrabold tracking-tight max-w-2xl text-foreground">
         {lecture.title}

@@ -51,9 +51,9 @@ export const RollNumberGate: React.FC = () => {
             <div className="rounded-full bg-primary-foreground/15 p-3 backdrop-blur-md">
               <GraduationCap className="h-8 w-8 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight">CEE Lectures Portal</h1>
+            <h1 className="text-xl font-bold tracking-tight">Md. Nazmul Islam Rafi's Workspace</h1>
             <p className="text-xs text-primary-foreground/85">
-              Department of Civil & Environmental Engineering, SUST
+              Shahjalal University of Science & Technology
             </p>
           </div>
         </div>
@@ -66,7 +66,7 @@ export const RollNumberGate: React.FC = () => {
               Student Verification
             </h2>
             <p className="text-xs text-muted-foreground">
-              Please provide your student identifiers to gain portal access.
+              Please provide your student identifiers to gain access.
             </p>
           </div>
 
@@ -138,7 +138,7 @@ export const RollNumberGate: React.FC = () => {
               </span>
             ) : (
               <span className="flex items-center justify-center gap-1.5">
-                Enter Lectures Portal
+                Enter Workspace
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </span>
             )}

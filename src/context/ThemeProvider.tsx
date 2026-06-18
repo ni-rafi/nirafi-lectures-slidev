@@ -20,6 +20,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     () => (localStorage.getItem('vite-ui-color-scheme') as ColorScheme) || defaultColorScheme
   );
 
+  const [borderRadius, _setBorderRadius] = useState<number>(
+    () => parseInt(localStorage.getItem('vite-ui-border-radius') || '4', 10)
+  );
+
   const resolvedTheme = useMemo((): ResolvedTheme => {
     if (theme === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -60,6 +64,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     root.classList.add(`theme-${colorScheme}`);
   }, [colorScheme]);
 
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.style.setProperty('--radius', `${borderRadius}px`);
+  }, [borderRadius]);
+
   const setTheme = (newTheme: Theme) => {
     localStorage.setItem('vite-ui-theme', newTheme);
     _setTheme(newTheme);
@@ -70,13 +79,20 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     _setColorScheme(scheme);
   };
 
+  const setBorderRadius = (radius: number) => {
+    localStorage.setItem('vite-ui-border-radius', String(radius));
+    _setBorderRadius(radius);
+  };
+
   const value = useMemo(() => ({
     theme,
     resolvedTheme,
     colorScheme,
+    borderRadius,
     setTheme,
     setColorScheme,
-  }), [theme, resolvedTheme, colorScheme]);
+    setBorderRadius,
+  }), [theme, resolvedTheme, colorScheme, borderRadius]);
 
   return (
     <ThemeContext.Provider value={value}>

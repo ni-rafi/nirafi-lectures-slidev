@@ -55,11 +55,11 @@ export const AppSidebar: React.FC = () => {
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
-      {/* Header - Portal Branding */}
+      {/* Header - Workspace Branding */}
       <SidebarHeader className="p-4">
         <Link to="/" className="flex items-center gap-2 font-semibold text-foreground hover:opacity-90">
           <GraduationCap className="h-6 w-6 text-primary shrink-0" />
-          <span className="truncate text-sm tracking-tight font-bold">CEE Lectures</span>
+          <span className="truncate text-sm tracking-tight font-bold">Rafi's Workspace</span>
         </Link>
       </SidebarHeader>
 
@@ -81,12 +81,12 @@ export const AppSidebar: React.FC = () => {
 
             <SidebarGroupContent className="mt-2">
               <SidebarMenu>
-                {/* Back to Portal button */}
+                {/* Back to Workspace button */}
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild size="default" className="text-muted-foreground hover:text-foreground">
                     <Link to="/" onClick={() => setOpenMobile(false)}>
                       <ChevronLeft className="h-4 w-4 shrink-0" />
-                      <span>Back to Portal</span>
+                      <span>Back to Workspace</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -126,7 +126,7 @@ export const AppSidebar: React.FC = () => {
                   <SidebarMenuButton asChild isActive={true}>
                     <Link to="/">
                       <LayoutDashboard className="h-4 w-4 shrink-0" />
-                      <span>Lecture Dashboard</span>
+                      <span>Workspace Dashboard</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

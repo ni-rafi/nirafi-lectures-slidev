@@ -8,16 +8,20 @@ export interface ThemeProviderState {
   theme: Theme;
   resolvedTheme: ResolvedTheme;
   colorScheme: ColorScheme;
+  borderRadius: number;
   setTheme: (theme: Theme) => void;
   setColorScheme: (scheme: ColorScheme) => void;
+  setBorderRadius: (radius: number) => void;
 }
 
 export const themeInitialState: ThemeProviderState = {
   theme: 'system',
   resolvedTheme: 'light',
   colorScheme: 'neutral',
+  borderRadius: 4,
   setTheme: () => null,
   setColorScheme: () => null,
+  setBorderRadius: () => null,
 };
 
 export const ThemeContext = createContext<ThemeProviderState>(themeInitialState);

@@ -12,10 +12,10 @@ export const AppHeader: React.FC = () => {
         {/* Logo and Brand */}
         <div className="flex items-center space-x-2">
           <span className="px-1.5 py-0.5 bg-primary/10 border border-primary/20 text-primary font-mono text-[9px] font-bold rounded">
-            CE
+            NIR
           </span>
           <span className="text-sm font-bold tracking-tight">
-            Lectures Portal
+            Workspace
           </span>
         </div>
 

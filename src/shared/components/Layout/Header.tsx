@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="flex items-center text-xs font-medium text-muted-foreground">
           <Link to="/" className="hover:text-foreground transition-colors">
-            Portal
+            Workspace
           </Link>
           {subjectId && (
             <>
