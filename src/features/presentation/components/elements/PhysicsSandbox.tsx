@@ -93,7 +93,7 @@ export const PhysicsSandbox: React.FC<PhysicsSandboxProps> = ({
         Matter.Events.on(mouseConstraint, 'mousedown', () => {
           if (!svgRef.current) return;
           let scale = 1;
-          const canvasElement = svgRef.current.closest('[data-slide-canvas]') as HTMLElement;
+          const canvasElement = (svgRef.current.closest('[data-playground-canvas]') || svgRef.current.closest('[data-slide-canvas]')) as HTMLElement;
           if (canvasElement) {
             scale = canvasElement.getBoundingClientRect().width / canvasElement.offsetWidth || 1;
           }

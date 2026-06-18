@@ -17,7 +17,6 @@ export const ShapeBuilderInspectorDimensions: React.FC<ShapeBuilderInspectorDime
 }) => {
   return (
     <div className="border-t border-border pt-3 space-y-3">
-      {/* Dimension Lines Toggle */}
       <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-foreground">
         <input
           type="checkbox"
@@ -27,6 +26,23 @@ export const ShapeBuilderInspectorDimensions: React.FC<ShapeBuilderInspectorDime
         />
         <span>Show Dimension Lines</span>
       </label>
+
+      {selectedEl.type === 'rect' && (
+        <div className="flex flex-col gap-1.5 pt-1">
+          <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex justify-between">
+            <span>Corner Radius</span>
+            <span className="font-mono text-primary font-bold">{selectedEl.borderRadius || 0}px</span>
+          </label>
+          <input
+            type="range"
+            min={0}
+            max={50}
+            value={selectedEl.borderRadius || 0}
+            onChange={(e) => onUpdateSelected('borderRadius', parseInt(e.target.value) || 0)}
+            className="w-full accent-primary cursor-pointer h-1 bg-muted rounded-lg appearance-none"
+          />
+        </div>
+      )}
 
       {selectedEl.showDimensionLines && selectedEl.dimensions && (
         <div className="space-y-3">

@@ -58,22 +58,35 @@ export function samplePolygon(vertices: Point2D[], N: number): Point2D[] {
 }
 
 /**
- * Generates N vertices representing a pre-built geometric shape, scaled and centered in a box of size x size.
+ * Generates N vertices representing a pre-built geometric shape, scaled and centered in a box of w x h.
  */
-export function getShapePoints(type: string, size: number, N = 120): Point2D[] {
-  const C = size / 2;
-  const R = size / 2;
+export function getShapePoints(
+  type: string,
+  w: number,
+  h: number,
+  N = 120,
+  points?: Point2D[],
+  borderRadius?: number
+): Point2D[] {
+  const C = w / 2;
+  const Cy = h / 2;
+  const Rx = w / 2;
+  const Ry = h / 2;
+
+  if (type === 'polygon' && points && points.length >= 3) {
+    return samplePolygon(points, N);
+  }
 
   if (type === 'circle') {
-    const points: Point2D[] = [];
+    const pts: Point2D[] = [];
     for (let i = 0; i < N; i++) {
       const theta = (2 * Math.PI * i) / N;
-      points.push({
-        x: C + R * Math.cos(theta),
-        y: C + R * Math.sin(theta),
+      pts.push({
+        x: C + Rx * Math.cos(theta),
+        y: Cy + Ry * Math.sin(theta),
       });
     }
-    return points;
+    return pts;
   }
 
   if (type === 'heart') {
@@ -96,14 +109,16 @@ export function getShapePoints(type: string, size: number, N = 120): Point2D[] {
 
     const spanX = maxX - minX;
     const spanY = maxY - minY;
-    const maxSpan = Math.max(spanX, spanY) || 1;
-    const scale = (size * 0.9) / maxSpan;
+    const maxSpanX = spanX || 1;
+    const maxSpanY = spanY || 1;
+    const scaleX = (w * 0.9) / maxSpanX;
+    const scaleY = (h * 0.9) / maxSpanY;
     const centerXRaw = (minX + maxX) / 2;
     const centerYRaw = (minY + maxY) / 2;
 
     return rawPoints.map(p => ({
-      x: C + (p.x - centerXRaw) * scale,
-      y: C + (p.y - centerYRaw) * scale,
+      x: C + (p.x - centerXRaw) * scaleX,
+      y: Cy + (p.y - centerYRaw) * scaleY,
     }));
   }
 
@@ -112,95 +127,122 @@ export function getShapePoints(type: string, size: number, N = 120): Point2D[] {
   switch (type) {
     case 'rect':
     case 'square':
-      vertices = [
-        { x: 0, y: 0 },
-        { x: size, y: 0 },
-        { x: size, y: size },
-        { x: 0, y: size },
-      ];
+      const r = Math.min(borderRadius || 0, w / 2, h / 2);
+      if (r <= 0) {
+        vertices = [
+          { x: 0, y: 0 },
+          { x: w, y: 0 },
+          { x: w, y: h },
+          { x: 0, y: h },
+        ];
+      } else {
+        const steps = 8;
+        // Top-Left corner
+        for (let i = 0; i <= steps; i++) {
+          const theta = Math.PI + (Math.PI / 2) * (i / steps);
+          vertices.push({ x: r + r * Math.cos(theta), y: r + r * Math.sin(theta) });
+        }
+        // Top-Right corner
+        for (let i = 0; i <= steps; i++) {
+          const theta = 1.5 * Math.PI + (Math.PI / 2) * (i / steps);
+          vertices.push({ x: w - r + r * Math.cos(theta), y: r + r * Math.sin(theta) });
+        }
+        // Bottom-Right corner
+        for (let i = 0; i <= steps; i++) {
+          const theta = (Math.PI / 2) * (i / steps);
+          vertices.push({ x: w - r + r * Math.cos(theta), y: h - r + r * Math.sin(theta) });
+        }
+        // Bottom-Left corner
+        for (let i = 0; i <= steps; i++) {
+          const theta = 0.5 * Math.PI + (Math.PI / 2) * (i / steps);
+          vertices.push({ x: r + r * Math.cos(theta), y: h - r + r * Math.sin(theta) });
+        }
+      }
       break;
     case 'triangle':
       vertices = [
         { x: C, y: 0 },
-        { x: size, y: size },
-        { x: 0, y: size },
+        { x: w, y: h },
+        { x: 0, y: h },
       ];
       break;
     case 'pentagon':
       for (let k = 0; k < 5; k++) {
         const theta = -Math.PI / 2 + (2 * Math.PI * k) / 5;
-        vertices.push({ x: C + R * Math.cos(theta), y: C + R * Math.sin(theta) });
+        vertices.push({ x: C + Rx * Math.cos(theta), y: Cy + Ry * Math.sin(theta) });
       }
       break;
     case 'hexagon':
       for (let k = 0; k < 6; k++) {
         const theta = -Math.PI / 2 + (2 * Math.PI * k) / 6;
-        vertices.push({ x: C + R * Math.cos(theta), y: C + R * Math.sin(theta) });
+        vertices.push({ x: C + Rx * Math.cos(theta), y: Cy + Ry * Math.sin(theta) });
       }
       break;
     case 'star': {
-      const rOut = R;
-      const rIn = R * 0.4;
       for (let k = 0; k < 10; k++) {
         const theta = -Math.PI / 2 + (Math.PI * k) / 5;
-        const r = k % 2 === 0 ? rOut : rIn;
-        vertices.push({ x: C + r * Math.cos(theta), y: C + r * Math.sin(theta) });
+        const rx = k % 2 === 0 ? Rx : Rx * 0.4;
+        const ry = k % 2 === 0 ? Ry : Ry * 0.4;
+        vertices.push({ x: C + rx * Math.cos(theta), y: Cy + ry * Math.sin(theta) });
       }
       break;
     }
     case 'cross': {
-      const w = size * 0.35;
-      const x1 = C - w / 2;
-      const x2 = C + w / 2;
+      const wx = w * 0.35;
+      const hx = h * 0.35;
+      const x1 = C - wx / 2;
+      const x2 = C + wx / 2;
+      const y1 = Cy - hx / 2;
+      const y2 = Cy + hx / 2;
       vertices = [
         { x: x1, y: 0 },
         { x: x2, y: 0 },
-        { x: x2, y: x1 },
-        { x: size, y: x1 },
-        { x: size, y: x2 },
-        { x: x2, y: x2 },
-        { x: x2, y: size },
-        { x: x1, y: size },
-        { x: x1, y: x2 },
-        { x: 0, y: x2 },
-        { x: 0, y: x1 },
-        { x: x1, y: x1 },
+        { x: x2, y: y1 },
+        { x: w, y: y1 },
+        { x: w, y: y2 },
+        { x: x2, y: y2 },
+        { x: x2, y: h },
+        { x: x1, y: h },
+        { x: x1, y: y2 },
+        { x: 0, y: y2 },
+        { x: 0, y: y1 },
+        { x: x1, y: y1 },
       ];
       break;
     }
     case 'arrow':
       vertices = [
-        { x: 0, y: size * 0.3 },
-        { x: size * 0.55, y: size * 0.3 },
-        { x: size * 0.55, y: 0 },
-        { x: size, y: C },
-        { x: size * 0.55, y: size },
-        { x: size * 0.55, y: size * 0.7 },
-        { x: 0, y: size * 0.7 },
+        { x: 0, y: h * 0.3 },
+        { x: w * 0.55, y: h * 0.3 },
+        { x: w * 0.55, y: 0 },
+        { x: w, y: Cy },
+        { x: w * 0.55, y: h },
+        { x: w * 0.55, y: h * 0.7 },
+        { x: 0, y: h * 0.7 },
       ];
       break;
     case 'parallelogram':
       vertices = [
-        { x: size * 0.25, y: 0 },
-        { x: size, y: 0 },
-        { x: size * 0.75, y: size },
-        { x: 0, y: size },
+        { x: w * 0.25, y: 0 },
+        { x: w, y: 0 },
+        { x: w * 0.75, y: h },
+        { x: 0, y: h },
       ];
       break;
     case 'rhombus':
       vertices = [
         { x: C, y: 0 },
-        { x: size, y: C },
-        { x: C, y: size },
-        { x: 0, y: C },
+        { x: w, y: Cy },
+        { x: C, y: h },
+        { x: 0, y: Cy },
       ];
       break;
     default:
       vertices = [
         { x: 0, y: 0 },
-        { x: size, y: 0 },
-        { x: size, y: size },
-        { x: 0, y: size },
+        { x: w, y: 0 },
+        { x: w, y: h },
+        { x: 0, y: h },
       ];
   }
 
@@ -210,9 +252,16 @@ export function getShapePoints(type: string, size: number, N = 120): Point2D[] {
 /**
  * Returns a standardized SVG path 'd' string for a shape type.
  */
-export function getShapePath(type: string, size: number, N = 120): string {
-  const points = getShapePoints(type, size, N);
-  return 'M ' + points.map(p => `${p.x.toFixed(3)},${p.y.toFixed(3)}`).join(' L ') + ' Z';
+export function getShapePath(
+  type: string,
+  w: number,
+  h: number,
+  N = 120,
+  points?: Point2D[],
+  borderRadius?: number
+): string {
+  const pts = getShapePoints(type, w, h, N, points, borderRadius);
+  return 'M ' + pts.map(p => `${p.x.toFixed(3)},${p.y.toFixed(3)}`).join(' L ') + ' Z';
 }
 
 /**

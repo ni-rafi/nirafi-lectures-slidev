@@ -70,7 +70,8 @@ export interface VisualCanvasShape {
     | 'cross'
     | 'heart'
     | 'parallelogram'
-    | 'rhombus';
+    | 'rhombus'
+    | 'polygon';
   x: number;           // Absolute position on 980 grid
   y: number;           // Absolute position on 551.25 grid
   w: number;           // Computed pixel width
@@ -85,6 +86,8 @@ export interface VisualCanvasShape {
   animation?: 'fade' | 'scale' | 'none';
   showDimensionLines?: boolean;
   dimensions?: ShapeDimensions;
+  points?: Array<{ x: number; y: number }>;
+  borderRadius?: number;
 }
 
 export interface SlideSchemaElement {

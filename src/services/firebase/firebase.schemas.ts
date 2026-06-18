@@ -49,6 +49,7 @@ export const UserPayloadSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   registration: z.string().optional().nullable(),
   session: z.string().optional().nullable(),
+  email: z.string().email('Invalid email address').or(z.literal('')).optional().nullable(),
   role: z.enum(['student', 'admin']),
   isGuest: z.boolean().optional(),
   themePreferences: z.record(z.string(), ThemePreferencesSchema).optional().nullable(),

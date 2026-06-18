@@ -200,7 +200,10 @@ export const SlideVisualCanvas: React.FC<SlideVisualCanvasProps> = ({
                     <svg className="absolute inset-0 w-full h-full overflow-visible">
                       <ShapeMorph
                         type={el.type}
-                        size={Math.min(el.w, el.h)}
+                        w={el.w}
+                        h={el.h}
+                        points={el.points}
+                        borderRadius={el.borderRadius}
                         fill={fill}
                         stroke={stroke}
                         strokeWidth={sw}

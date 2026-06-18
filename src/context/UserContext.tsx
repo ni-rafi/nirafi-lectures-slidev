@@ -12,7 +12,7 @@ interface UserContextType {
   isLoggedIn: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (rollNumber: string, session: string) => Promise<boolean>;
+  login: (rollNumber: string, session: string, name: string, email?: string) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
   updateThemePreferences: (key: string, preferences: ThemePreferences | null) => Promise<void>;
@@ -103,9 +103,20 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, [firebaseService]);
 
   const login = useCallback(
-    async (rawRoll: string, rawSession: string): Promise<boolean> => {
+    async (rawRoll: string, rawSession: string, name: string, email?: string): Promise<boolean> => {
       setError(null);
       setIsLoading(true);
+
+      // Validate email format if provided
+      if (email && email.trim() !== '') {
+        const trimmedEmail = email.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(trimmedEmail)) {
+          setError('Invalid email address format.');
+          setIsLoading(false);
+          return false;
+        }
+      }
 
       const isValidRoll = validateRegistration(rawRoll);
       const isValidSession = validateSession(rawSession);
@@ -150,9 +161,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
         // Save or update profile in backend
         const profile = await firebaseService.setUserProfile(anonymousUid, {
-          name: role === 'admin' ? `Admin ${normalizedRoll}` : `Student ${normalizedRoll}`,
+          name: name.trim() || (role === 'admin' ? `Admin ${normalizedRoll}` : `Student ${normalizedRoll}`),
           registration: normalizedRoll,
           session: normalizedSession,
+          email: email?.trim() || null,
           role: role,
           isGuest: role === 'student',
         });
@@ -209,6 +221,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           name: userProfile.name,
           registration: userProfile.registration || null,
           session: userProfile.session || null,
+          email: userProfile.email || null,
           role: userProfile.role,
           isGuest: userProfile.isGuest,
           themePreferences: updatedPreferences,

@@ -89,27 +89,29 @@ export const LectureCard: React.FC<LectureCardProps> = ({
         {isAdmin ? (
           <div className="flex items-center gap-3">
             {/* Inline Publish Toggle for Admins */}
-            <div className="flex items-center gap-1.5 bg-background border rounded-md px-2 py-1 h-8 shadow-xs">
-              <span className="text-[9px] font-bold tracking-wider text-muted-foreground uppercase select-none">
+            <div className="flex items-center gap-2 bg-background border rounded-md px-2.5 h-8 shadow-xs">
+              <span className={`text-[10px] font-bold tracking-wider uppercase select-none transition-colors ${
+                isLocked ? 'text-muted-foreground' : 'text-primary'
+              }`}>
                 {isLocked ? 'Locked' : 'Active'}
               </span>
               <button
                 type="button"
                 onClick={handleToggle}
                 disabled={isToggling}
-                className={`relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border border-transparent transition-colors duration-200 ease-in-out align-middle focus:outline-hidden disabled:opacity-50 ${
-                  isLocked ? 'bg-muted border-muted-foreground/20' : 'bg-primary'
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden disabled:opacity-50 ${
+                  isLocked ? 'bg-muted' : 'bg-primary'
                 }`}
                 role="switch"
                 aria-checked={!isLocked}
               >
                 {isToggling ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground mx-auto" />
+                  <Loader2 className="h-3 w-3 animate-spin text-muted-foreground mx-auto" />
                 ) : (
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none inline-block h-2.5 w-2.5 transform rounded-full bg-background shadow-xs ring-0 transition duration-200 ease-in-out ${
-                      isLocked ? 'translate-x-0' : 'translate-x-3'
+                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-background shadow-xs ring-0 transition duration-200 ease-in-out ${
+                      isLocked ? 'translate-x-0' : 'translate-x-4'
                     }`}
                   />
                 )}
@@ -122,9 +124,9 @@ export const LectureCard: React.FC<LectureCardProps> = ({
                 asChild
                 size="sm"
                 variant="ghost"
-                className="h-8 text-[11px] font-bold gap-1.5 px-3 rounded-r-none bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 border-r-0"
+                className="h-8 text-[11px] font-bold gap-1.5 px-3 rounded-r-none bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 border-r-0 no-underline hover:no-underline"
               >
-                <Link to={deckUrl}>
+                <Link to={deckUrl} className="no-underline hover:no-underline flex items-center gap-1.5">
                   <Play className="h-3 w-3 fill-current shrink-0" />
                   <span>Preview</span>
                 </Link>
@@ -134,7 +136,7 @@ export const LectureCard: React.FC<LectureCardProps> = ({
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-8 px-1.5 rounded-l-none bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 border-l border-primary/10"
+                    className="h-8 px-2 rounded-l-none bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
                   >
                     <ChevronDown className="h-3.5 w-3.5" />
                     <span className="sr-only">Export Options</span>
@@ -178,9 +180,9 @@ export const LectureCard: React.FC<LectureCardProps> = ({
               asChild
               size="sm"
               variant="ghost"
-              className="h-8 text-[11px] font-bold gap-1.5 px-3 rounded-r-none bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 border-r-0"
+              className="h-8 text-[11px] font-bold gap-1.5 px-3 rounded-r-none bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 border-r-0 no-underline hover:no-underline"
             >
-              <Link to={deckUrl}>
+              <Link to={deckUrl} className="no-underline hover:no-underline flex items-center gap-1.5">
                 <Play className="h-3 w-3 fill-current shrink-0" />
                 <span>Launch Slides</span>
               </Link>
@@ -192,7 +194,7 @@ export const LectureCard: React.FC<LectureCardProps> = ({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-8 px-1.5 rounded-l-none bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 border-l border-primary/10"
+                  className="h-8 px-2 rounded-l-none bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
                 >
                   <ChevronDown className="h-3.5 w-3.5" />
                   <span className="sr-only">Export Options</span>

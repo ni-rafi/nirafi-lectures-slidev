@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserContext } from '@/context/UserContext';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, LayoutDashboard } from 'lucide-react';
 import { SUBJECTS } from '@/config/lectures';
 import {
   Accordion,
@@ -131,19 +131,27 @@ export const LecturePortal: React.FC = () => {
                     <span className="text-xs font-bold uppercase tracking-wider text-foreground">
                       {session.label}
                     </span>
-                    {isAdmin && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/${subject.id}/${session.id}/admin`);
-                        }}
-                        className="mr-4 px-2.5 py-1 text-[10px] font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/25 rounded-md cursor-pointer transition-colors"
-                      >
-                        Admin Dashboard
-                      </button>
-                    )}
                   </AccordionTrigger>
-                  <AccordionContent className="px-5 pt-5 pb-5">
+                  <AccordionContent className="px-5 pt-5 pb-5 flex flex-col gap-4">
+                    {isAdmin && (
+                      <div className="flex items-center justify-between border-b pb-3 mb-1 select-none">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-xs font-bold text-foreground">
+                            Session Administration
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            Manage access locks and view aggregated student quiz performance.
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => navigate(`/${subject.id}/${session.id}/admin`)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-md cursor-pointer transition-all duration-200"
+                        >
+                          <LayoutDashboard className="h-3.5 w-3.5" />
+                          <span>Admin Scoreboard</span>
+                        </button>
+                      </div>
+                    )}
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {session.lectures.map((lecture) => {
                         const deckUrl = `/${subject.id}/${session.id}/${lecture.id}`;

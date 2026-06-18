@@ -111,6 +111,14 @@ export const AppRoutes: React.FC = () => {
           </LectureRouteGuard>
         }
       />
+      <Route
+        path={ROUTE_PATHS.SHAPES_PLAYGROUND}
+        element={
+          <AdminRouteGuard>
+            <ShapeBuilderPlayground />
+          </AdminRouteGuard>
+        }
+      />
 
       {/* PageLayout wraps all authenticated routes with app sidebar and headers */}
       <Route element={<PageLayout />}>
@@ -120,14 +128,6 @@ export const AppRoutes: React.FC = () => {
         <Route path={ROUTE_PATHS.PORTAL_LEGACY} element={<Navigate to={ROUTE_PATHS.PORTAL} replace />} />
         <Route path={ROUTE_PATHS.SLIDE_FLAT} element={<FlatSlideRedirect />} />
         <Route path={ROUTE_PATHS.DOCS} element={<SlideCustomizationDocs />} />
-        <Route
-          path={ROUTE_PATHS.SHAPES_PLAYGROUND}
-          element={
-            <AdminRouteGuard>
-              <ShapeBuilderPlayground />
-            </AdminRouteGuard>
-          }
-        />
 
         {/* Global Fallback Redirect to Dashboard */}
         <Route path="*" element={<Navigate to={ROUTE_PATHS.PORTAL} replace />} />

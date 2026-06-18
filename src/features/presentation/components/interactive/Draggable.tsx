@@ -59,7 +59,7 @@ export const Draggable: React.FC<DraggableProps> = ({
 
     // Compute the scale factor of the slide canvas container
     let scale = 1;
-    const canvasElement = ref.current?.closest('[data-slide-canvas]') as HTMLElement;
+    const canvasElement = (ref.current?.closest('[data-playground-canvas]') || ref.current?.closest('[data-slide-canvas]')) as HTMLElement;
     if (canvasElement) {
       scale = canvasElement.getBoundingClientRect().width / canvasElement.offsetWidth || 1;
     }

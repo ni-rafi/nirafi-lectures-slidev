@@ -16,6 +16,7 @@ const TOOLBAR_TYPES = [
   'hexagon',
   'arrow',
   'text',
+  'polygon',
 ] as const;
 
 export const ShapeBuilderToolbar: React.FC<ShapeBuilderToolbarProps> = ({ onAddElement }) => {
@@ -37,6 +38,8 @@ export const ShapeBuilderToolbar: React.FC<ShapeBuilderToolbarProps> = ({ onAddE
               <Square className="h-3 w-3 text-primary" />
             ) : t === 'circle' ? (
               <Circle className="h-3 w-3 text-primary" />
+            ) : t === 'polygon' ? (
+              <Layers className="h-3 w-3 text-primary" />
             ) : (
               <Type className="h-3 w-3 text-primary" />
             )}

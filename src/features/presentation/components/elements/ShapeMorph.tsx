@@ -4,30 +4,44 @@ import { getShapePath } from './shapeUtils';
 
 export interface ShapeMorphProps extends Omit<React.SVGProps<SVGPathElement>, 'd'> {
   /**
-   * Shape type name: 'circle', 'rect', 'triangle', 'star', 'arrow', 'pentagon', 'hexagon', 'cross', 'heart', 'parallelogram', 'rhombus'
+   * Shape type name
    */
   type: string;
   /**
-   * Bounding box dimension (width and height)
+   * Optional width and height bounds
    */
-  size: number;
+  w?: number;
+  h?: number;
+  /**
+   * Bounding box dimension fallback (width and height)
+   */
+  size?: number;
+  /**
+   * Custom vertices for polygons
+   */
+  points?: Array<{ x: number; y: number }>;
+  /**
+   * Corner radius for rectangles
+   */
+  borderRadius?: number;
   /**
    * Path transition duration in milliseconds
    */
   duration?: number;
   /**
-   * Easing function (e.g. 'ease-in-out', 'cubic-bezier(0.16, 1, 0.3, 1)')
+   * Easing function
    */
   easing?: string;
 }
 
 /**
- * ShapeMorph renders a vector shape that transitions smoothly when the 'type' or 'size' changes.
- * Under the hood, it converts shapes into polygons of exactly 120 vertices, enabling smooth native path morphing.
+ * ShapeMorph renders a vector shape that transitions smoothly when properties change.
  */
 export const ShapeMorph = React.forwardRef<SVGPathElement, ShapeMorphProps>(
-  ({ type, size, duration = 800, easing = 'cubic-bezier(0.16, 1, 0.3, 1)', ...props }, ref) => {
-    const pathD = getShapePath(type, size);
+  ({ type, w, h, size, points, borderRadius, duration = 800, easing = 'cubic-bezier(0.16, 1, 0.3, 1)', ...props }, ref) => {
+    const width = w ?? size ?? 100;
+    const height = h ?? size ?? 100;
+    const pathD = getShapePath(type, width, height, 120, points, borderRadius);
 
     return (
       <MorphingPath

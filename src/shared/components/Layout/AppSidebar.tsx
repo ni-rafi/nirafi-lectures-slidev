@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { BookOpen, GraduationCap, LayoutDashboard, LogOut, Presentation, ChevronLeft, Sparkles } from 'lucide-react';
+import { BookOpen, GraduationCap, LayoutDashboard, LogOut, Presentation, ChevronLeft } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +17,6 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { useUserContext } from '@/context/UserContext';
 import { SUBJECTS } from '@/config/lectures';
-import { ROUTE_PATHS } from '@/routes/paths';
 
 /**
  * AppSidebar displays navigation, subjects list, active lecture slide TOC, and student status.
@@ -34,8 +33,6 @@ export const AppSidebar: React.FC = () => {
   const { rollNumber, session, logout, userProfile } = useUserContext();
   const { setOpenMobile } = useSidebar();
 
-  const isAdmin = userProfile?.role === 'admin';
-
   const isSlideMode = !!(subjectId && sessionId && lectureId);
   const currentSlideInt = slideNo ? parseInt(slideNo, 10) : 1;
 
@@ -43,14 +40,6 @@ export const AppSidebar: React.FC = () => {
   const currentSubject = SUBJECTS.find((sub) => sub.id === subjectId);
   const currentSession = currentSubject?.sessions.find((sess) => sess.id === sessionId);
   const currentLecture = currentSession?.lectures.find((lec) => lec.id === lectureId);
-
-  // Compute the visual designer playground link dynamically
-  const fallbackSub = SUBJECTS[0]?.id || 'quantity-surveying';
-  const fallbackSess = SUBJECTS[0]?.sessions[0]?.id || 'session-2026';
-  const fallbackLec = SUBJECTS[0]?.sessions[0]?.lectures[0]?.id || 'lecture-1-concrete';
-  const playgroundLink = isSlideMode
-    ? `/playground/${subjectId}/${sessionId}/${lectureId}/shapes`
-    : `/playground/${fallbackSub}/${fallbackSess}/${fallbackLec}/shapes`;
 
   // Helper to change slide
   const handleSlideClick = (slideIndex: number) => {
@@ -113,9 +102,8 @@ export const AppSidebar: React.FC = () => {
                       <SidebarMenuButton
                         isActive={isActive}
                         onClick={() => handleSlideClick(idx)}
-                        className={`w-full justify-start text-xs font-medium ${
-                          isActive ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'hover:bg-accent'
-                        }`}
+                        className={`w-full justify-start text-xs font-medium ${isActive ? 'bg-primary/10 text-primary hover:bg-primary/20' : 'hover:bg-accent'
+                          }`}
                       >
                         <Presentation className="h-3.5 w-3.5 shrink-0" />
                         <span>Slide {idx}</span>
@@ -152,20 +140,6 @@ export const AppSidebar: React.FC = () => {
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-
-                  {isAdmin && (
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={location.pathname.startsWith('/playground')}
-                      >
-                        <Link to={playgroundLink} onClick={() => setOpenMobile(false)}>
-                          <Sparkles className="h-4 w-4 shrink-0" />
-                          <span>Canvas Designer</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  )}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -198,17 +172,27 @@ export const AppSidebar: React.FC = () => {
         {rollNumber ? (
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-0.5 min-w-0">
-              <p className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground leading-none">
-                Logged Student
+              <p className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground leading-none mb-1">
+                {userProfile?.role === 'admin' ? 'Logged Admin' : 'Logged Student'}
               </p>
-              <p className="text-xs font-semibold text-foreground leading-tight truncate">
+              {userProfile?.name && (
+                <p className="text-xs font-bold text-foreground leading-tight truncate">
+                  {userProfile.name}
+                </p>
+              )}
+              <p className="text-xs font-medium text-muted-foreground leading-tight truncate">
                 Reg: {rollNumber}
               </p>
               <p className="text-[10px] text-muted-foreground leading-tight">
                 Sess: {session}
               </p>
+              {userProfile?.email && (
+                <p className="text-[10px] text-muted-foreground leading-tight truncate font-mono mt-0.5" title={userProfile.email}>
+                  {userProfile.email}
+                </p>
+              )}
             </div>
-            
+
             <SidebarMenuButton
               onClick={handleLogout}
               className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive justify-start text-xs font-medium mt-1 border border-destructive/20"

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { VisualCanvasShape, PhysicalUnit } from '../../../types/schema';
 
 // Import subcomponents
@@ -7,7 +7,6 @@ import ShapeBuilderHeader from './ShapeBuilderHeader';
 import ShapeBuilderToolbar from './ShapeBuilderToolbar';
 import ShapeBuilderInspector from './ShapeBuilderInspector';
 import ShapeBuilderCanvas from './ShapeBuilderCanvas';
-import ShapeBuilderPageTabs from './ShapeBuilderPageTabs';
 import { usePlaygroundData } from './usePlaygroundData';
 
 export const ShapeBuilderPlayground: React.FC = () => {
@@ -16,6 +15,11 @@ export const ShapeBuilderPlayground: React.FC = () => {
     sessionId: string;
     lectureId: string;
   }>();
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(`/${subjectId}/${sessionId}/${lectureId}`);
+  };
 
   // Scoped hook to handle all Firestore and page state operations
   const {
@@ -63,10 +67,22 @@ export const ShapeBuilderPlayground: React.FC = () => {
         ? { length: 2.0, height: 1.5 }
         : type === 'rhombus'
         ? { diagonal1: 2.0, diagonal2: 1.5 }
+        : type === 'polygon'
+        ? { length: 2.0, height: 1.5 }
         : { length: 2.0, height: 0.4 };
 
     const w = type === 'circle' ? 150 : 200;
-    const h = type === 'circle' ? 150 : type === 'triangle' ? 150 : 80;
+    const h = type === 'circle' ? 150 : type === 'triangle' || type === 'polygon' ? 150 : 80;
+
+    const points =
+      type === 'polygon'
+        ? [
+            { x: 0, y: 0 },
+            { x: 200, y: 0 },
+            { x: 200, y: 150 },
+            { x: 0, y: 150 },
+          ]
+        : undefined;
 
     const newEl: VisualCanvasShape = {
       id: `${type}-${Date.now()}`,
@@ -79,9 +95,10 @@ export const ShapeBuilderPlayground: React.FC = () => {
       stroke: 'var(--primary)',
       strokeWidth: 2,
       enterAt: 1,
-      showDimensionLines: true,
+      showDimensionLines: type !== 'polygon',
       dimensions: defaultDims,
       label: `${type.toUpperCase()}`,
+      points,
     };
 
     const updated = [...elements, newEl];
@@ -190,7 +207,7 @@ export const ShapeBuilderPlayground: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="h-[calc(100vh-4rem)] flex items-center justify-center bg-slate-950 text-slate-100 font-sans">
+      <div className="h-screen w-screen flex items-center justify-center bg-background text-foreground font-sans">
         <div className="flex flex-col items-center gap-3">
           <span className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           <span className="text-xs text-muted-foreground font-semibold">Loading designer canvas...</span>
@@ -200,19 +217,17 @@ export const ShapeBuilderPlayground: React.FC = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans">
+    <div className="h-screen w-screen flex flex-col bg-background text-foreground overflow-hidden font-sans">
       <ShapeBuilderHeader
         scaleFactor={scaleFactor}
         onScaleFactorChange={updateActivePageScaleFactor}
         simulatedClick={simulatedClick}
         onSimulatedClickChange={setSimulatedClick}
         onCopy={copyToClipboard}
-      />
-
-      <ShapeBuilderPageTabs
+        onBack={handleBack}
+        savingStatus={savingStatus}
         pages={pages}
         activeIndex={activeIndex}
-        savingStatus={savingStatus}
         onSelectPage={setActiveIndex}
         onAddPage={addPage}
         onDuplicatePage={duplicatePage}

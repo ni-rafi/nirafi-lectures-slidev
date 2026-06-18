@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
  */
 export const RollNumberGate: React.FC = () => {
   const { login, error, clearError } = useUserContext();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [roll, setRoll] = useState('');
   const [sessionVal, setSessionVal] = useState('2026-27'); // Default to target session
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,15 +23,29 @@ export const RollNumberGate: React.FC = () => {
     setValidationError(null);
 
     // Basic pre-submit validation
+    if (!name.trim()) {
+      setValidationError('Student Name is required.');
+      return;
+    }
+
     const digitsOnly = roll.replace(/\D/g, '');
     if (digitsOnly.length !== 10) {
       setValidationError('Registration number must be exactly 10 digits.');
       return;
     }
 
+    // Email format validation (if provided)
+    if (email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        setValidationError('Invalid email address format.');
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     try {
-      const success = await login(roll, sessionVal);
+      const success = await login(roll, sessionVal, name, email);
       if (!success) {
         // Error is set in UserContext and will be displayed
         setIsSubmitting(false);
@@ -70,6 +86,27 @@ export const RollNumberGate: React.FC = () => {
             </p>
           </div>
 
+          {/* Name Input */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="name" className="text-xs font-semibold text-foreground/80">
+              Student Name
+            </label>
+            <Input
+              id="name"
+              type="text"
+              required
+              placeholder="e.g. Md. Nazmul Islam Rafi"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (validationError) setValidationError(null);
+                clearError();
+              }}
+              className="bg-muted/30 focus:bg-background transition-colors text-sm"
+              disabled={isSubmitting}
+            />
+          </div>
+
           {/* Registration Input */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="roll" className="text-xs font-semibold text-foreground/80">
@@ -87,6 +124,27 @@ export const RollNumberGate: React.FC = () => {
                 clearError();
               }}
               className="bg-muted/30 focus:bg-background transition-colors font-mono text-sm"
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {/* Email Input */}
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="email" className="text-xs font-semibold text-foreground/80 flex items-center justify-between">
+              <span>Email Address</span>
+              <span className="text-[10px] text-muted-foreground font-normal">Optional</span>
+            </label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="e.g. rafi@sust.edu"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (validationError) setValidationError(null);
+                clearError();
+              }}
+              className="bg-muted/30 focus:bg-background transition-colors text-sm"
               disabled={isSubmitting}
             />
           </div>

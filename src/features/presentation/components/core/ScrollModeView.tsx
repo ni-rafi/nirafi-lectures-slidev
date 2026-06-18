@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Play, Sun, Moon, ChevronDown, Printer, FileDown, Palette, BookOpen } from 'lucide-react';
+import { ChevronLeft, Play, Sun, Moon, ChevronDown, Printer, FileDown, Palette, BookOpen, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useUserContext } from '@/context';
 import PageMetadata from './PageMetadata';
 import {
   DropdownMenu,
@@ -38,6 +39,9 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
     presenterFeatures,
     navigateWithTransition,
   } = orchestrator;
+
+  const { userProfile } = useUserContext();
+  const isAdmin = userProfile?.role === 'admin';
 
   if (!activeSub || !activeLec) return null;
 
@@ -145,6 +149,20 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {isAdmin && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                navigate(`/playground/${subjectId}/${sessionId}/${lectureId}/shapes`);
+              }}
+              className="flex items-center gap-1.5 font-semibold shadow-xs border-primary/30 hover:bg-primary/5 hover:text-primary text-foreground"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <span>Canvas Designer</span>
+            </Button>
+          )}
 
           <Button
             size="sm"
