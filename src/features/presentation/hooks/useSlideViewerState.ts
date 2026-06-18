@@ -80,15 +80,25 @@ export const useSlideViewerState = ({
 
   const { resetClicks, totalClicks, setClick } = useClickStepsContext();
 
+  const prevSlideRef = useRef(currentSlideInt);
+  const shouldSetMaxClicksRef = useRef(false);
+
   useEffect(() => {
+    if (currentSlideInt < prevSlideRef.current) {
+      shouldSetMaxClicksRef.current = true;
+    } else {
+      shouldSetMaxClicksRef.current = false;
+    }
+    prevSlideRef.current = currentSlideInt;
     resetClicks();
   }, [currentSlideInt, lectureId, resetClicks]);
 
   useEffect(() => {
-    if (location.state?.clicks === 'max' && totalClicks > 0) {
+    if ((shouldSetMaxClicksRef.current || location.state?.clicks === 'max') && totalClicks > 0) {
       setClick(totalClicks);
+      shouldSetMaxClicksRef.current = false;
     }
-  }, [location.state?.clicks, totalClicks, setClick]);
+  }, [totalClicks, location.state?.clicks, setClick]);
 
   useEffect(() => {
     if (!isPresenterView || !timerRunning) return;

@@ -111,7 +111,7 @@ export const OverviewModal: React.FC<OverviewModalProps> = ({
                           <SlideContainer scaleMode="fit" isThumbnail={true}>
                             <MorphingBackground variant={getBgVariant(meta.type)} />
                             <div className="flex-1 flex flex-col justify-center items-center w-full h-full relative z-10">
-                              <ClickStepsProvider currentClickOverride={0}>
+                              <ClickStepsProvider currentClickOverride={999}>
                                 <SlideRenderer slideNo={num} subject={activeSub} lecture={activeLec} session={activeSession} />
                               </ClickStepsProvider>
                             </div>

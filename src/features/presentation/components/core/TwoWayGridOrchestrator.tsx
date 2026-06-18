@@ -5,6 +5,7 @@ import SlideRenderer, { getSlideMetadata } from '../slides/SlideRenderer';
 import { ClickStepsProvider } from '../../context/ClickStepsContext';
 import { PresentationContext, ViewMode, Theme } from '../../context/PresentationContext';
 import { SimulationModal, ClickTracker } from './SimulationModal';
+import { useSlideTheme } from '../../context/SlideThemeContext';
 
 interface TwoWayGridOrchestratorProps {
   subject: Subject;
@@ -27,6 +28,42 @@ const SlideCard: React.FC<{
 }> = ({ slideNo, subject, lecture, session, onSelect, onPlaySimulation }) => {
   const meta = getSlideMetadata(slideNo, subject, lecture);
   const [localTotalClicks, setLocalTotalClicks] = useState(0);
+
+  let resolvedTheme: any = null;
+  try {
+    resolvedTheme = useSlideTheme().resolvedTheme;
+  } catch (e) {
+    // Context fallback
+  }
+
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  let customBackgroundValue: string | undefined = undefined;
+
+  if (resolvedTheme) {
+    if (resolvedTheme.bgType === 'gradient') {
+      customBackgroundValue = isDark
+        ? `linear-gradient(135deg, oklch(0.18 0.04 ${resolvedTheme.accentHue}) 0%, oklch(0.12 0.02 ${resolvedTheme.accentHue}) 100%)`
+        : `linear-gradient(135deg, oklch(0.95 0.05 ${resolvedTheme.accentHue}) 0%, oklch(0.99 0.01 ${resolvedTheme.accentHue}) 100%)`;
+    } else if (resolvedTheme.bgType === 'custom' && resolvedTheme.customBgValue) {
+      customBackgroundValue = resolvedTheme.customBgValue;
+    }
+  }
+
+  const containerStyle: React.CSSProperties & Record<string, string | number> = {
+    '--slide-accent-hue': resolvedTheme ? resolvedTheme.accentHue.toString() : '220',
+    '--slide-radius': resolvedTheme ? `${resolvedTheme.borderRadius}px` : '0px',
+    '--slide-font-sans': resolvedTheme ? resolvedTheme.fontSans : 'Montserrat',
+    '--slide-font-header': resolvedTheme ? resolvedTheme.fontHeader : 'Raleway',
+    '--slide-bg-type': resolvedTheme ? resolvedTheme.bgType : 'solid',
+    '--slide-custom-bg': resolvedTheme ? resolvedTheme.customBgValue : '',
+    '--slide-border-side': resolvedTheme ? resolvedTheme.borderSide : 'left',
+    '--slide-header-size': resolvedTheme ? `${resolvedTheme.headerFontSize}px` : '30px',
+  };
+
+  if (customBackgroundValue) {
+    containerStyle.background = customBackgroundValue;
+    containerStyle['--background'] = customBackgroundValue;
+  }
 
   return (
     <div className="relative group w-full bg-card rounded-2xl border border-border shadow-xs hover:shadow-md transition-shadow duration-300 animate-in fade-in duration-300">
@@ -66,7 +103,11 @@ const SlideCard: React.FC<{
         </div>
       </div>
       
-      <div className="p-6 md:p-8 select-text w-full">
+      <div 
+        style={containerStyle}
+        className="p-6 md:p-8 select-text w-full bg-background text-foreground rounded-b-2xl overflow-hidden flex flex-col justify-between"
+        data-slide-canvas
+      >
         <ClickStepsProvider currentClickOverride={999}>
           <SlideRenderer slideNo={slideNo} subject={subject} lecture={lecture} session={session} />
         </ClickStepsProvider>

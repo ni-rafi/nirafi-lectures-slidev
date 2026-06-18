@@ -27,7 +27,7 @@ export const TitleLayout: React.FC<TitleLayoutProps> = ({
 
   if (viewMode === 'scroll') {
     return (
-      <div className="relative flex flex-col items-center justify-center text-center max-w-2xl mx-auto py-8 px-6 gap-6 bg-card border border-border/60 rounded-2xl shadow-xs w-full overflow-hidden">
+      <div className="relative flex flex-col items-center justify-center text-center max-w-2xl mx-auto py-4 gap-6 bg-transparent text-foreground w-full overflow-hidden">
         {/* Top logo in scroll card */}
         <div className="flex items-center justify-center w-full px-2 opacity-85 select-none">
           <img src={sustLogoUrl} className="h-10 w-10 object-contain sust-logo-transition" alt="SUST Logo" />

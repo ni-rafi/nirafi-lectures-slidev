@@ -37,7 +37,7 @@ export const GridLayout: React.FC<GridLayoutProps> = ({
 
   if (viewMode === 'scroll') {
     return (
-      <div className="relative flex flex-col w-full p-6 md:p-8 bg-card border border-border/60 rounded-2xl shadow-xs select-text text-foreground min-h-[300px] justify-between">
+      <div className="relative flex flex-col w-full bg-transparent select-text text-foreground min-h-[200px] justify-between">
         <div>
           <LayoutHeader title={title} />
           <main className="w-full">

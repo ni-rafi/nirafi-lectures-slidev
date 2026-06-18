@@ -40,7 +40,7 @@ export const ThankYouLayout: React.FC<ThankYouLayoutProps> = ({
 
   if (viewMode === 'scroll') {
     return (
-      <div className="relative flex flex-col items-center justify-center py-12 px-6 bg-card border border-border/60 rounded-2xl shadow-xs w-full overflow-hidden min-h-[300px]">
+      <div className="relative flex flex-col items-center justify-center py-6 bg-transparent text-foreground w-full overflow-hidden min-h-[200px]">
         {renderContent()}
       </div>
     );
