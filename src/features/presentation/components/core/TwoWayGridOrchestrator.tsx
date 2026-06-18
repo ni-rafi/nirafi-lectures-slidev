@@ -1,48 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { ChevronDown, Play } from 'lucide-react';
 import type { Subject, Lecture, Session } from '@/config/lectures';
 import SlideRenderer, { getSlideMetadata } from '../slides/SlideRenderer';
-import { ClickStepsProvider, useClickStepsContext } from '../../context/ClickStepsContext';
+import { ClickStepsProvider } from '../../context/ClickStepsContext';
 import { PresentationContext, ViewMode, Theme } from '../../context/PresentationContext';
 import { useSlideTheme } from '../../context/SlideThemeContext';
-
-const ClickTrackerInner: React.FC<{
-  slideNo: number;
-  subject: Subject;
-  lecture: Lecture;
-  session?: Session;
-  onCountResolved: (count: number) => void;
-}> = ({ slideNo, subject, lecture, session, onCountResolved }) => {
-  const { totalClicks } = useClickStepsContext();
-  useEffect(() => {
-    onCountResolved(totalClicks);
-  }, [totalClicks, onCountResolved]);
-  return (
-    <div className="hidden" aria-hidden="true">
-      <SlideRenderer slideNo={slideNo} subject={subject} lecture={lecture} session={session} />
-    </div>
-  );
-};
-
-const ClickTracker: React.FC<{
-  slideNo: number;
-  subject: Subject;
-  lecture: Lecture;
-  session?: Session;
-  onCountResolved: (count: number) => void;
-}> = ({ slideNo, subject, lecture, session, onCountResolved }) => {
-  return (
-    <ClickStepsProvider currentClickOverride={0}>
-      <ClickTrackerInner
-        slideNo={slideNo}
-        subject={subject}
-        lecture={lecture}
-        session={session}
-        onCountResolved={onCountResolved}
-      />
-    </ClickStepsProvider>
-  );
-};
 
 interface TwoWayGridOrchestratorProps {
   subject: Subject;
@@ -65,9 +27,6 @@ const SlideCard: React.FC<{
   onSelect: () => void;
 }> = ({ slideNo, subject, lecture, session, onSelect }) => {
   const meta = getSlideMetadata(slideNo, subject, lecture);
-  const [localTotalClicks, setLocalTotalClicks] = useState(0);
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [localClick, setLocalClick] = useState(0);
 
   let resolvedTheme: any = null;
   try {
@@ -107,14 +66,6 @@ const SlideCard: React.FC<{
 
   return (
     <div className="relative group w-full bg-card rounded-2xl border border-border shadow-xs hover:shadow-md transition-shadow duration-300 animate-in fade-in duration-300">
-      <ClickTracker
-        slideNo={slideNo}
-        subject={subject}
-        lecture={lecture}
-        session={session}
-        onCountResolved={setLocalTotalClicks}
-      />
-
       <div className="flex items-center justify-between border-b border-border/60 bg-muted/20 px-6 py-3.5 rounded-t-2xl select-none">
         <div className="flex flex-col text-left">
           <span className="text-[10px] font-bold text-primary font-mono uppercase tracking-wider">Slide {slideNo} • {meta.type}</span>
@@ -122,20 +73,6 @@ const SlideCard: React.FC<{
         </div>
         
         <div className="flex items-center gap-2">
-          {!isSimulating && localTotalClicks > 0 && (
-            <button
-              onClick={() => {
-                setIsSimulating(true);
-                setLocalClick(0);
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-bold transition-colors cursor-pointer"
-              title="Play step-by-step simulation"
-            >
-              <Play className="h-3.5 w-3.5 fill-primary" />
-              <span>Play Steps</span>
-            </button>
-          )}
-
           <button
             onClick={onSelect}
             className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -151,39 +88,9 @@ const SlideCard: React.FC<{
         className="p-6 md:p-8 select-text w-full bg-background text-foreground rounded-b-2xl overflow-hidden flex flex-col justify-between"
         data-slide-canvas
       >
-        <ClickStepsProvider currentClickOverride={isSimulating ? localClick : 999}>
+        <ClickStepsProvider currentClickOverride={999}>
           <SlideRenderer slideNo={slideNo} subject={subject} lecture={lecture} session={session} />
         </ClickStepsProvider>
-
-        {isSimulating && (
-          <div className="flex items-center justify-between border-t border-border/40 mt-4 pt-3 text-xs bg-muted/5 px-4 py-2 rounded-xl border select-none">
-            <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => { if (localClick > 0) setLocalClick(prev => prev - 1); }}
-                disabled={localClick === 0}
-                className="px-2.5 py-1 bg-background hover:bg-muted border border-border/50 rounded-md disabled:opacity-40 cursor-pointer font-bold transition-colors"
-              >
-                Back
-              </button>
-              <button
-                onClick={() => { if (localClick < localTotalClicks) setLocalClick(prev => prev + 1); }}
-                disabled={localClick === localTotalClicks}
-                className="px-2.5 py-1 bg-background hover:bg-muted border border-border/50 rounded-md disabled:opacity-40 cursor-pointer font-bold transition-colors"
-              >
-                Next
-              </button>
-            </div>
-            <span className="font-mono text-muted-foreground font-semibold">
-              Step {localClick} of {localTotalClicks}
-            </span>
-            <button
-              onClick={() => { setIsSimulating(false); setLocalClick(0); }}
-              className="px-2.5 py-1 bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 rounded-md cursor-pointer font-bold transition-colors"
-            >
-              Exit Simulation
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
