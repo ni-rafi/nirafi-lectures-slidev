@@ -124,7 +124,11 @@ export interface SlideSchemaElement {
     | 'rebar-calculator-outputs'
     | 'quiz'
     | 'composite'
-    | 'visual-canvas';
+    | 'visual-canvas'
+    | 'course-outline-cover'
+    | 'course-outline-outcomes'
+    | 'course-outline-table'
+    | 'course-outline-legends';
   config?: unknown;
   data?: unknown;
 }

@@ -26,6 +26,10 @@ import {
   SchemaLatexElement,
 } from '../../types/schema';
 import { SlideVisualCanvas } from '../elements/SlideVisualCanvas';
+import { CourseOutlineCover } from '@/features/outline/components/CourseOutlineCover';
+import { CourseOutlineOutcomes } from '@/features/outline/components/CourseOutlineOutcomes';
+import { CourseOutlineTable } from '@/features/outline/components/CourseOutlineTable';
+import { CourseOutlineLegends } from '@/features/outline/components/CourseOutlineLegends';
 
 // Live Rebar parameters inputs sub-component using synced URL state
 const RebarCalculatorInputs: React.FC = () => {
@@ -218,6 +222,39 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
 
       case 'rebar-calculator-outputs':
         return <RebarCalculatorOutputs />;
+
+      case 'course-outline-cover': {
+        const data = elem.data as any;
+        return <CourseOutlineCover metadata={data.metadata} />;
+      }
+
+      case 'course-outline-outcomes': {
+        const data = elem.data as any;
+        return <CourseOutlineOutcomes outcomes={data.outcomes} contents={data.contents} />;
+      }
+
+      case 'course-outline-table': {
+        const data = elem.data as any;
+        const config = elem.config as { part: 1 | 2 } | undefined;
+        return (
+          <CourseOutlineTable
+            part={config?.part || 1}
+            schedule={data.schedule}
+            tlLegends={data.tlLegends}
+            assessmentLegends={data.assessmentLegends}
+          />
+        );
+      }
+
+      case 'course-outline-legends': {
+        const data = elem.data as any;
+        return (
+          <CourseOutlineLegends
+            tlLegends={data.tlLegends}
+            assessmentLegends={data.assessmentLegends}
+          />
+        );
+      }
 
       case 'composite': {
         const compositeData = elem.data as { elements: SlideSchemaElement[] };

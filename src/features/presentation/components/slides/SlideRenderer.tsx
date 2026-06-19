@@ -7,6 +7,7 @@ import * as ConcreteLecture from '@/lectures/quantity-surveying/session-2026/lec
 import * as BrickworkLecture from '@/lectures/quantity-surveying/session-2026/lecture-2-brickwork/lecture';
 import * as SteelLecture from '@/lectures/quantity-surveying/session-2026/lecture-3-steel/lecture';
 import * as SlidevIntroLecture from '@/lectures/web-development/session-2026/lecture-1-slidev-intro/lecture';
+import * as EngineeringMechanicsOutline from '@/lectures/engineering-mechanics/session-2024/course-outline/lecture';
 
 interface SlideRendererProps {
   slideNo: number;
@@ -30,6 +31,7 @@ const LECTURE_DECKS: Record<string, {
   'brickwork': BrickworkLecture,
   'steel': SteelLecture,
   'slidev_intro': SlidevIntroLecture,
+  'course-outline': EngineeringMechanicsOutline,
 };
 
 const getLectureDeck = (lectureId: string) => {

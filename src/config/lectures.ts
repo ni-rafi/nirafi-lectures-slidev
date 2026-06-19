@@ -109,4 +109,29 @@ export const SUBJECTS: Course[] = [
       },
     ],
   },
+  {
+    id: 'engineering-mechanics',
+    courseTitle: 'Engineering Mechanics II',
+    courseCode: 'CEE 0541 1233',
+    description: 'Dynamics, relative motion, cables, friction analysis, impulses, and mechanical work systems.',
+    iconEmoji: '⚙️',
+    color: '#ea580c',
+    sessions: [
+      {
+        id: 'session-2024',
+        label: 'Session 2024–25',
+        lectures: [
+          {
+            id: 'course-outline',
+            title: 'Course Outline & Syllabus',
+            description: 'Detailed weekly plan, learning outcomes (COs), assessment strategy, and strategic legends.',
+            slideNo: 1,
+            durationMins: 20,
+            locked: false,
+            tags: ['syllabus', 'outline', 'mechanics'],
+          },
+        ],
+      },
+    ],
+  },
 ];
