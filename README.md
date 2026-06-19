@@ -1,4 +1,4 @@
-# Slidev Civil Engineering Lecture Slides & Calculations Platform
+# nirafi-workspace: Civil Engineering Lecture Slides & Calculations Platform
 
 A centralized platform containing interactive lecture decks for civil engineering (and web development) topics, backed by a modular, unit-tested calculation engine, Firebase Firestore integration, an adaptive slide layout component library, and a declarative schema-driven slide engine.
 

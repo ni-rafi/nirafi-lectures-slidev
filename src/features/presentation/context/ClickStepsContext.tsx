@@ -67,6 +67,12 @@ export const ClickStepsProvider: React.FC<ClickStepsProviderProps> = ({
   const currentClick = currentClickOverride !== undefined ? currentClickOverride : currentClickState;
   const [totalClicks, setTotalClicks] = useState(0);
 
+  // Stays true across all registration calls during backward entry (initialClick=999)
+  // so that currentClick tracks maxStep as each element registers, regardless of
+  // how many React render/flush cycles happen between registrations.
+  // Cleared the moment the user explicitly steps via setClick.
+  const isBackwardEntryRef = useRef(initialClick >= 999);
+
   const registryRef = useRef<Record<string, number>>({});
   const nextRelativeRef = useRef(1);
 
@@ -89,12 +95,11 @@ export const ClickStepsProvider: React.FC<ClickStepsProviderProps> = ({
     const maxStep = Math.max(...Object.values(registryRef.current));
     setTotalClicks(maxStep);
 
-    // For backward entry (initialClick=999), normalise to the real last step
-    // each time a new element registers (keeps currentClick === totalClicks).
-    setCurrentClick((prev) => {
-      if (currentClickOverride !== undefined) return prev; // respect override
-      return prev >= 999 ? maxStep : prev;               // normalise backward entry
-    });
+    // During backward entry keep currentClick pinned to the latest maxStep so
+    // that every registered element sees the slide in its fully-revealed state.
+    if (isBackwardEntryRef.current && currentClickOverride === undefined) {
+      setCurrentClick(maxStep);
+    }
 
     return absoluteStep;
   }, [currentClickOverride]);
@@ -109,6 +114,8 @@ export const ClickStepsProvider: React.FC<ClickStepsProviderProps> = ({
   }, []);
 
   const setClick = useCallback((step: number) => {
+    // User is explicitly stepping — exit backward-entry tracking mode.
+    isBackwardEntryRef.current = false;
     setCurrentClick(Math.max(0, step));
   }, []);
 
