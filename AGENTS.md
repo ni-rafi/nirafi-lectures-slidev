@@ -8,6 +8,7 @@ A skill is a set of local instructions to follow that is stored in a `SKILL.md` 
 - slide-customization: Guides customizing and using interactive elements like paragraphs, bullets, equations, tables, and click highlights in slide decks. (file: .agent/skills/slide-customization/SKILL.md)
 - reusable-components: Guides creating and utilizing mode-aware reusable components for interactive slide controls, sliders, and outputs that adapt between Slide Mode and Blog Mode. (file: .agent/skills/reusable-components/SKILL.md)
 - lecture-activation-security: Guides managing real-time lecture activations, custom claims, and cryptographic signatures. (file: .agent/skills/lecture-activation-security/SKILL.md)
+- testing: Guides implementing unit tests for core logics, slide registry schema validations, and fixing test regressions. (file: .agent/skills/testing/SKILL.md)
 
 
 ### How to use skills

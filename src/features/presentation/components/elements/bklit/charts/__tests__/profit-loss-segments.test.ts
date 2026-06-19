@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import { splitProfitLossSegments } from "../profit-loss-segments";
 
 const xAccessor = (d: Record<string, unknown>) => d.date as Date;

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import { computeSegmentBounds } from "../highlight-segment-bounds";
 
 // Data points at t = 0,10,20,30 ms; a linear pixel xScale (1px per ms) keeps the

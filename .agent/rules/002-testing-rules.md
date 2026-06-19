@@ -11,8 +11,8 @@ description: Linter and Testing Rules
 - Solve all compiler errors and warnings prior to checking in.
 
 ## 2. Unit Testing
-- Every mathematical file inside `cores/` must have companion unit tests.
-- Place unit tests inside a nested `__tests__` folder (e.g. `cores/quantity-surveying/__tests__/`).
+- Every mathematical/logical file inside `cores/` and lecture subdirectories must have companion unit tests.
+- Place unit tests inside a nested `__tests__` folder (e.g. `cores/quantity-surveying/__tests__/` or `session-XXXX/calculations/__tests__/`).
 - Run tests using `npm run test` (Vitest framework).
 
 ## 3. Linting
@@ -22,3 +22,8 @@ description: Linter and Testing Rules
 ## 4. Database Schema Verification
 - Database operations must enforce pre-flight validation via Zod schemas.
 - Verify Zod parser calls (`.parse()`) reject invalid payloads.
+
+## 5. Slide Registry & Regression Prevention
+- Avoid DOM-based UI rendering in test suites to prevent heavy browser environments and speed up test execution.
+- Maintain a dynamic test suite that auto-crawls all registered slide decks, validating exact alignment of `slides` and `slideMetadata` keys, and enforcing structural integrity of metadata fields (like title, type, and section) using Zod schemas.
+

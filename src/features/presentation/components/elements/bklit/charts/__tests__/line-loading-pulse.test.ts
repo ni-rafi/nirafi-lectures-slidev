@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import { resolveLineLoadingPulseMode } from "../line-loading-pulse";
 
 describe("resolveLineLoadingPulseMode", () => {

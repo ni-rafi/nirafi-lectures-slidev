@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { describe, it } from "vitest";
 import {
   BAR_DEPTH_MAX_PX,
   BAR_DEPTH_PERSPECTIVE_RATIO,
