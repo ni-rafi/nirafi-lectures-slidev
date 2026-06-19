@@ -9,7 +9,93 @@ This skill defines the patterns, markup, and styles for customizing slide body c
 
 ---
 
-## 1. Interactive Highlighting (`<ClickHighlight>`)
+## 0. Declarative Schema-Driven Customization (Recommended)
+
+For standard lecture slides, customize content using the declarative **Slide Schema** configuration pattern rather than raw JSX. The polymorphic `<SlideSchemaEngine>` parses structured configurations and inflates layout elements automatically:
+
+### 0.1 Element Types in Schema
+
+* **`rich-paragraph`**: Renders `<SlideParagraph>` with highlights.
+  ```typescript
+  element: {
+    type: 'rich-paragraph',
+    data: {
+      fragments: [
+        'Estimating concrete requires ',
+        { highlight: 'isolating total volume', at: 1, variant: 'paint' },
+        ' to prevent shortages.'
+      ]
+    }
+  }
+  ```
+* **`list`**: Renders `<SlideList>` with stagger reveals.
+  ```typescript
+  element: {
+    type: 'list',
+    config: { revealMode: 'each-click' },
+    data: {
+      listTitle: 'Measurement Guidelines',
+      items: [
+        { title: 'Slab Thickness:', text: 'Maintain a 0.150m minimum bound.' },
+        { title: 'Calculation Precision:', text: 'Round outputs to 3 decimals.' }
+      ]
+    }
+  }
+  ```
+* **`table`**: Renders `<SlideTable>` with header reveals and cell-level highlights.
+  ```typescript
+  element: {
+    type: 'table',
+    config: { striped: true, bordered: true },
+    data: {
+      headers: [
+        { label: 'Code', align: 'left' },
+        { label: 'Qty', align: 'right' },
+        { label: 'Rate ($)', align: 'right', revealAt: 2 }
+      ],
+      rows: [
+        [ '1.1', <ClickHighlight at={1}>12.500</ClickHighlight>, <ClickReveal at={3}>120.00</ClickReveal> ]
+      ]
+    }
+  }
+  ```
+* **`latex`**: Renders `<LatexFormula>` formula parts.
+  ```typescript
+  element: {
+    type: 'latex',
+    config: { title: 'Standard Formula' },
+    data: {
+      formulaParts: [
+        'W = ',
+        { highlight: '\\\\frac{d^2}{162} \\\\times L', at: 2, variant: 'text' }
+      ]
+    }
+  }
+  ```
+* **`quiz`**: Renders classroom interactive assessments synced with Firebase.
+  ```typescript
+  element: {
+    type: 'quiz',
+    config: { quizId: 'brick_lec2_q1', quizType: 'numeric-input' },
+    data: { question: 'What is the volume of a standard brick?', correctAnswer: '1900000' }
+  }
+  ```
+
+> [!TIP]
+> **Single Source of Truth**: When building slides or writing schemas, the AI agent and developers can inspect the actual code definitions, schema examples, and copy-pasteable configurations directly in the Developer Guide source files under [src/features/docs/dev-guide/](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/):
+> * For paragraph options & formatting: [ParagraphsSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/ParagraphsSection.tsx)
+> * For list reveal modes & item properties: [ListsSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/ListsSection.tsx)
+> * For table alignment, cell highlights, & column reveals: [TablesSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/TablesSection.tsx)
+> * For math formula structures: [FormulasSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/FormulasSection.tsx)
+> * For classroom quizzes: [QuizzesSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/QuizzesSection.tsx)
+> * For slider inputs & calculators: [InputsSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/InputsSection.tsx)
+> * For schema engine registry and parser definitions: [SchemaEngineSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/SchemaEngineSection.tsx)
+>
+> If you are an AI coding assistant, **always view the relevant guide file** to inspect the supported properties, variables, and UI layouts before implementing slide changes or composing new slides. Humans can also access these interactively by running `npm run dev` and navigating to the Workspace Hub's **Developer Guide** (`?tab=dev`).
+
+---
+
+## 1. Interactive Highlighting (Hybrid/JSX Reference)
 
 Highlighting should be native and fluid, supporting both inline text flow and custom designs (paintbrush highlights, soft rectangular badges, text coloring, and strike-throughs).
 
