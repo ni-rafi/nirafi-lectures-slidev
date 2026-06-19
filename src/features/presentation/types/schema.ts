@@ -125,10 +125,11 @@ export interface SlideSchemaElement {
     | 'quiz'
     | 'composite'
     | 'visual-canvas'
-    | 'course-outline-cover'
-    | 'course-outline-outcomes'
-    | 'course-outline-table'
-    | 'course-outline-legends';
+    | 'highlightable-list'
+    | 'master-detail-panel'
+    | 'interactive-schedule-table'
+    | 'reference-legends'
+    | 'reference-books-list';
   config?: unknown;
   data?: unknown;
 }
@@ -140,7 +141,7 @@ export interface SlideSchema {
     title: string;
     type: string;
   };
-  layout: 'title' | 'twocolumn' | 'fullwidth' | 'thankyou';
+  layout: 'title' | 'twocolumn' | 'fullwidth' | 'thankyou' | 'title-v2';
   props: {
     title?: string;
     subtitle?: string;
@@ -151,5 +152,11 @@ export interface SlideSchema {
     leftElement?: SlideSchemaElement;
     rightElement?: SlideSchemaElement;
     element?: SlideSchemaElement;
+    courseCode?: string;
+    courseTitle?: string;
+    yearSemester?: string;
+    creditHours?: string;
+    usnCode?: string;
+    session?: string;
   };
 }

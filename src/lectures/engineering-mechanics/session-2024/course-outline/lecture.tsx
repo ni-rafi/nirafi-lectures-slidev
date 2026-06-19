@@ -56,6 +56,30 @@ const assessmentLegends = [
   { code: 'SA 03', strategy: 'Seminar paper / field / thesis report evaluation' },
 ];
 
+const references = [
+  {
+    id: 1,
+    title: 'Vector Mechanics for Engineers: Statics and Dynamics',
+    author: 'Ferdinand P. Beer, E. Russell Johnston Jr., Phillip J. Cornwell, David F. Mazurek',
+    edition: '12th Edition',
+    publisher: 'McGraw-Hill Education',
+  },
+  {
+    id: 2,
+    title: 'Engineering Mechanics: Statics & Dynamics',
+    author: 'Russell C. Hibbeler',
+    edition: '14th Edition',
+    publisher: 'Pearson',
+  },
+  {
+    id: 3,
+    title: 'Engineering Mechanics: Dynamics',
+    author: 'J. L. Meriam, L. G. Kraige, J. N. Bolton',
+    edition: '8th Edition',
+    publisher: 'Wiley',
+  },
+];
+
 const schedule = [
   { week: 1, topic: 'Introduction to CEE 0541 1233', contentCode: '---', coCovered: '---', tlStrategy: ['TL 01'], assessmentStrategy: ['---'] },
   { week: 2, topic: 'Fundamentals of friction', contentCode: '1', coCovered: '1', tlStrategy: ['TL 01', 'TL 02'], assessmentStrategy: ['CA 01', 'SA 01'] },
@@ -78,40 +102,47 @@ export const courseOutlineData: SlideSchema[] = [
     id: 1,
     section: 'Overview',
     metadata: { title: 'Cover Page', type: 'Course Metadata' },
-    layout: 'twocolumn',
+    layout: 'title-v2',
     props: {
-      leftWidth: '55%',
-      leftElement: { type: 'course-outline-cover', data: { metadata } },
-      rightElement: {
-        type: 'composite',
+      courseCode: metadata.courseCode,
+      courseTitle: metadata.courseTitle,
+      yearSemester: metadata.yearSemester,
+      creditHours: `${metadata.credit} (Core Theory)`,
+      usnCode: metadata.usn,
+      session: metadata.session,
+    },
+  },
+  {
+    id: 2,
+    section: 'Rationale',
+    metadata: { title: 'Course Rationale', type: 'Syllabus Overview' },
+    layout: 'fullwidth',
+    props: {
+      title: 'Course Rationale',
+      element: {
+        type: 'rich-paragraph',
         data: {
-          elements: [
-            {
-              type: 'rich-paragraph',
-              data: {
-                fragments: [
-                  'Rationale of the Course:\n\n',
-                  rationale,
-                ],
-              },
-            },
+          fragments: [
+            rationale,
           ],
         },
       },
     },
   },
   {
-    id: 2,
+    id: 3,
     section: 'Outcomes & Contents',
     metadata: { title: 'Outcomes & Chapters', type: 'Syllabus Breakdown' },
-    layout: 'fullwidth',
+    layout: 'twocolumn',
     props: {
       title: 'Course Outcomes & Content Structure',
-      element: { type: 'course-outline-outcomes', data: { outcomes, contents } },
+      leftWidth: '28%',
+      leftElement: { type: 'course-outline-outcomes-left', data: { outcomes, coCoveredIds: [1, 2, 3] } },
+      rightElement: { type: 'course-outline-outcomes-right', data: { contents, ccCoveredIds: [1, 2, 3, 4] } },
     },
   },
   {
-    id: 3,
+    id: 4,
     section: 'Schedule Part 1',
     metadata: { title: 'Schedule Weeks 1-7', type: 'Weekly Outline' },
     layout: 'fullwidth',
@@ -119,12 +150,12 @@ export const courseOutlineData: SlideSchema[] = [
       element: {
         type: 'course-outline-table',
         config: { part: 1 },
-        data: { schedule, tlLegends, assessmentLegends },
+        data: { schedule, tlLegends, assessmentLegends, outcomes, contents },
       },
     },
   },
   {
-    id: 4,
+    id: 5,
     section: 'Schedule Part 2',
     metadata: { title: 'Schedule Weeks 8-14', type: 'Weekly Outline' },
     layout: 'fullwidth',
@@ -132,12 +163,12 @@ export const courseOutlineData: SlideSchema[] = [
       element: {
         type: 'course-outline-table',
         config: { part: 2 },
-        data: { schedule, tlLegends, assessmentLegends },
+        data: { schedule, tlLegends, assessmentLegends, outcomes, contents },
       },
     },
   },
   {
-    id: 5,
+    id: 6,
     section: 'Legends',
     metadata: { title: 'Teaching & Assessment', type: 'Strategies index' },
     layout: 'fullwidth',
@@ -149,7 +180,19 @@ export const courseOutlineData: SlideSchema[] = [
     },
   },
   {
-    id: 6,
+    id: 7,
+    section: 'References',
+    metadata: { title: 'Reference Books', type: 'Course Materials' },
+    layout: 'fullwidth',
+    props: {
+      element: {
+        type: 'course-outline-references',
+        data: { references },
+      },
+    },
+  },
+  {
+    id: 8,
     section: 'Wrap Up',
     metadata: { title: 'Conclusion', type: 'Thank You Slide' },
     layout: 'thankyou',

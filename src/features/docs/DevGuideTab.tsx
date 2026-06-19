@@ -21,6 +21,7 @@ import QuizzesSection from './dev-guide/QuizzesSection';
 import TimelineStepsSection from './dev-guide/TimelineStepsSection';
 import CompareAccentsSection from './dev-guide/CompareAccentsSection';
 import SchemaEngineSection from './dev-guide/SchemaEngineSection';
+import SyllabusElementsSection from './dev-guide/SyllabusElementsSection';
 
 type SubSection =
   | 'paragraphs'
@@ -41,7 +42,8 @@ type SubSection =
   | 'compareaccents'
   | 'layouts'
   | 'composing'
-  | 'schemaengine';
+  | 'schemaengine'
+  | 'syllabuselements';
 
 export const DevGuideTab: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -65,7 +67,8 @@ export const DevGuideTab: React.FC = () => {
     'compareaccents',
     'layouts',
     'composing',
-    'schemaengine'
+    'schemaengine',
+    'syllabuselements'
   ].includes(subParam)
     ? subParam
      : 'paragraphs') as SubSection;
@@ -96,6 +99,7 @@ export const DevGuideTab: React.FC = () => {
     { id: 'timelinesteps' as SubSection, label: 'Timelines & Steps', icon: Calendar },
     { id: 'compareaccents' as SubSection, label: 'Comparisons & Accents', icon: Bookmark },
     { id: 'layouts' as SubSection, label: 'Slide Layouts', icon: Layout },
+    { id: 'syllabuselements' as SubSection, label: 'Syllabus & Outlines', icon: Layers },
     { id: 'composing' as SubSection, label: 'Lecture Composition', icon: Layers },
     { id: 'schemaengine' as SubSection, label: 'Schema Engine', icon: Code2 },
   ];
@@ -140,6 +144,8 @@ export const DevGuideTab: React.FC = () => {
         return <ComposingSection />;
       case 'schemaengine':
         return <SchemaEngineSection />;
+      case 'syllabuselements':
+        return <SyllabusElementsSection />;
       default:
         return <ParagraphsSection />;
     }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useFirebase } from '@/context/FirebaseContext';
 import { TitleLayout } from '@/shared/layouts/TitleLayout';
+import { TitleV2Layout } from '@/shared/layouts/TitleV2Layout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { ThankYouLayout } from '@/shared/layouts/ThankYouLayout';
@@ -16,7 +17,7 @@ import {
   InteractiveCard,
   ParameterSlider,
   CalculationOutput,
-} from '@/features/presentation';
+} from '@/features/presentation/components/elements';
 import {
   SlideSchema,
   SlideSchemaElement,
@@ -26,10 +27,11 @@ import {
   SchemaLatexElement,
 } from '../../types/schema';
 import { SlideVisualCanvas } from '../elements/SlideVisualCanvas';
-import { CourseOutlineCover } from '@/features/outline/components/CourseOutlineCover';
-import { CourseOutlineOutcomes } from '@/features/outline/components/CourseOutlineOutcomes';
-import { CourseOutlineTable } from '@/features/outline/components/CourseOutlineTable';
-import { CourseOutlineLegends } from '@/features/outline/components/CourseOutlineLegends';
+import { HighlightableList } from '@/features/outline/components/HighlightableList';
+import { MasterDetailPanel } from '@/features/outline/components/MasterDetailPanel';
+import { InteractiveScheduleTable } from '@/features/outline/components/InteractiveScheduleTable';
+import { ReferenceLegends } from '@/features/outline/components/ReferenceLegends';
+import { ReferenceBooksList } from '@/features/outline/components/ReferenceBooksList';
 
 // Live Rebar parameters inputs sub-component using synced URL state
 const RebarCalculatorInputs: React.FC = () => {
@@ -223,35 +225,71 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
       case 'rebar-calculator-outputs':
         return <RebarCalculatorOutputs />;
 
-      case 'course-outline-cover': {
-        const data = elem.data as any;
-        return <CourseOutlineCover metadata={data.metadata} />;
-      }
 
-      case 'course-outline-outcomes': {
-        const data = elem.data as any;
-        return <CourseOutlineOutcomes outcomes={data.outcomes} contents={data.contents} />;
-      }
 
-      case 'course-outline-table': {
+      case 'highlightable-list': {
         const data = elem.data as any;
-        const config = elem.config as { part: 1 | 2 } | undefined;
         return (
-          <CourseOutlineTable
-            part={config?.part || 1}
-            schedule={data.schedule}
-            tlLegends={data.tlLegends}
-            assessmentLegends={data.assessmentLegends}
+          <HighlightableList
+            items={data.items || data.outcomes}
+            highlightedIds={data.highlightedIds || data.coCoveredIds}
+            listTitle={data.listTitle}
+            highlightLabel={data.highlightLabel}
+            badgePrefix={data.badgePrefix}
+            notHighlightedMessage={data.notHighlightedMessage}
           />
         );
       }
 
-      case 'course-outline-legends': {
+      case 'master-detail-panel': {
         const data = elem.data as any;
         return (
-          <CourseOutlineLegends
+          <MasterDetailPanel
+            items={data.items || data.contents}
+            activeIds={data.activeIds || data.ccCoveredIds}
+            panelTitle={data.panelTitle}
+            detailHeader={data.detailHeader}
+            badgePrefix={data.badgePrefix}
+            activeLabel={data.activeLabel}
+            inactiveLabel={data.inactiveLabel}
+          />
+        );
+      }
+
+      case 'interactive-schedule-table': {
+        const data = elem.data as any;
+        const config = elem.config as { part: 1 | 2 } | undefined;
+        return (
+          <InteractiveScheduleTable
+            part={config?.part || 1}
+            schedule={data.schedule}
             tlLegends={data.tlLegends}
             assessmentLegends={data.assessmentLegends}
+            outcomes={data.outcomes}
+            contents={data.contents}
+          />
+        );
+      }
+
+      case 'reference-legends': {
+        const data = elem.data as any;
+        return (
+          <ReferenceLegends
+            leftTitle={data.leftTitle}
+            rightTitle={data.rightTitle}
+            leftLegends={data.leftLegends || data.tlLegends}
+            rightLegends={data.rightLegends || data.assessmentLegends}
+            rightSubSections={data.rightSubSections}
+          />
+        );
+      }
+
+      case 'reference-books-list': {
+        const data = elem.data as any;
+        return (
+          <ReferenceBooksList
+            title={data.title}
+            references={data.references}
           />
         );
       }
@@ -299,6 +337,19 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
           subtitle={config.props.subtitle || `${typedSubject?.courseCode || ''} Series • Session 2026-27`}
           description={config.props.description || typedLecture?.description || ''}
           footer={config.props.footer}
+        />
+      );
+
+    case 'title-v2':
+      return (
+        <TitleV2Layout
+          courseCode={config.props.courseCode || typedSubject?.courseCode || ''}
+          courseTitle={config.props.courseTitle || config.props.title || typedLecture?.title || ''}
+          subtitle={config.props.subtitle}
+          yearSemester={config.props.yearSemester || ''}
+          creditHours={config.props.creditHours || ''}
+          usnCode={config.props.usnCode || ''}
+          session={config.props.session || ''}
         />
       );
 

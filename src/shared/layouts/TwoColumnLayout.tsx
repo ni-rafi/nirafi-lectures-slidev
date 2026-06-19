@@ -67,13 +67,13 @@ export const TwoColumnLayout: React.FC<TwoColumnLayoutProps> = ({
         <main className="flex flex-1 gap-6 w-full min-h-0 items-start">
           <section 
             style={{ width: leftWidth }} 
-            className="left-column h-full flex flex-col justify-start text-left overflow-y-auto pr-2 transition-all duration-500"
+            className="left-column h-full flex flex-col justify-start text-left overflow-y-auto pl-1 pr-2 transition-all duration-500"
           >
             {leftContent}
           </section>
           <section 
             style={{ width: rightWidth }} 
-            className="right-column h-full flex flex-col justify-start text-left overflow-y-auto pl-4 border-l border-border/40 transition-all duration-500"
+            className="right-column h-full flex flex-col justify-start text-left overflow-y-auto pl-4 pr-1 border-l border-border/40 transition-all duration-500"
           >
             {rightContent}
           </section>

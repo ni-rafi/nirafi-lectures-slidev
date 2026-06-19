@@ -39,6 +39,15 @@ export interface StrategyLegend {
   strategy: string;
 }
 
+export interface ReferenceBook {
+  id: number;
+  title: string;
+  author: string;
+  edition?: string;
+  publisher?: string;
+  url?: string;
+}
+
 export interface CourseOutlineData {
   metadata: CourseMetadata;
   schedule: WeeklyScheduleRow[];
@@ -47,4 +56,5 @@ export interface CourseOutlineData {
   contents: ContentItem[];
   tlLegends: StrategyLegend[];
   assessmentLegends: StrategyLegend[];
+  references: ReferenceBook[];
 }
