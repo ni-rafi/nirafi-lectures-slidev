@@ -83,13 +83,15 @@ export const SlideTable: React.FC<SlideTableProps> = ({
     if (isBlog) return 'p-3';
     const visible = isColVisible(colIdx);
     return visible
-      ? 'p-3 opacity-100 max-w-[300px] transition-all duration-500 ease-in-out'
+      ? 'py-2 px-3 opacity-100 max-w-[300px] transition-all duration-500 ease-in-out'
       : 'p-0 opacity-0 max-w-0 border-r-0 border-l-0 pointer-events-none overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out';
   };
 
+  const firstVisibleColIdx = headers.findIndex((_, idx) => isColVisible(idx));
+
   const containerClass = isBlog
-    ? `border border-border/50 rounded-xl overflow-hidden w-full text-left text-xs bg-transparent ${className}`
-    : `border rounded-xl overflow-hidden w-full text-left text-xs bg-card shadow-sm transition-all duration-300 hover:shadow-md ${className}`;
+    ? `border border-border/50 rounded-xl overflow-visible w-full text-left text-xs bg-transparent ${className}`
+    : `border rounded-xl overflow-visible w-full text-left text-xs bg-card shadow-sm transition-all duration-300 hover:shadow-md ${className}`;
 
   const content = (
     <div className={containerClass}>
@@ -103,8 +105,11 @@ export const SlideTable: React.FC<SlideTableProps> = ({
               const alignClass = align === 'right' ? 'text-right' : (align === 'center' ? 'text-center' : 'text-left');
               const borderClass = bordered && visible && idx < lastVisibleColIdx ? 'border-r border-border/80' : 'border-r-0';
               const animClass = getColClasses(idx);
+              const isFirstVisible = idx === firstVisibleColIdx;
+              const isLastVisible = idx === lastVisibleColIdx;
+              const cornerClass = isFirstVisible ? 'rounded-tl-xl' : (isLastVisible ? 'rounded-tr-xl' : '');
               return (
-                <th key={idx} className={`${alignClass} ${borderClass} ${animClass}`}>
+                <th key={idx} className={`${alignClass} ${borderClass} ${animClass} ${cornerClass}`}>
                   {label}
                 </th>
               );

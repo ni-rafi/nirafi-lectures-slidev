@@ -75,7 +75,7 @@ export const LayoutElementsSection: React.FC = () => {
   const getCodeText = () => {
     switch (componentType) {
       case 'twocolumns':
-        return `import { SlideTwoColumns } from '@/features/presentation';
+        return `import { SlideTwoColumns } from '@/features/presentation/components/elements';
 
 <SlideTwoColumns
   ratio="${ratio}"
@@ -84,7 +84,7 @@ export const LayoutElementsSection: React.FC = () => {
   right={<RightPanel />}
 />`;
       case 'grid':
-        return `import { SlideGrid } from '@/features/presentation';
+        return `import { SlideGrid } from '@/features/presentation/components/elements';
 
 <SlideGrid cols={${cols}}>
   <div>Card A</div>
@@ -92,7 +92,7 @@ export const LayoutElementsSection: React.FC = () => {
   <div>Card C</div>
 </SlideGrid>`;
       case 'quote':
-        return `import { SlideQuote } from '@/features/presentation';
+        return `import { SlideQuote } from '@/features/presentation/components/elements';
 
 <SlideQuote
   quote="${quoteText}"
@@ -100,7 +100,7 @@ export const LayoutElementsSection: React.FC = () => {
   source="${source}"
 />`;
       case 'image':
-        return `import { SlideImage } from '@/features/presentation';
+        return `import { SlideImage } from '@/features/presentation/components/elements';
 
 <SlideImage
   src="concrete-reinforce.jpg"

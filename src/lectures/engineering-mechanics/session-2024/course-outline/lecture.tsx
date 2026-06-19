@@ -137,8 +137,8 @@ export const courseOutlineData: SlideSchema[] = [
     props: {
       title: 'Course Outcomes & Content Structure',
       leftWidth: '28%',
-      leftElement: { type: 'course-outline-outcomes-left', data: { outcomes, coCoveredIds: [1, 2, 3] } },
-      rightElement: { type: 'course-outline-outcomes-right', data: { contents, ccCoveredIds: [1, 2, 3, 4] } },
+      leftElement: { type: 'highlightable-list', data: { outcomes, coCoveredIds: [1, 2, 3] } },
+      rightElement: { type: 'master-detail-panel', data: { contents, ccCoveredIds: [1, 2, 3, 4] } },
     },
   },
   {
@@ -147,8 +147,9 @@ export const courseOutlineData: SlideSchema[] = [
     metadata: { title: 'Schedule Weeks 1-7', type: 'Weekly Outline' },
     layout: 'fullwidth',
     props: {
+      title: 'Weekly Outline',
       element: {
-        type: 'course-outline-table',
+        type: 'interactive-schedule-table',
         config: { part: 1 },
         data: { schedule, tlLegends, assessmentLegends, outcomes, contents },
       },
@@ -160,8 +161,9 @@ export const courseOutlineData: SlideSchema[] = [
     metadata: { title: 'Schedule Weeks 8-14', type: 'Weekly Outline' },
     layout: 'fullwidth',
     props: {
+      title: 'Weekly Outline',
       element: {
-        type: 'course-outline-table',
+        type: 'interactive-schedule-table',
         config: { part: 2 },
         data: { schedule, tlLegends, assessmentLegends, outcomes, contents },
       },
@@ -174,8 +176,8 @@ export const courseOutlineData: SlideSchema[] = [
     layout: 'fullwidth',
     props: {
       element: {
-        type: 'course-outline-legends',
-        data: { tlLegends, assessmentLegends },
+        type: 'reference-legends',
+        data: { leftLegends: tlLegends, rightLegends: assessmentLegends },
       },
     },
   },
@@ -186,7 +188,7 @@ export const courseOutlineData: SlideSchema[] = [
     layout: 'fullwidth',
     props: {
       element: {
-        type: 'course-outline-references',
+        type: 'reference-books-list',
         data: { references },
       },
     },

@@ -74,7 +74,7 @@ export const InputsSection: React.FC = () => {
   }
 };`;
 
-  const manualCode = `import { InteractiveCard, ParameterSlider, CalculationOutput } from '@/features/presentation';
+  const manualCode = `import { InteractiveCard, ParameterSlider, CalculationOutput } from '@/features/presentation/components/elements';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 
 // Inside a custom sandbox React component (Hybrid Strategy)

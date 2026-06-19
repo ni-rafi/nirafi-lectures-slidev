@@ -357,7 +357,7 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
       const bg = config.props.bgVariant === 'cover' ? undefined : config.props.bgVariant;
       return (
         <TwoColumnLayout
-          title={config.props.title || ''}
+          title={config.props.title || config.metadata?.title || ''}
           bgVariant={bg}
           leftWidth={config.props.leftWidth || '45%'}
           leftContent={renderElement(config.props.leftElement)}
@@ -370,7 +370,7 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
       const bg = config.props.bgVariant === 'cover' ? undefined : config.props.bgVariant;
       return (
         <FullWidthLayout
-          title={config.props.title || ''}
+          title={config.props.title || config.metadata?.title || ''}
           bgVariant={bg}
         >
           {renderElement(config.props.element)}

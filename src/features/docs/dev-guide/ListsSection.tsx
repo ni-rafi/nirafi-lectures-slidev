@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SlideSchemaEngine } from '@/features/presentation/components/slides/SlideSchemaEngine';
-import { ClickStepsProvider } from '@/features/presentation';
+import { ClickStepsProvider } from '@/features/presentation/context';
 import { Button } from '@/components/ui/button';
 import { PlaygroundSection } from './PlaygroundSection';
 import { SlideSchema } from '@/features/presentation/types/schema';

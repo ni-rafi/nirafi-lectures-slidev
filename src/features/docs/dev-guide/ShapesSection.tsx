@@ -24,7 +24,7 @@ export const ShapesSection: React.FC = () => {
     </div>
   );
 
-  const codeText = `import { ShapeMorph } from '@/features/presentation';
+  const codeText = `import { ShapeMorph } from '@/features/presentation/components/elements';
 
 <svg width={${size + 20}} height={${size + 20}}>
   <ShapeMorph
@@ -37,7 +37,7 @@ export const ShapesSection: React.FC = () => {
 
   const editorContent = (
     <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {'{ ShapeMorph }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;{"\n\n"}
+      <span className="text-purple-400">import</span> {'{ ShapeMorph }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
       <span className="text-blue-400">&lt;ShapeMorph</span>{"\n"}
       {"  "}<span className="text-teal-400">type</span>=<span className="text-amber-300">"</span>
       <select

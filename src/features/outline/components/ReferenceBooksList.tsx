@@ -69,13 +69,17 @@ export const ReferenceBooksList: React.FC<ReferenceBooksListProps> = ({
     );
   };
 
+  const showHeader = !presentation || isBlog;
+
   if (isBlog) {
     return (
       <div className="flex flex-col gap-4 py-4 text-left">
-        <h3 className="text-lg font-bold flex items-center gap-2 text-primary border-b pb-2">
-          <Bookmark className="h-5 w-5" />
-          {title}
-        </h3>
+        {showHeader && (
+          <h3 className="text-lg font-bold flex items-center gap-2 text-primary border-b pb-2">
+            <Bookmark className="h-5 w-5" />
+            {title}
+          </h3>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {references.map((book, idx) => renderBookItem(book, idx))}
         </div>
@@ -85,12 +89,14 @@ export const ReferenceBooksList: React.FC<ReferenceBooksListProps> = ({
 
   // Slide Mode Layout (16:9 optimized layout)
   return (
-    <div className="flex flex-col h-full select-text text-left">
-      <h3 className="text-sm font-extrabold flex items-center gap-2 border-b pb-2 mb-3">
-        <Bookmark className="h-4 w-4 text-primary" />
-        {title}
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 overflow-y-auto max-h-[310px] pr-1 pb-2">
+    <div className="flex flex-col select-text text-left w-full gap-2">
+      {showHeader && (
+        <h3 className="text-sm font-extrabold flex items-center gap-2 border-b pb-2 mb-1">
+          <Bookmark className="h-4 w-4 text-primary" />
+          {title}
+        </h3>
+      )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pr-1 pb-2">
         {references.map((book, idx) => renderBookItem(book, idx))}
       </div>
     </div>

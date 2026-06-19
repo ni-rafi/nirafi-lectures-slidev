@@ -18,7 +18,7 @@ export const IconsSection: React.FC = () => {
     </div>
   );
 
-  const codeText = `import { SlideIcon } from '@/features/presentation';
+  const codeText = `import { SlideIcon } from '@/features/presentation/components/elements';
 
 // Renders React logo with custom size and accent color
 <SlideIcon
@@ -28,7 +28,7 @@ export const IconsSection: React.FC = () => {
 
   const editorContent = (
     <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {'{ SlideIcon }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;{"\n\n"}
+      <span className="text-purple-400">import</span> {'{ SlideIcon }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
       <span className="text-blue-400">&lt;SlideIcon</span>{"\n"}
       {"  "}<span className="text-teal-400">icon</span>=<span className="text-amber-300">"</span>
       <select

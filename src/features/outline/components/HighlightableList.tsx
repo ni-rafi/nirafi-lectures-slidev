@@ -1,6 +1,6 @@
 import React from 'react';
 import { usePresentation } from '@/features/presentation/context/PresentationContext';
-import { ClickHighlight } from '@/features/presentation';
+import { ClickHighlight } from '@/features/presentation/components/elements';
 import { Award } from 'lucide-react';
 
 export interface HighlightableListItem {

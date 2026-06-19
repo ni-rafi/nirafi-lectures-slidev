@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { CodeBlock } from '@/features/presentation/components/elements/CodeBlock';
 import { CodePlayground } from '@/features/presentation/components/elements/CodePlayground';
-import { ClickStepsProvider } from '@/features/presentation';
+import { ClickStepsProvider } from '@/features/presentation/context';
 import { Button } from '@/components/ui/button';
 import { PlaygroundSection } from './PlaygroundSection';
 
@@ -102,7 +102,7 @@ console.log("Total Mass is: " + mass + " kg");`);
   );
 
   const codeText = tab === 'block' 
-    ? `import { CodeBlock } from '@/features/presentation';
+    ? `import { CodeBlock } from '@/features/presentation/components/elements';
 
 <CodeBlock
   code={\`${code.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`}
@@ -110,7 +110,7 @@ console.log("Total Mass is: " + mass + " kg");`);
   highlight="${highlight}"
   lines={true}
 />`
-    : `import { CodePlayground } from '@/features/presentation';
+    : `import { CodePlayground } from '@/features/presentation/components/elements';
 
 <CodePlayground
   code={\`${code.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`}
@@ -121,7 +121,7 @@ console.log("Total Mass is: " + mass + " kg");`);
 
   const editorContent = (
     <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {tab === 'block' ? '{ CodeBlock }' : '{ CodePlayground }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;{"\n\n"}
+      <span className="text-purple-400">import</span> {tab === 'block' ? '{ CodeBlock }' : '{ CodePlayground }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
       <span className="text-purple-400">const</span> sourceCode = <span className="text-amber-300">`</span>{"\n"}
       <textarea
         value={code}

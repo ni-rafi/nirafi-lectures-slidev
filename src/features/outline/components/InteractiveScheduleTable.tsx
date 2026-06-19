@@ -1,6 +1,6 @@
 import React from 'react';
 import { usePresentation } from '@/features/presentation/context/PresentationContext';
-import { SlideTable } from '@/features/presentation';
+import { SlideTable } from '@/features/presentation/components/elements';
 import { HoverTooltip } from '@/features/presentation/components/elements/HoverTooltip';
 import { WeeklyScheduleRow, StrategyLegend, OutcomeItem, ContentItem } from '../types';
 import { Calendar, HelpCircle } from 'lucide-react';
@@ -152,20 +152,29 @@ export const InteractiveScheduleTable: React.FC<InteractiveScheduleTableProps> =
     </div>,
   ]);
 
-  return (
-    <div className="flex flex-col h-full justify-between select-text text-left">
-      <div className="flex items-center justify-between border-b pb-2 mb-2">
-        <h3 className="text-sm font-extrabold flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-primary" />
-          Weekly Outline Table (Weeks {part === 1 ? '1–7' : '8–14'})
-        </h3>
-        <span className="flex items-center gap-1 text-[9px] text-muted-foreground font-medium select-none">
-          <HelpCircle className="h-3 w-3" />
-          Hover on codes for definitions
-        </span>
-      </div>
+  const showHeader = !presentation || isBlog;
 
-      <div className="flex-1 flex flex-col justify-center min-h-0">
+  return (
+    <div className="flex flex-col select-text text-left w-full gap-2">
+      {showHeader ? (
+        <div className="flex items-center justify-between border-b pb-2">
+          <h3 className="text-sm font-extrabold flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-primary" />
+            Weekly Outline Table (Weeks {part === 1 ? '1–7' : '8–14'})
+          </h3>
+          <span className="flex items-center gap-1 text-[9px] text-muted-foreground font-medium select-none">
+            <HelpCircle className="h-3 w-3" />
+            Hover on codes for definitions
+          </span>
+        </div>
+      ) : (
+        <div className="flex items-center justify-end select-none text-[9px] text-muted-foreground font-medium pr-1">
+          <HelpCircle className="h-3.5 w-3.5 mr-1 text-primary animate-pulse" />
+          Hover on codes for definitions
+        </div>
+      )}
+
+      <div className="w-full">
         <SlideTable
           headers={headers}
           rows={rows}

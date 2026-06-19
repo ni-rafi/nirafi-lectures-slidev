@@ -1,0 +1,12 @@
+export { SlideSchemaEngine } from './SlideSchemaEngine';
+export { SlideRenderer, type SlideMetadata, getBgVariant, getSlideMetadata, getLectureSlideCount } from './SlideRenderer';
+export { SlideCover } from './SlideCover';
+export { SlideConcepts } from './SlideConcepts';
+export { SlideDraggable } from './SlideDraggable';
+export { SlideCodeHighlighting } from './SlideCodeHighlighting';
+export { SlideMonacoSandbox } from './SlideMonacoSandbox';
+export { SlideMathRendering } from './SlideMathRendering';
+export { SlideMermaidFlowchart } from './SlideMermaidFlowchart';
+export { SlideIconShowcase } from './SlideIconShowcase';
+export { SlideBklitChart } from './SlideBklitChart';
+export { SlidePhysicsShapes } from './SlidePhysicsShapes';

@@ -15,7 +15,7 @@ export const DiagramsSection: React.FC = () => {
     </div>
   );
 
-  const codeText = `import { MermaidDiagram } from '@/features/presentation';
+  const codeText = `import { MermaidDiagram } from '@/features/presentation/components/elements';
 
 const diagramDef = \`${definition}\`;
 
@@ -26,7 +26,7 @@ const diagramDef = \`${definition}\`;
 
   const editorContent = (
     <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {'{ MermaidDiagram }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;{"\n\n"}
+      <span className="text-purple-400">import</span> {'{ MermaidDiagram }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
       <span className="text-purple-400">const</span> diagramDef = <span className="text-amber-300">`</span>{"\n"}
       <textarea
         value={definition}

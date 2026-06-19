@@ -4,7 +4,7 @@ import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { ThankYouLayout } from '@/shared/layouts/ThankYouLayout';
 import { calculateConcreteVolume } from '../calculations/concrete';
-import { SlideContent, SlideTable, ClickHighlight, LatexFormula, InteractiveCard, ParameterSlider, CalculationOutput } from '@/features/presentation';
+import { SlideContent, SlideTable, ClickHighlight, LatexFormula, InteractiveCard, ParameterSlider, CalculationOutput } from '@/features/presentation/components/elements';
 import SlideBklitChart from '@/features/presentation/components/slides/SlideBklitChart';
 import { QuizCardOrchestrator } from '@/features/quiz';
 

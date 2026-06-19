@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ClickReveal } from '@/features/presentation/components/elements/ClickReveal';
-import { ClickStepsProvider } from '@/features/presentation';
+import { ClickStepsProvider } from '@/features/presentation/context';
 import { Button } from '@/components/ui/button';
 import { PlaygroundSection } from './PlaygroundSection';
 
@@ -48,7 +48,7 @@ export const RevealsSection: React.FC = () => {
     </div>
   );
 
-  const codeText = `import { ClickReveal } from '@/features/presentation';
+  const codeText = `import { ClickReveal } from '@/features/presentation/components/elements';
 
 <ClickReveal
   at={${at}}
@@ -62,7 +62,7 @@ export const RevealsSection: React.FC = () => {
 
   const editorContent = (
     <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {'{ ClickReveal }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;{"\n\n"}
+      <span className="text-purple-400">import</span> {'{ ClickReveal }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
       <span className="text-blue-400">&lt;ClickReveal</span>{"\n"}
       {"  "}<span className="text-teal-400">at</span>=<span className="text-pink-400">&#123;</span>
       <input

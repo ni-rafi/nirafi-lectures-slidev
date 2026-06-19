@@ -182,7 +182,7 @@ const slideElement = {
   }
 };`;
       case 'tooltip':
-        return `import { HoverTooltip } from '@/features/presentation';
+        return `import { HoverTooltip } from '@/features/presentation/components/elements';
 
 <HoverTooltip
   trigger={<span className="underline font-bold text-primary">Hover Over Me</span>}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CodeMagicMove } from '@/features/presentation/components/elements/CodeMagicMove';
-import { ClickStepsProvider } from '@/features/presentation';
+import { ClickStepsProvider } from '@/features/presentation/context';
 import { Button } from '@/components/ui/button';
 import { PlaygroundSection } from './PlaygroundSection';
 
@@ -55,7 +55,7 @@ const volume = area * 6.0;`);
     </div>
   );
 
-  const codeText = `import { CodeMagicMove } from '@/features/presentation';
+  const codeText = `import { CodeMagicMove } from '@/features/presentation/components/elements';
 
 const steps = [
   \`${step1.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`,
@@ -70,7 +70,7 @@ const steps = [
 
   const editorContent = (
     <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {'{ CodeMagicMove }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;{"\n\n"}
+      <span className="text-purple-400">import</span> {'{ CodeMagicMove }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
       <span className="text-purple-400">const</span> steps = <span className="text-slate-400">[</span>{"\n"}
       {"  "}<span className="text-amber-300">`</span>{"\n"}
       <textarea

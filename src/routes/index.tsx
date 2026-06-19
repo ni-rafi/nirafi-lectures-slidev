@@ -5,7 +5,7 @@ import { useUserContext, useLectureStatus } from '@/context';
 import { PageLayout } from '@/shared/components/Layout/PageLayout';
 import { ClickStepsProvider } from '@/features/presentation/context/ClickStepsContext';
 import LecturePortal from '@/features/portal';
-import SlideViewer from '@/features/presentation';
+import { SlideViewer } from '@/features/presentation/components/core';
 import RollNumberGate from '@/features/gate/components/RollNumberGate';
 import AdminClassDashboard from '@/features/portal/components/AdminClassDashboard';
 import SlideCustomizationDocs from '@/features/docs/SlideCustomizationDocs';

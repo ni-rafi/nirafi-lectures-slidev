@@ -94,14 +94,14 @@ export const ReferenceLegends: React.FC<ReferenceLegendsProps> = ({
 
   // Slide Mode Layout
   return (
-    <div className="grid grid-cols-12 gap-6 h-full select-text text-left">
+    <div className="grid grid-cols-12 gap-6 select-text text-left">
       {/* Left Column */}
       <div className="col-span-6 flex flex-col gap-2">
         <h3 className="text-sm font-extrabold flex items-center gap-2 border-b pb-2 mb-1">
           <BookOpen className="h-4 w-4 text-primary" />
           {leftTitle}
         </h3>
-        <div className="overflow-y-auto max-h-[300px] pr-1">
+        <div className="pr-1">
           {renderLegendList(leftLegends)}
         </div>
       </div>
@@ -112,7 +112,7 @@ export const ReferenceLegends: React.FC<ReferenceLegendsProps> = ({
           <Layers className="h-4 w-4 text-primary" />
           {rightTitle}
         </h3>
-        <div className="overflow-y-auto max-h-[300px] pr-1 flex flex-col gap-4">
+        <div className="pr-1 flex flex-col gap-4">
           {rightSubSections.map((sub, idx) => {
             const list = getSubSectionList(sub);
             return (

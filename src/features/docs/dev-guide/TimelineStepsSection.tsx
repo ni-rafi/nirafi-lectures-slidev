@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PlaygroundSection } from './PlaygroundSection';
 import { SlideTimeline, SlideStepProgress } from '@/features/presentation/components/elements/SlideContent';
-import { ClickStepsProvider } from '@/features/presentation';
+import { ClickStepsProvider } from '@/features/presentation/context';
 import { Button } from '@/components/ui/button';
 
 export const TimelineStepsSection: React.FC = () => {
@@ -51,7 +51,7 @@ export const TimelineStepsSection: React.FC = () => {
     </div>
   );
 
-  const timelineCode = `import { SlideTimeline } from '@/features/presentation';
+  const timelineCode = `import { SlideTimeline } from '@/features/presentation/components/elements';
 
 <SlideTimeline
   revealMode="${revealMode}"
@@ -65,7 +65,7 @@ export const TimelineStepsSection: React.FC = () => {
   const timelineEditor = (
     <div className="text-slate-300 space-y-2 text-[11px] font-mono">
       <div>
-        <span className="text-purple-400">import</span> {'{ SlideTimeline }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;
+        <span className="text-purple-400">import</span> {'{ SlideTimeline }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;
       </div>
       <div>
         <span className="text-blue-400">&lt;SlideTimeline</span>
@@ -98,7 +98,7 @@ export const TimelineStepsSection: React.FC = () => {
     </div>
   );
 
-  const stepsCode = `import { SlideStepProgress } from '@/features/presentation';
+  const stepsCode = `import { SlideStepProgress } from '@/features/presentation/components/elements';
 
 <SlideStepProgress
   variant="${stepVariant}"
@@ -109,7 +109,7 @@ export const TimelineStepsSection: React.FC = () => {
   const stepsEditor = (
     <div className="text-slate-300 space-y-2 text-[11px] font-mono">
       <div>
-        <span className="text-purple-400">import</span> {'{ SlideStepProgress }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;
+        <span className="text-purple-400">import</span> {'{ SlideStepProgress }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;
       </div>
       <div>
         <span className="text-blue-400">&lt;SlideStepProgress</span>

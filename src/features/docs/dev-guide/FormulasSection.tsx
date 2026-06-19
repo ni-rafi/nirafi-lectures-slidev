@@ -33,7 +33,7 @@ export const FormulasSection: React.FC = () => {
   // Escapes backslashes in code text copy so copy-paste works perfectly
   const escapeBackslashes = (str: string) => str.replace(/\\/g, '\\\\');
 
-  const codeText = `import { FormulaBreakdown } from '@/features/presentation';
+  const codeText = `import { FormulaBreakdown } from '@/features/presentation/components/elements';
 
 const steps = [
   { label: "${step1Label}", formula: "${escapeBackslashes(step1Formula)}" },
@@ -45,7 +45,7 @@ const steps = [
 
   const editorContent = (
     <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {'{ FormulaBreakdown }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;{"\n\n"}
+      <span className="text-purple-400">import</span> {'{ FormulaBreakdown }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
       <span className="text-purple-400">const</span> steps = <span className="text-slate-400">[</span>{"\n"}
       {"  "}<span className="text-slate-400">&#123;</span>{"\n"}
       {"    "}<span className="text-teal-400">label</span>: <span className="text-amber-300">"</span>

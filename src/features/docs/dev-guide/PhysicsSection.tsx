@@ -40,7 +40,7 @@ export const PhysicsSection: React.FC = () => {
     </div>
   );
 
-  const codeText = `import { PhysicsSandbox } from '@/features/presentation';
+  const codeText = `import { PhysicsSandbox } from '@/features/presentation/components/elements';
 
 const shapes = [
   { id: 'n1', type: 'circle', x: 90, y: 40, size: 40, label: 'A', fill: 'var(--color-primary)' },
@@ -64,7 +64,7 @@ const connectors = [
 
   const editorContent = (
     <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {'{ PhysicsSandbox }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;{"\n\n"}
+      <span className="text-purple-400">import</span> {'{ PhysicsSandbox }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
       <span className="text-blue-400">&lt;PhysicsSandbox</span>{"\n"}
       {"  "}<span className="text-teal-400">shapes</span>=<span className="text-pink-400">&#123;</span>shapes<span className="text-pink-400">&#125;</span> <span className="text-teal-400">connectors</span>=<span className="text-pink-400">&#123;</span>connectors<span className="text-pink-400">&#125;</span>{"\n"}
       {"  "}<span className="text-teal-400">physicsEnabled</span>=<span className="text-pink-400">&#123;</span>

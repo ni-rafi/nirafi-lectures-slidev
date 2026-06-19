@@ -38,7 +38,7 @@ export const CompareAccentsSection: React.FC = () => {
     </div>
   );
 
-  const compareCode = `import { SlideCompare } from '@/features/presentation';
+  const compareCode = `import { SlideCompare } from '@/features/presentation/components/elements';
 
 <SlideCompare
   highlight="${highlight}"
@@ -51,7 +51,7 @@ export const CompareAccentsSection: React.FC = () => {
   const compareEditor = (
     <div className="text-slate-300 space-y-2 text-[11px] font-mono">
       <div>
-        <span className="text-purple-400">import</span> {'{ SlideCompare }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation"</span>;
+        <span className="text-purple-400">import</span> {'{ SlideCompare }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;
       </div>
       <div>
         <span className="text-blue-400">&lt;SlideCompare</span>
@@ -90,7 +90,7 @@ export const CompareAccentsSection: React.FC = () => {
     </div>
   );
 
-  const accentCode = `import { SlideBadge, SlideCallout } from '@/features/presentation';
+  const accentCode = `import { SlideBadge, SlideCallout } from '@/features/presentation/components/elements';
 
 <SlideBadge label="${badgeLabel}" variant="${badgeVariant}" />
 
