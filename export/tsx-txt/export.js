@@ -1,3 +1,17 @@
+/**
+ * tsx-to-txt Export Script
+ * 
+ * This script walks through the documentation feature files under `src/features/docs`,
+ * copies all `.tsx` files, and saves them in the current directory (`export/tsx-txt/`)
+ * with a `.txt` extension.
+ * 
+ * Usage:
+ * Run this script using Node from the workspace root:
+ * 
+ *   node export/tsx-txt/export.js
+ * 
+ */
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
