@@ -124,7 +124,6 @@ export const SchemaElementRenderer: React.FC<SchemaElementRendererProps> = ({
         <QuizCardOrchestrator
           quizId={quizConfig.quizId}
           questionText={quizData.question}
-          correctAnswer={quizData.correctAnswer}
           quizType={quizConfig.quizType || 'numeric-input'}
         />
       );

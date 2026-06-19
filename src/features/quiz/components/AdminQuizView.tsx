@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { NumericQuizAdmin } from './types/NumericQuiz';
 import { MultipleChoiceQuizAdmin } from './types/MultipleChoiceQuiz';
 import { Play, RotateCcw, BarChart, List, Clock, RefreshCw } from 'lucide-react';

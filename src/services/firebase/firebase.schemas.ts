@@ -107,6 +107,8 @@ export const StudentQuizAnswerSchema = z.object({
   answer: z.string().min(1),
   isCorrect: z.boolean(),
   submittedAt: z.number(),
+  score: z.number().optional(),
+  isOverridden: z.boolean().optional(),
 });
 
 export type StudentQuizAnswer = z.infer<typeof StudentQuizAnswerSchema>;

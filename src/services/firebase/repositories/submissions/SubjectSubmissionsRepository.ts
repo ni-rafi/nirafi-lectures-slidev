@@ -36,4 +36,13 @@ export class SubjectSubmissionsRepository extends BaseFirestoreRepository<Subjec
     const path = this.getCollectionPath(subjectId, sessionId);
     return firestoreService.getAll(this.definition, path);
   }
+
+  public subscribeAllSessionSubmissions(
+    subjectId: string,
+    sessionId: string,
+    callback: (submissions: SubjectSubmissions[]) => void
+  ): () => void {
+    const path = this.getCollectionPath(subjectId, sessionId);
+    return firestoreService.subscribe(this.definition, callback, path);
+  }
 }

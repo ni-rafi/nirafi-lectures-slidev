@@ -55,37 +55,53 @@ export const useQuizState = (
     }
   }, [uid, quizId, isAdmin, firebaseService]);
 
-  // 3. Fetch submissions for Admin view
-  const fetchSubmissions = async () => {
-    if (isAdmin) {
-      const answersMod = await import(`../../../lectures/${subjectId}/${sessionId}/answers.ts`);
-      const realCorrectAnswer = answersMod.QUIZ_ANSWERS[quizId] || '';
-      setResolvedCorrectAnswer(realCorrectAnswer);
-
-      const subs = await firebaseService.getAllSubmissions(subjectId, sessionId);
-      const quizSubs = subs
-        .filter((s) => s.answers[quizId] !== undefined)
-        .map((s) => {
-          const ans = s.answers[quizId]!;
-          const isCorrect = ans.answer.trim().toLowerCase() === realCorrectAnswer.trim().toLowerCase();
-          return {
-            studentName: s.studentName,
-            studentRegistration: s.studentRegistration,
-            answer: ans.answer,
-            isCorrect,
-          };
-        });
-      setAllSubmissions(quizSubs);
-    }
-  };
-
+  // 3. Subscribe to submissions for Admin view in real-time
   useEffect(() => {
     if (isAdmin && (quizState?.status === 'active' || quizState?.status === 'closed')) {
-      fetchSubmissions();
-      const interval = setInterval(fetchSubmissions, 4000);
-      return () => clearInterval(interval);
+      let isCancelled = false;
+      let unsubscribe: (() => void) | null = null;
+
+      const setupSubscription = async () => {
+        try {
+          const answersMod = await import(`../../../lectures/${subjectId}/${sessionId}/answers.ts`);
+          if (isCancelled) return;
+
+          const realCorrectAnswer = answersMod.QUIZ_ANSWERS[quizId] || '';
+          setResolvedCorrectAnswer(realCorrectAnswer);
+
+          unsubscribe = firebaseService.subscribeAllSubmissions(subjectId, sessionId, (subs) => {
+            if (isCancelled) return;
+            const quizSubs = subs
+              .filter((s) => s.answers[quizId] !== undefined)
+              .map((s) => {
+                const ans = s.answers[quizId]!;
+                const isCorrect = ans.isOverridden
+                  ? ans.isCorrect
+                  : ans.answer.trim().toLowerCase() === realCorrectAnswer.trim().toLowerCase();
+                return {
+                  studentName: s.studentName,
+                  studentRegistration: s.studentRegistration,
+                  answer: ans.answer,
+                  isCorrect,
+                };
+              });
+            setAllSubmissions(quizSubs);
+          });
+        } catch (e) {
+          console.error('Failed to setup real-time submissions listener:', e);
+        }
+      };
+
+      setupSubscription();
+
+      return () => {
+        isCancelled = true;
+        if (unsubscribe) unsubscribe();
+      };
+    } else {
+      setAllSubmissions([]);
     }
-  }, [isAdmin, quizState?.status, quizId]);
+  }, [isAdmin, quizState?.status, quizId, firebaseService]);
 
 
   // 4. Timer Logic
