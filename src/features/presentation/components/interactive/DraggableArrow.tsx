@@ -5,6 +5,7 @@ interface DraggableArrowProps {
   initialPos?: DragPosition;
   onPositionChange?: (pos: DragPosition) => void;
   className?: string;
+  syncKey?: string;
 }
 
 /**
@@ -15,6 +16,7 @@ export const DraggableArrow: React.FC<DraggableArrowProps> = ({
   initialPos = { x: 100, y: 100, w: 150, h: 50, rotate: 0 },
   onPositionChange,
   className = '',
+  syncKey,
 }) => {
   const w = initialPos.w || 120;
   const h = initialPos.h || 40;
@@ -24,6 +26,7 @@ export const DraggableArrow: React.FC<DraggableArrowProps> = ({
       initialPos={initialPos}
       onPositionChange={onPositionChange}
       className={className}
+      syncKey={syncKey}
     >
       {/* SVG canvas sheet drawing the arrow path */}
       <svg

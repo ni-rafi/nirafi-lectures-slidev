@@ -20,7 +20,7 @@ export const InputsSection: React.FC = () => {
   const showInput = true;
   const showSlider = true;
 
-  // Interactive URL-synced parameter value
+  // Interactive synced parameter value
   const [length, setLength] = useUrlSyncedState<number>('length', 6.0);
   const calculatedVolume = parseFloat((length * 2.4 * 0.15).toFixed(3));
 
@@ -78,7 +78,8 @@ export const InputsSection: React.FC = () => {
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 
 // Inside a custom sandbox React component (Hybrid Strategy)
-const [length, setLength] = useUrlSyncedState('length', 6.0);
+// Synchronizes state dynamically via local storage (does not pollute the URL)
+const [length, setLength] = useUrlSyncedState<number>('length', ${length.toFixed(1)});
 const volume = (length * 2.4 * 0.15).toFixed(3);
 
 return (
@@ -127,8 +128,86 @@ return (
     }
 
     return (
-      <div className="text-slate-300 font-mono text-[11px] select-text leading-relaxed whitespace-pre">
-        {manualCode}
+      <div className="text-slate-300 font-mono text-[11px] select-text leading-relaxed">
+        <div><span className="text-purple-400">import</span> <span className="text-pink-400">&#123;</span> InteractiveCard, ParameterSlider, CalculationOutput <span className="text-pink-400">&#125;</span> <span className="text-purple-400">from</span> <span className="text-amber-300">'@/features/presentation/components/elements'</span>;</div>
+        <div><span className="text-purple-400">import</span> <span className="text-pink-400">&#123;</span> useUrlSyncedState <span className="text-pink-400">&#125;</span> <span className="text-purple-400">from</span> <span className="text-amber-300">'@/features/presentation/hooks/useUrlSyncedState'</span>;</div>
+        <br />
+        <div className="text-muted-foreground/60">// Inside a custom sandbox React component (Hybrid Strategy)</div>
+        <div className="text-muted-foreground/60">// Synchronizes state dynamically via local storage (does not pollute the URL)</div>
+        <div>
+          <span className="text-purple-400">const</span> [length, setLength] = <span className="text-blue-400">useUrlSyncedState</span>&lt;<span className="text-teal-400">number</span>&gt;(<span className="text-amber-300">'length'</span>,{' '}
+          <input
+            type="number"
+            step="0.5"
+            value={length}
+            min={min}
+            max={max}
+            onChange={(e) => setLength(parseFloat(e.target.value) || 6.0)}
+            className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-orange-400 focus:outline-none focus:border-primary/50 w-12 font-mono text-[11px] inline-block font-bold"
+          />
+          );
+        </div>
+        <div>
+          <span className="text-purple-400">const</span> volume = (length * <span className="text-orange-400">2.4</span> * <span className="text-orange-400">0.15</span>).<span className="text-blue-400">toFixed</span>(<span className="text-orange-400">3</span>);
+        </div>
+        <br />
+        <div><span className="text-purple-400">return</span> (</div>
+        <div className="pl-4">
+          <span className="text-blue-400">&lt;InteractiveCard</span> <span className="text-teal-400">title</span>=<span className="text-amber-300">"</span>
+          <input
+            type="text"
+            value={cardTitle}
+            onChange={(e) => setCardTitle(e.target.value)}
+            className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-slate-100 focus:outline-none focus:border-primary/50 w-40 font-mono text-[10px] inline-block font-bold"
+          />
+          <span className="text-amber-300">"</span><span className="text-blue-400">&gt;</span>
+        </div>
+        <div className="pl-8">
+          <span className="text-blue-400">&lt;ParameterSlider</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">label</span>=<span className="text-amber-300">"{sliderLabel}"</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">value</span>=<span className="text-pink-400">&#123;</span>length<span className="text-pink-400">&#125;</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">min</span>=<span className="text-pink-400">&#123;</span><span className="text-orange-400">{min}</span><span className="text-pink-400">&#125;</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">max</span>=<span className="text-pink-400">&#123;</span><span className="text-orange-400">{max}</span><span className="text-pink-400">&#125;</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">step</span>=<span className="text-pink-400">&#123;</span><span className="text-orange-400">{step}</span><span className="text-pink-400">&#125;</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">unit</span>=<span className="text-amber-300">"{unit}"</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">onChange</span>=<span className="text-pink-400">&#123;</span>setLength<span className="text-pink-400">&#125;</span>
+        </div>
+        <div className="pl-8">
+          <span className="text-blue-400">/&gt;</span>
+        </div>
+        <div className="pl-8">
+          <span className="text-blue-400">&lt;CalculationOutput</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">title</span>=<span className="text-amber-300">"{outputTitle}"</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">value</span>=<span className="text-pink-400">&#123;</span>volume<span className="text-pink-400">&#125;</span>
+        </div>
+        <div className="pl-12">
+          <span className="text-teal-400">unit</span>=<span className="text-amber-300">"{unit}³"</span>
+        </div>
+        <div className="pl-8">
+          <span className="text-blue-400">/&gt;</span>
+        </div>
+        <div className="pl-4">
+          <span className="text-blue-400">&lt;/InteractiveCard&gt;</span>
+        </div>
+        <div>);</div>
       </div>
     );
   };
@@ -168,7 +247,7 @@ return (
             </span>
           ) : (
             <span>
-              <strong>Raw Synced Sliders (Hybrid Strategy):</strong> Create custom, reactive sliders and calculation layouts by invoking the <code>useUrlSyncedState(key, defaultValue)</code> hook. This syncs slider changes directly with scoped query search parameters in the browser URL.
+              <strong>Raw Synced Sliders (Hybrid Strategy):</strong> Create custom, reactive sliders and calculation layouts by invoking the <code>useUrlSyncedState(key, defaultValue)</code> hook. This syncs slider changes directly via local storage and storage events, scoped automatically by slide number to avoid naming collisions across tabs/windows. <em>Note: Although historically synced via URL query parameters, this hook uses the scoped local storage system to prevent URL state pollution and enable instant cross-tab synchronization.</em>
             </span>
           )
         }

@@ -214,8 +214,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                 className={`relative flex items-center px-2 py-0.5 rounded transition-all duration-300 ${
                   isHighlighted 
                     ? isLight
-                      ? 'bg-primary/5 border-l-2 border-primary text-slate-900 font-medium'
-                      : 'bg-primary/10 border-l-2 border-primary'
+                      ? 'bg-primary/5 text-slate-900 font-medium'
+                      : 'bg-primary/10'
                     : isLight
                       ? 'opacity-35 blur-[0.1px] saturate-75'
                       : 'opacity-25 blur-[0.2px] saturate-50'

@@ -14,10 +14,11 @@ export const SlideDraggable: React.FC = () => {
         </p>
       </div>
 
-      <DraggableArrow initialPos={{ x: 80, y: 220, w: 180, h: 40 }} />
+      <DraggableArrow initialPos={{ x: 80, y: 220, w: 180, h: 40 }} syncKey="draggable_slide3_arrow" />
       
       <Draggable
         initialPos={{ x: 400, y: 160, w: 220, h: 100 }}
+        syncKey="draggable_slide3_box"
         className="p-4 border bg-amber-500/10 border-amber-500/30 text-amber-500 rounded-xl text-xs flex flex-col justify-center items-center shadow-md select-none"
       >
         <span className="font-bold text-[10px] uppercase font-mono tracking-wider mb-1">

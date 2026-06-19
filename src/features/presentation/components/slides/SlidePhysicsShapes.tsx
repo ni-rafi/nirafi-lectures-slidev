@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import PhysicsSandbox from '../elements/PhysicsSandbox';
 import { ShapeData, ConnectorData } from '../elements/physicsHelpers';
 import InteractiveCard from '../elements/InteractiveCard';
 import ParameterSlider from '../elements/ParameterSlider';
+import { useUrlSyncedState } from '../../hooks/useUrlSyncedState';
 
 // Preset configurations defined compactly
 const PRESETS: Record<string, { shapes: ShapeData[]; connectors: ConnectorData[] }> = {
@@ -63,14 +64,14 @@ const PRESETS: Record<string, { shapes: ShapeData[]; connectors: ConnectorData[]
 };
 
 export const SlidePhysicsShapes: React.FC = () => {
-  const [preset, setPreset] = useState<'flowchart' | 'star' | 'chain'>('flowchart');
-  const [physicsEnabled, setPhysicsEnabled] = useState(false);
-  const [shapeOverrides, setShapeOverrides] = useState<Record<string, string>>({});
+  const [preset, setPreset] = useUrlSyncedState<'flowchart' | 'star' | 'chain'>('physics_preset', 'flowchart');
+  const [physicsEnabled, setPhysicsEnabled] = useUrlSyncedState<boolean>('physics_enabled', false);
+  const [shapeOverrides, setShapeOverrides] = useUrlSyncedState<Record<string, string>>('physics_shape_overrides', {});
 
   // Physics tuning controls
-  const [gravity, setGravity] = useState(1.0);
-  const [bounciness, setBounciness] = useState(0.6);
-  const [stiffness, setStiffness] = useState(0.04);
+  const [gravity, setGravity] = useUrlSyncedState<number>('physics_gravity', 1.0);
+  const [bounciness, setBounciness] = useUrlSyncedState<number>('physics_bounciness', 0.6);
+  const [stiffness, setStiffness] = useUrlSyncedState<number>('physics_stiffness', 0.04);
 
   // Compute active layout merged with interactive morph overrides
   const currentLayout = useMemo(() => {

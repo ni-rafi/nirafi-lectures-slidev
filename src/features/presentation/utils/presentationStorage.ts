@@ -29,12 +29,20 @@ export function getStorageItem<T>(key: string, fallback: T, parser?: (val: strin
   if (typeof fallback === 'boolean') {
     return (saved === 'true') as unknown as T;
   }
+  if (typeof fallback === 'object' && fallback !== null) {
+    try {
+      return JSON.parse(saved) as T;
+    } catch {
+      return fallback;
+    }
+  }
   return saved as unknown as T;
 }
 
 export function setStorageItem(key: string, value: unknown): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(key, String(value));
+  const strValue = typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value);
+  localStorage.setItem(key, strValue);
 }
 
 export function clearLectureStorage(lectureId: string): void {

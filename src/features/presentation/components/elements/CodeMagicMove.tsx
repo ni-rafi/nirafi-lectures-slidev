@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useId, useMemo } from 'react';
 import { useClickStepsContext } from '../../context/ClickStepsContext';
+import { useTheme } from '@/context';
 import CodeBlock from './CodeBlock';
 
 interface CodeMagicMoveProps {
@@ -18,6 +19,16 @@ export const CodeMagicMove: React.FC<CodeMagicMoveProps> = ({
   const moveId = useId();
   const { registerClick, deregisterClick, currentClick } = useClickStepsContext();
   const [baseStep, setBaseStep] = useState<number | null>(null);
+
+  // Safely consume theme context
+  let resolvedTheme = 'dark';
+  try {
+    const themeCtx = useTheme();
+    resolvedTheme = themeCtx?.resolvedTheme || 'dark';
+  } catch {
+    // fallback if no provider
+  }
+  const isLight = resolvedTheme === 'light';
 
   // Register relative click triggers for code morph iterations (excluding base step)
   useEffect(() => {
@@ -51,7 +62,11 @@ export const CodeMagicMove: React.FC<CodeMagicMoveProps> = ({
   return (
     <div className="w-full relative overflow-hidden transition-all duration-500 ease-in-out">
       {/* Morph Title label with animation step count */}
-      <div className="flex justify-between items-center px-4 py-1.5 border border-b-0 border-white/10 bg-slate-900/60 rounded-t-2xl font-mono text-[9px] uppercase tracking-wider text-muted-foreground select-none">
+      <div className={`flex justify-between items-center px-4 py-1.5 border border-b-0 font-mono text-[9px] uppercase tracking-wider select-none rounded-t-2xl ${
+        isLight
+          ? 'border-slate-200/80 bg-slate-100/80 text-slate-500'
+          : 'border-white/10 bg-slate-900/60 text-muted-foreground'
+      }`}>
         <span>Magic Move Morph</span>
         <span className="font-semibold text-primary">
           Step {activeStepIdx + 1} of {steps.length}

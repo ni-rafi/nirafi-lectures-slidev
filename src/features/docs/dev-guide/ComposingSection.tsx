@@ -101,7 +101,7 @@ export const ComposingSection: React.FC = () => {
             <span className="text-[8px] font-mono text-muted-foreground uppercase">Slide 3: Custom Sandbox Widget</span>
             <div className="flex flex-col items-center justify-center flex-1 gap-2 text-center py-2">
               <div className="text-[10px] font-bold text-amber-400">Rebar interactive Calculator:</div>
-              <div className="border border-dashed p-2 text-[9px] w-full max-w-[200px] text-slate-400">Custom Slider Forms, SVG diagrams & Live URL updates</div>
+              <div className="border border-dashed p-2 text-[9px] w-full max-w-[200px] text-slate-400">Custom Slider Forms, SVG diagrams & Live Storage Sync</div>
             </div>
             <div className="text-[8px] text-center font-mono text-muted-foreground/60">Interactive React Sandbox</div>
           </div>

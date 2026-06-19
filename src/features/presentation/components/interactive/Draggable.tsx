@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useId } from 'react';
+import { useUrlSyncedState } from '../../hooks/useUrlSyncedState';
 
 export interface DragPosition {
   x: number;
@@ -15,6 +16,7 @@ interface DraggableProps {
   onDragStart?: () => void;
   onDragEnd?: () => void;
   className?: string;
+  syncKey?: string;
 }
 
 /**
@@ -28,17 +30,32 @@ export const Draggable: React.FC<DraggableProps> = ({
   onDragStart,
   onDragEnd,
   className = '',
+  syncKey,
 }) => {
   const containerId = useId();
   const ref = useRef<HTMLDivElement | null>(null);
-  const [pos, setPos] = useState<DragPosition>(initialPos);
+  const [pos, setPos] = useUrlSyncedState<DragPosition>(
+    syncKey || `drag_${containerId.replace(/:/g, '_')}`,
+    initialPos
+  );
   const [isSelected, setIsSelected] = useState(false);
   const dragStartRef = useRef<{ mouseX: number; mouseY: number; startX: number; startY: number } | null>(null);
 
+  const lastInitialPosRef = useRef(initialPos);
   // Sync position state if prop changes
   useEffect(() => {
-    setPos(initialPos);
-  }, [initialPos]);
+    const last = lastInitialPosRef.current;
+    if (
+      initialPos.x !== last.x ||
+      initialPos.y !== last.y ||
+      initialPos.w !== last.w ||
+      initialPos.h !== last.h ||
+      initialPos.rotate !== last.rotate
+    ) {
+      setPos(initialPos);
+      lastInitialPosRef.current = initialPos;
+    }
+  }, [initialPos, setPos]);
 
   // Handle click outside to deselect
   useEffect(() => {

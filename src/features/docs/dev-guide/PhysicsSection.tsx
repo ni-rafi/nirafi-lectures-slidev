@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PhysicsSandbox } from '@/features/presentation/components/elements/PhysicsSandbox';
 import { ShapeData, ConnectorData } from '@/features/presentation/components/elements/physicsHelpers';
+import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { PlaygroundSection } from './PlaygroundSection';
 
 export const PhysicsSection: React.FC = () => {
-  const [physicsEnabled, setPhysicsEnabled] = useState(true);
-  const [gravity, setGravity] = useState(1);
-  const [bounciness, setBounciness] = useState(0.6);
-  const [jointStiffness, setJointStiffness] = useState(0.05);
+  const [physicsEnabled, setPhysicsEnabled] = useUrlSyncedState<boolean>('doc_physics_enabled', true);
+  const [gravity, setGravity] = useUrlSyncedState<number>('doc_physics_gravity', 1);
+  const [bounciness, setBounciness] = useUrlSyncedState<number>('doc_physics_bounciness', 0.6);
+  const [jointStiffness, setJointStiffness] = useUrlSyncedState<number>('doc_physics_joint_stiffness', 0.05);
 
   const shapes: ShapeData[] = [
     { id: 'n1', type: 'circle', x: 90, y: 40, size: 40, label: 'A', fill: 'var(--color-primary, #6366f1)' },
@@ -41,33 +42,32 @@ export const PhysicsSection: React.FC = () => {
   );
 
   const codeText = `import { PhysicsSandbox } from '@/features/presentation/components/elements';
+import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 
-const shapes = [
-  { id: 'n1', type: 'circle', x: 90, y: 40, size: 40, label: 'A', fill: 'var(--color-primary)' },
-  { id: 'n2', type: 'rect', x: 150, y: 70, size: 40, label: 'B', fill: '#10b981' },
-  { id: 'n3', type: 'star', x: 210, y: 110, size: 40, label: 'C', fill: '#f59e0b' }
-];
+// Inside a custom slide React component
+// Parameters synchronize dynamically via local storage across windows
+const [physicsEnabled, setPhysicsEnabled] = useUrlSyncedState('physics_enabled', true);
+const [gravity, setGravity] = useUrlSyncedState('physics_gravity', 1.0);
+const [bounciness, setBounciness] = useUrlSyncedState('physics_bounciness', 0.6);
+const [jointStiffness, setJointStiffness] = useUrlSyncedState('physics_stiffness', 0.05);
 
-const connectors = [
-  { id: 'c1', from: 'n1', to: 'n2' },
-  { id: 'c2', from: 'n2', to: 'n3' }
-];
-
-<PhysicsSandbox
-  shapes={shapes}
-  connectors={connectors}
-  physicsEnabled={${physicsEnabled}}
-  gravity={${gravity}}
-  bounciness={${bounciness}}
-  jointStiffness={${jointStiffness}}
-/>`;
+return (
+  <PhysicsSandbox
+    shapes={shapes}
+    connectors={connectors}
+    physicsEnabled={physicsEnabled}
+    gravity={gravity}
+    bounciness={bounciness}
+    jointStiffness={jointStiffness}
+  />
+);`;
 
   const editorContent = (
-    <div className="text-slate-300">
-      <span className="text-purple-400">import</span> {'{ PhysicsSandbox }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n\n"}
-      <span className="text-blue-400">&lt;PhysicsSandbox</span>{"\n"}
-      {"  "}<span className="text-teal-400">shapes</span>=<span className="text-pink-400">&#123;</span>shapes<span className="text-pink-400">&#125;</span> <span className="text-teal-400">connectors</span>=<span className="text-pink-400">&#123;</span>connectors<span className="text-pink-400">&#125;</span>{"\n"}
-      {"  "}<span className="text-teal-400">physicsEnabled</span>=<span className="text-pink-400">&#123;</span>
+    <div className="text-slate-300 font-mono text-[11px] leading-relaxed">
+      <span className="text-purple-400">import</span> {'{ PhysicsSandbox }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/components/elements"</span>;{"\n"}
+      <span className="text-purple-400">import</span> {'{ useUrlSyncedState }'} <span className="text-purple-400">from</span> <span className="text-amber-300">"@/features/presentation/hooks/useUrlSyncedState"</span>;{"\n\n"}
+      <span className="text-muted-foreground/60">// Parameters synchronize dynamically via local storage</span>{"\n"}
+      <span className="text-purple-400">const</span> [physicsEnabled, setPhysicsEnabled] = <span className="text-blue-400">useUrlSyncedState</span>(<span className="text-amber-300">'physics_enabled'</span>,{" "}
       <select
         value={String(physicsEnabled)}
         onChange={(e) => setPhysicsEnabled(e.target.value === 'true')}
@@ -76,8 +76,8 @@ const connectors = [
         <option value="true">true</option>
         <option value="false">false</option>
       </select>
-      <span className="text-pink-400">&#125;</span>{"\n"}
-      {"  "}<span className="text-teal-400">gravity</span>=<span className="text-pink-400">&#123;</span>
+      );{"\n"}
+      <span className="text-purple-400">const</span> [gravity, setGravity] = <span className="text-blue-400">useUrlSyncedState</span>(<span className="text-amber-300">'physics_gravity'</span>,{" "}
       <input
         type="number"
         step="0.1"
@@ -87,8 +87,8 @@ const connectors = [
         onChange={(e) => setGravity(parseFloat(e.target.value) || 0)}
         className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-orange-400 focus:outline-none focus:border-primary/50 w-12 font-mono text-[11px] inline-block"
       />
-      <span className="text-pink-400">&#125;</span>{"\n"}
-      {"  "}<span className="text-teal-400">bounciness</span>=<span className="text-pink-400">&#123;</span>
+      );{"\n"}
+      <span className="text-purple-400">const</span> [bounciness, setBounciness] = <span className="text-blue-400">useUrlSyncedState</span>(<span className="text-amber-300">'physics_bounciness'</span>,{" "}
       <input
         type="number"
         step="0.1"
@@ -98,8 +98,8 @@ const connectors = [
         onChange={(e) => setBounciness(parseFloat(e.target.value) || 0)}
         className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-orange-400 focus:outline-none focus:border-primary/50 w-12 font-mono text-[11px] inline-block"
       />
-      <span className="text-pink-400">&#125;</span>{"\n"}
-      {"  "}<span className="text-teal-400">jointStiffness</span>=<span className="text-pink-400">&#123;</span>
+      );{"\n"}
+      <span className="text-purple-400">const</span> [jointStiffness, setJointStiffness] = <span className="text-blue-400">useUrlSyncedState</span>(<span className="text-amber-300">'physics_stiffness'</span>,{" "}
       <input
         type="number"
         step="0.01"
@@ -109,7 +109,13 @@ const connectors = [
         onChange={(e) => setJointStiffness(parseFloat(e.target.value) || 0.05)}
         className="bg-slate-900 border border-white/10 rounded px-1.5 py-0.5 text-orange-400 focus:outline-none focus:border-primary/50 w-14 font-mono text-[11px] inline-block"
       />
-      <span className="text-pink-400">&#125;</span>{"\n"}
+      );{"\n\n"}
+      <span className="text-blue-400">&lt;PhysicsSandbox</span>{"\n"}
+      {"  "}<span className="text-teal-400">shapes</span>=<span className="text-pink-400">&#123;</span>shapes<span className="text-pink-400">&#125;</span> <span className="text-teal-400">connectors</span>=<span className="text-pink-400">&#123;</span>connectors<span className="text-pink-400">&#125;</span>{"\n"}
+      {"  "}<span className="text-teal-400">physicsEnabled</span>=<span className="text-pink-400">&#123;</span>physicsEnabled<span className="text-pink-400">&#125;</span>{"\n"}
+      {"  "}<span className="text-teal-400">gravity</span>=<span className="text-pink-400">&#123;</span>gravity<span className="text-pink-400">&#125;</span>{"\n"}
+      {"  "}<span className="text-teal-400">bounciness</span>=<span className="text-pink-400">&#123;</span>bounciness<span className="text-pink-400">&#125;</span>{"\n"}
+      {"  "}<span className="text-teal-400">jointStiffness</span>=<span className="text-pink-400">&#123;</span>jointStiffness<span className="text-pink-400">&#125;</span>{"\n"}
       <span className="text-blue-400">/&gt;</span>
     </div>
   );
@@ -119,7 +125,7 @@ const connectors = [
       title="Draggable Physics Canvas"
       description={
         <span>
-          Use <code>&lt;PhysicsSandbox&gt;</code> to create visual physics scenarios in slides. It leverages the <code>Matter.js</code> library to add dynamic gravity, joint-constraints, and draggable canvas items.
+          Use <code>&lt;PhysicsSandbox&gt;</code> to create visual physics scenarios in slides. It leverages the <code>Matter.js</code> library to add dynamic gravity, joint-constraints, and draggable canvas items. Interactive parameters can be synchronized dynamically across windows and follower tabs using the <code>useUrlSyncedState</code> hook.
         </span>
       }
       preview={preview}

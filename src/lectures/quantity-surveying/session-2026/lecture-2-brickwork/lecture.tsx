@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { TitleLayout } from '@/shared/layouts/TitleLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
@@ -108,9 +109,9 @@ const Slide2: React.FC = () => {
 
 // Slide 3: Live Masonry Calculator
 const Slide3: React.FC = () => {
-  const [area, setArea] = useState(15);
-  const [thickness, setThickness] = useState(0.24);
-  const [mortar, setMortar] = useState(0.01);
+  const [area, setArea] = useUrlSyncedState<number>('area', 15);
+  const [thickness, setThickness] = useUrlSyncedState<number>('thickness', 0.24);
+  const [mortar, setMortar] = useUrlSyncedState<number>('mortar', 0.01);
 
   const result = calculateBrickwork(area, thickness, 0.24, 0.115, 0.07, mortar);
 
