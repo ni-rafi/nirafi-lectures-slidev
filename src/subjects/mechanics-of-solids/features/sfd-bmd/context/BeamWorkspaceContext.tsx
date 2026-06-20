@@ -41,7 +41,7 @@ interface BeamWorkspaceContextProps {
   setIsSectionBuilderOpen: (open: boolean) => void;
 }
 
-const BeamWorkspaceContext = createContext<BeamWorkspaceContextProps | undefined>(undefined);
+export const BeamWorkspaceContext = createContext<BeamWorkspaceContextProps | undefined>(undefined);
 
 export const BeamWorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [length, setLengthState] = useState<number>(6);

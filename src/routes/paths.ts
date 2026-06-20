@@ -9,4 +9,5 @@ export const ROUTE_PATHS = {
   DOCS: '/docs',
   SHAPES_PLAYGROUND: '/playground/:subjectId/:sessionId/:lectureId/shapes',
   SOLVER_SFD_BMD: '/mechanics-of-solids/sfd-bmd',
+  SOLVER_INFLUENCE_LINES: '/structural-analysis/influence-lines',
 };

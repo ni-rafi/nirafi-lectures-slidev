@@ -1,12 +1,17 @@
-import React from 'react';
-import { useBeamWorkspace } from '@/subjects/mechanics-of-solids/features/sfd-bmd/context/BeamWorkspaceContext';
+import React, { useContext } from 'react';
+import { BeamWorkspaceContext } from '@/subjects/mechanics-of-solids/features/sfd-bmd/context/BeamWorkspaceContext';
+import { InfluenceLinesWorkspaceContext } from '@/subjects/structural-analysis/features/influence-lines/context/InfluenceLinesWorkspaceContext';
 
 interface DoiStepVisualProps {
   text: string;
 }
 
 export const DoiStepVisual: React.FC<DoiStepVisualProps> = ({ text }) => {
-  const { length, supports } = useBeamWorkspace();
+  const beamCtx = useContext(BeamWorkspaceContext);
+  const influenceCtx = useContext(InfluenceLinesWorkspaceContext);
+
+  const length = beamCtx ? beamCtx.length : (influenceCtx ? influenceCtx.length : 10);
+  const supports = beamCtx ? beamCtx.supports : (influenceCtx ? influenceCtx.supports : []);
 
   const width = 320;
   const height = 70;
