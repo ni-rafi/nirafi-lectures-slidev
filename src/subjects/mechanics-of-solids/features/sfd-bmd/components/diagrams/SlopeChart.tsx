@@ -6,12 +6,47 @@ import { motion, AnimatePresence } from 'motion/react';
 import { splitIntoSignSegments } from '../../utils/chartUtils';
 
 export const SlopeChart: React.FC = () => {
-  const { length, hoverX, setHoverX } = useBeamWorkspace();
+  const { length, hoverX, setHoverX, supports, releases, eiSegments } = useBeamWorkspace();
   const { solverResult, deflectionResult } = useBeamEngine();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
   if (!deflectionResult.success || deflectionResult.points.length === 0 || !solverResult.success) return null;
+
+  const sortedSupports = [...supports].sort((a, b) => a.position - b.position);
+  const supportPosToLetter = new Map<number, string>();
+  sortedSupports.forEach((s, idx) => {
+    supportPosToLetter.set(s.position, String.fromCharCode(65 + idx));
+  });
+
+  const refPointsRaw = [
+    { x: 0, label: '0.0m' },
+    { x: length, label: `${length.toFixed(1)}m` }
+  ];
+  supports.forEach((s) => {
+    const letter = supportPosToLetter.get(s.position) || '';
+    refPointsRaw.push({ x: s.position, label: letter });
+  });
+  releases.forEach((r) => {
+    refPointsRaw.push({ x: r.position, label: 'H' });
+  });
+  eiSegments.forEach((seg) => {
+    refPointsRaw.push({ x: seg.startPosition, label: 'S' });
+    refPointsRaw.push({ x: seg.endPosition, label: 'S' });
+  });
+
+  const refPoints: { x: number; label: string }[] = [];
+  refPointsRaw.sort((a, b) => a.x - b.x).forEach(pt => {
+    const match = refPoints.find(u => Math.abs(u.x - pt.x) < 0.15);
+    if (match) {
+      const tokens = match.label.split('/');
+      if (!tokens.includes(pt.label)) {
+        match.label += `/${pt.label}`;
+      }
+    } else {
+      refPoints.push(pt);
+    }
+  });
 
   const paddingX = 60;
   const width = 800;
@@ -88,6 +123,17 @@ export const SlopeChart: React.FC = () => {
               <stop offset="100%" stopColor="#f97316" stopOpacity="0.02" />
             </linearGradient>
           </defs>
+
+          {/* Reference guidelines */}
+          {refPoints.map((pt, idx) => {
+            const px = toPixelX(pt.x);
+            return (
+              <g key={idx} className="opacity-[0.18]">
+                <line x1={px} y1={10} x2={px} y2={height - 22} stroke="var(--foreground)" strokeWidth={1} strokeDasharray="3,3" />
+                <text x={px} y={height - 10} textAnchor="middle" className="fill-foreground text-[8px] font-bold">{pt.label}</text>
+              </g>
+            );
+          })}
 
           {/* Grid lines */}
           <line x1={paddingX} y1={midY - 40} x2={paddingX + chartW} y2={midY - 40} stroke="var(--border)" strokeWidth={0.5} strokeDasharray="4,4" opacity={0.4} />
