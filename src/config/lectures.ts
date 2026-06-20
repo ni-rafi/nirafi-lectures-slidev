@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Lecture Registry — single source of truth for the portal
-// Add new lectures here; update slideNo when slides.md order changes.
+// Automatically aggregated via Vite eager globbing.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface Lecture {
@@ -11,6 +11,7 @@ export interface Lecture {
   durationMins: number;
   locked: boolean;
   tags: string[];
+  quizzes?: Record<string, 'stealth' | 'placeholder'>;
 }
 
 export interface Session {
@@ -31,107 +32,80 @@ export interface Course {
 
 export type Subject = Course;
 
-export const SUBJECTS: Course[] = [
-  {
+// Eagerly import all lecture metadata configs across the workspace
+const metadataModules = import.meta.glob<{ metadata: Lecture }>(
+  '/src/subjects/*/lectures/session-*/lecture-*/metadata.ts',
+  { eager: true }
+);
+
+// Course shells map. Each subject is defined by its course config shell.
+const COURSE_SHELLS: Record<string, Course> = {
+  'quantity-surveying': {
     id: 'quantity-surveying',
     courseTitle: 'Quantity Surveying',
     courseCode: 'CE-QS',
     description: 'Structural estimation, material take-off, and project costing for civil engineering works.',
     iconEmoji: '🏗️',
     color: '#f59e0b',
-    sessions: [
-      {
-        id: 'session-2026',
-        label: 'Session 2026–27',
-        lectures: [
-          {
-            id: 'concrete',
-            title: 'Concrete Volumetric Estimations',
-            description: 'Estimate concrete volume with wastage factors for beams, columns, and slabs.',
-            slideNo: 5,
-            durationMins: 45,
-            locked: false,
-            tags: ['concrete', 'volumetric', 'SI units'],
-          },
-          {
-            id: 'brickwork',
-            title: 'Brickwork & Mortar Estimations',
-            description: 'Calculate brick counts and mortar quantities for structural masonry walls.',
-            slideNo: 9,
-            durationMins: 40,
-            locked: false,
-            tags: ['brickwork', 'masonry', 'mortar'],
-          },
-          {
-            id: 'steel',
-            title: 'Steel Reinforcement Estimations',
-            description: 'Calculate weight of reinforcement bar steel using standard diameter equations.',
-            slideNo: 13,
-            durationMins: 35,
-            locked: false,
-            tags: ['steel', 'reinforcement', 'rebar'],
-          },
-        ],
-      },
-    ],
+    sessions: [],
   },
-  {
+  'web-development': {
     id: 'web-development',
     courseTitle: 'Web App Development',
     courseCode: 'CS-WAD',
     description: 'Modern web application development with Vue 3, TypeScript, Firebase, and Slidev.',
     iconEmoji: '💻',
     color: '#6366f1',
-    sessions: [
-      {
-        id: 'session-2026',
-        label: 'Session 2026–27',
-        lectures: [
-          {
-            id: 'slidev_intro',
-            title: 'Introduction to Slidev',
-            description: 'Learn how to build developer presentations with Markdown, Vue, and Slidev.',
-            slideNo: 2,
-            durationMins: 30,
-            locked: false,
-            tags: ['slidev', 'markdown', 'vue'],
-          },
-          {
-            id: 'vue_basics',
-            title: 'Vue 3 Basics & Components',
-            description: 'Deep dive into Vue 3 composition API, components, and reactivity.',
-            slideNo: 0,  // not yet added to slides.md
-            durationMins: 60,
-            locked: true,
-            tags: ['vue3', 'composition api', 'components'],
-          },
-        ],
-      },
-    ],
+    sessions: [],
   },
-  {
+  'engineering-mechanics': {
     id: 'engineering-mechanics',
     courseTitle: 'Engineering Mechanics II',
     courseCode: 'CEE 0541 1233',
     description: 'Dynamics, relative motion, cables, friction analysis, impulses, and mechanical work systems.',
     iconEmoji: '⚙️',
     color: '#ea580c',
-    sessions: [
-      {
-        id: 'session-2024',
-        label: 'Session 2024–25',
-        lectures: [
-          {
-            id: 'course-outline',
-            title: 'Course Outline & Syllabus',
-            description: 'Detailed weekly plan, learning outcomes (COs), assessment strategy, and strategic legends.',
-            slideNo: 1,
-            durationMins: 20,
-            locked: false,
-            tags: ['syllabus', 'outline', 'mechanics'],
-          },
-        ],
-      },
-    ],
+    sessions: [],
   },
-];
+};
+
+// Process modules to populate the COURSE_SHELLS
+Object.entries(metadataModules).forEach(([path, module]) => {
+  const match = path.match(/\/subjects\/([^/]+)\/lectures\/(session-[^/]+)\//);
+  if (!match) return;
+
+  const subjectId = match[1];
+  const sessionId = match[2];
+  if (!subjectId || !sessionId) return;
+
+  const course = COURSE_SHELLS[subjectId];
+  if (!course) return;
+
+  // Find or create session
+  let session = course.sessions.find((s: Session) => s.id === sessionId);
+  if (!session) {
+    const year = sessionId.split('-')[1];
+    const nextYearShort = year ? String(Number(year) - 2000 + 1) : '';
+    session = {
+      id: sessionId,
+      label: `Session ${year}–${nextYearShort}`,
+      lectures: [],
+    };
+    course.sessions.push(session);
+  }
+
+  // Push the lecture metadata
+  session.lectures.push(module.metadata);
+});
+
+// Sort lectures by slideNo within each session for consistent order
+Object.values(COURSE_SHELLS).forEach((course) => {
+  course.sessions.forEach((session) => {
+    session.lectures.sort((a, b) => a.slideNo - b.slideNo);
+  });
+});
+
+// Export aggregated subjects list
+export const SUBJECTS: Course[] = Object.values(COURSE_SHELLS).filter(
+  (course) => course.sessions.length > 0
+);

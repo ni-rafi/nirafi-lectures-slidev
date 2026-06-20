@@ -1,50 +1,22 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { flushSync } from 'react-dom';
 import { useParams, useNavigate, NavigateOptions, useLocation } from 'react-router-dom';
 import { SUBJECTS } from '@/config/lectures';
 import { useUserContext } from '@/context/UserContext';
-import { getSlideMetadata, getLectureSlideCount, getBgVariant, getLectureDeck } from '../components/slides/SlideRenderer';
+import { getSlideMetadata, getLectureSlideCount, getLectureDeck, loadLectureDeck } from '../components/slides/SlideRenderer';
 import { useSlideViewerState } from './useSlideViewerState';
 import { usePresenterFeatures } from './usePresenterFeatures';
 import { ViewMode, Theme } from '../context/PresentationContext';
-import { useFirebase } from '@/context/FirebaseContext';
-import type { QuizState } from '@/services/firebase/IFirebaseService';
 import { DEFAULT_SETTINGS } from '../components/layers/SettingsPopover';
-import { isProjectionView, storageKeys, setStorageItem, clearLectureStorage } from '../utils/presentationStorage';
-
-
-/** Minimal shape of the View Transition API object we actually use */
-interface ViewTransitionHandle {
-  ready: Promise<void>;
-  finished: Promise<void>;
-}
+import { useSlideTransitions } from './useSlideTransitions';
+import { useQuizSubscriptions } from './useQuizSubscriptions';
+import { useSlideNavigation } from './useSlideNavigation';
 
 export const useSlideViewerOrchestrator = () => {
   const { subjectId, sessionId, lectureId, slideNo } = useParams<Record<string, string>>();
   const navigate = useNavigate();
-  const currentSlideInt = slideNo ? parseInt(slideNo, 10) : 1;
-
-  // Tracks the intended direction of the most recent slide change.
-  // Read by PresentationModeView to set initialClick on the per-slide ClickStepsProvider.
-  const slideDirectionRef = useRef<'forward' | 'backward'>('forward');
 
   // Settings ref to access settings without causing dependency re-evaluation circular loops
   const settingsRef = useRef(DEFAULT_SETTINGS);
-
-  const startSafeTransition = useCallback((updateFn: () => void) => {
-    if (!document.startViewTransition) {
-      updateFn();
-      return;
-    }
-    // When rapid navigation fires a second transition before the first animation
-    // finishes, the browser aborts the first and rejects its promises. We suppress
-    // both `ready` and `finished` so no uncaught-rejection noise reaches the console.
-    const vt = document.startViewTransition(() => {
-      flushSync(updateFn);
-    }) as unknown as ViewTransitionHandle;
-    vt.ready.catch(() => { });
-    vt.finished.catch(() => { });
-  }, []);
 
   const activeSub = SUBJECTS.find((sub) => sub.id === subjectId);
   const activeSession = activeSub?.sessions.find((sess) => sess.id === sessionId);
@@ -53,44 +25,63 @@ export const useSlideViewerOrchestrator = () => {
   const { userProfile } = useUserContext();
   const isAdmin = userProfile?.role === 'admin';
 
-  const rawTotalSlidesCount = useMemo(() => {
-    return activeLec ? getLectureSlideCount(activeLec.id) : 10;
-  }, [activeLec]);
+  const [isLoadingDeck, setIsLoadingDeck] = useState(true);
+  const [deckError, setDeckError] = useState<string | null>(null);
 
-  // Active slide local state for synchronous rendering transitions
-  const [activeSlide, setActiveSlide] = useState(currentSlideInt);
-
-  const firebaseService = useFirebase();
-  const [quizStates, setQuizStates] = useState<Record<string, QuizState>>({});
-
+  // Dynamically resolve and load slide deck assets
   useEffect(() => {
-    if (!activeLec || !activeSub) return;
-    const deck = getLectureDeck(activeLec.id);
-    const quizIds = (Object.values(deck.slideMetadata) as Array<{ quizId?: string }>)
-      .map((m) => m.quizId)
-      .filter((id): id is string => !!id);
-
-    if (quizIds.length === 0) {
-      setQuizStates({});
+    if (!activeLec || !subjectId || !sessionId) {
+      setIsLoadingDeck(false);
       return;
     }
 
-    const unsubscribes = quizIds.map((id) =>
-      firebaseService.subscribeQuizState(id, (state) => {
-        if (state) {
-          setQuizStates((prev) => ({ ...prev, [id]: state }));
-        }
-      })
-    );
+    setIsLoadingDeck(true);
+    setDeckError(null);
 
-    return () => {
-      unsubscribes.forEach((unsub) => unsub());
-    };
-  }, [activeLec, activeSub, firebaseService]);
+    loadLectureDeck(subjectId, sessionId, activeLec.id)
+      .then(() => {
+        setIsLoadingDeck(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load lecture deck:', err);
+        setDeckError(String(err));
+        setIsLoadingDeck(false);
+      });
+  }, [subjectId, sessionId, activeLec?.id]);
+
+  const rawTotalSlidesCount = useMemo(() => {
+    if (isLoadingDeck || !activeLec) return 0;
+    return getLectureSlideCount(activeLec.id);
+  }, [activeLec, isLoadingDeck]);
+
+  // Manage dynamic transitions
+  const { startSafeTransition, applyTransitionStyle } = useSlideTransitions(activeSub, activeLec, settingsRef);
+
+  // Manage slide navigation and history synchronization
+  const {
+    activeSlide,
+    setActiveSlide,
+    bgVariant,
+    slideDirectionRef,
+    changeSlideWithTransition,
+  } = useSlideNavigation(
+    subjectId,
+    sessionId,
+    lectureId,
+    slideNo,
+    activeSub,
+    activeLec,
+    isLoadingDeck,
+    applyTransitionStyle,
+    startSafeTransition
+  );
+
+  // Manage quiz subscriptions
+  const quizStates = useQuizSubscriptions(activeSub, activeLec, isLoadingDeck);
 
   const visibleSlideNumbers = useMemo(() => {
     const list: number[] = [];
-    if (!activeSub || !activeLec) return list;
+    if (isLoadingDeck || !activeSub || !activeLec) return list;
     const deck = getLectureDeck(activeLec.id);
 
     for (let i = 1; i <= rawTotalSlidesCount; i++) {
@@ -105,136 +96,17 @@ export const useSlideViewerOrchestrator = () => {
       list.push(i);
     }
     return list;
-  }, [rawTotalSlidesCount, activeSub, activeLec, quizStates, isAdmin]);
+  }, [rawTotalSlidesCount, activeSub, activeLec, quizStates, isAdmin, isLoadingDeck]);
 
   const totalSlidesCount = visibleSlideNumbers.length;
 
   const currentMeta = useMemo(() => {
-    if (!activeLec || !activeSub) return null;
+    if (isLoadingDeck || !activeLec || !activeSub) return null;
     return getSlideMetadata(activeSlide, activeSub, activeLec);
-  }, [activeSlide, activeSub, activeLec]);
+  }, [activeSlide, activeSub, activeLec, isLoadingDeck]);
 
   const quizId = currentMeta?.quizId || null;
   const activeQuizState = quizId ? quizStates[quizId] || null : null;
-
-  // Initial background resolution
-  const initialMeta = activeLec && activeSub ? getSlideMetadata(currentSlideInt, activeSub, activeLec) : null;
-  const [bgVariant, setBgVariant] = useState<'default' | 'calculation' | 'gallery' | 'cover'>(
-    initialMeta ? getBgVariant(initialMeta.type) : 'default'
-  );
-
-  // Sync route URL parameter slideNo changes into local state (e.g. browser history back/forward)
-  useEffect(() => {
-    if (slideNo !== undefined) {
-      const parsed = parseInt(slideNo, 10);
-      if (!isNaN(parsed) && parsed !== activeSlide) {
-        setActiveSlide(parsed);
-        const meta = activeSub && activeLec ? getSlideMetadata(parsed, activeSub, activeLec) : null;
-        if (meta) {
-          setBgVariant(getBgVariant(meta.type));
-        }
-      }
-    }
-  }, [slideNo]);
-
-  // Synchronize initial active slide to localStorage on mount for the leader
-  // and clear previous states. Also clean up on exit (unmount).
-  useEffect(() => {
-    if (!isProjectionView() && lectureId) {
-      clearLectureStorage(lectureId);
-      const activeSlideKey = storageKeys.activeSlide(lectureId);
-      setStorageItem(activeSlideKey, activeSlide);
-    }
-
-    return () => {
-      if (!isProjectionView() && lectureId) {
-        clearLectureStorage(lectureId);
-      }
-    };
-  }, [lectureId]);
-
-  const applyTransitionStyle = useCallback((nextSlideNum: number, direction: 'forward' | 'backward') => {
-    const meta = activeSub && activeLec ? getSlideMetadata(nextSlideNum, activeSub, activeLec) : null;
-    const resolvedTransition = meta?.transition || settingsRef.current.transitionType || 'morph';
-    const duration = meta?.transitionDuration !== undefined
-      ? meta.transitionDuration
-      : (settingsRef.current.transitionDuration || 500);
-
-    let oldAnim = 'morph-out';
-    let newAnim = 'morph-in';
-
-    if (resolvedTransition === 'slide') {
-      if (direction === 'forward') {
-        oldAnim = 'canvas-slide-out-left';
-        newAnim = 'canvas-slide-in-right';
-      } else {
-        oldAnim = 'canvas-slide-out-right';
-        newAnim = 'canvas-slide-in-left';
-      }
-    } else if (resolvedTransition === 'fade') {
-      oldAnim = 'canvas-fade-out';
-      newAnim = 'canvas-fade-in';
-    } else if (resolvedTransition === 'zoom') {
-      oldAnim = 'canvas-zoom-out';
-      newAnim = 'canvas-zoom-in';
-    } else if (resolvedTransition === 'none') {
-      oldAnim = 'none';
-      newAnim = 'none';
-    }
-
-    const docEl = document.documentElement;
-    docEl.style.setProperty('--slide-canvas-duration', `${duration}ms`);
-    docEl.style.setProperty('--slide-canvas-old-anim', oldAnim);
-    docEl.style.setProperty('--slide-canvas-new-anim', newAnim);
-  }, [activeSub, activeLec]);
-
-  // Sync browser back/forward buttons (popstate events) with view transitions
-  useEffect(() => {
-    const handlePopState = () => {
-      const pathParts = window.location.pathname.split('/');
-      const lastPart = pathParts[pathParts.length - 1];
-      if (lastPart) {
-        const parsed = parseInt(lastPart, 10);
-        if (!isNaN(parsed) && parsed !== activeSlide) {
-          const meta = activeSub && activeLec ? getSlideMetadata(parsed, activeSub, activeLec) : null;
-          const nextBgVariant = meta ? getBgVariant(meta.type) : 'default';
-          const direction = parsed > activeSlide ? 'forward' : 'backward';
-
-          applyTransitionStyle(parsed, direction);
-          slideDirectionRef.current = direction;
-
-          startSafeTransition(() => {
-            setActiveSlide(parsed);
-            setBgVariant(nextBgVariant);
-          });
-        }
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [activeSlide, activeSub, activeLec, startSafeTransition, applyTransitionStyle]);
-
-  const changeSlideWithTransition = useCallback((nextSlide: number, direction: 'forward' | 'backward' = 'forward') => {
-    const meta = activeSub && activeLec ? getSlideMetadata(nextSlide, activeSub, activeLec) : null;
-    const nextBgVariant = meta ? getBgVariant(meta.type) : 'default';
-
-    applyTransitionStyle(nextSlide, direction);
-    slideDirectionRef.current = direction;
-
-    if (!isProjectionView()) {
-      const activeSlideKey = storageKeys.activeSlide(lectureId || 'mock');
-      const clickStepKey = storageKeys.clickStep(lectureId || 'mock', nextSlide);
-      const targetInitialClick = direction === 'backward' ? 999 : 0;
-      setStorageItem(clickStepKey, targetInitialClick);
-      setStorageItem(activeSlideKey, nextSlide);
-    }
-
-    startSafeTransition(() => {
-      setActiveSlide(nextSlide);
-      setBgVariant(nextBgVariant);
-    });
-    window.history.pushState(null, '', `/${subjectId}/${sessionId}/${lectureId}/${nextSlide}`);
-  }, [subjectId, sessionId, lectureId, activeSub, activeLec, startSafeTransition, applyTransitionStyle]);
 
   const { pathname } = useLocation();
   const isBlogMode = pathname.endsWith('/blog');
@@ -257,7 +129,7 @@ export const useSlideViewerOrchestrator = () => {
   // Group slide numbers by section
   const sections = useMemo(() => {
     const groups: Record<string, number[]> = {};
-    if (!activeSub || !activeLec) return groups;
+    if (isLoadingDeck || !activeSub || !activeLec) return groups;
     visibleSlideNumbers.forEach((i) => {
       const meta = getSlideMetadata(i, activeSub, activeLec);
       const sec = meta.section;
@@ -265,15 +137,16 @@ export const useSlideViewerOrchestrator = () => {
       groups[sec].push(i);
     });
     return groups;
-  }, [visibleSlideNumbers, activeSub, activeLec]);
+  }, [visibleSlideNumbers, activeSub, activeLec, isLoadingDeck]);
 
   // Redirect to nearest valid slide if the current URL slide is hidden/stealthed
   useEffect(() => {
+    if (isLoadingDeck) return;
     if (visibleSlideNumbers.length > 0 && !visibleSlideNumbers.includes(activeSlide)) {
       const closest = visibleSlideNumbers.find((num) => num > activeSlide) || visibleSlideNumbers[visibleSlideNumbers.length - 1] || 1;
       changeSlideWithTransition(closest, 'forward');
     }
-  }, [visibleSlideNumbers, activeSlide, changeSlideWithTransition]);
+  }, [visibleSlideNumbers, activeSlide, changeSlideWithTransition, isLoadingDeck]);
 
   const navigateWithTransition = useCallback((path: string, options?: NavigateOptions) => {
     startSafeTransition(() => navigate(path, options));
@@ -371,6 +244,8 @@ export const useSlideViewerOrchestrator = () => {
     handlePrevSlide,
     handleNextSlide,
     visibleSlideNumbers,
+    isLoadingDeck,
+    deckError,
   };
 };
 

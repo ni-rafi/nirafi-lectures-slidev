@@ -2,13 +2,6 @@ import React from 'react';
 import type { Subject, Lecture, Session } from '@/config/lectures';
 import SlideConcepts from './SlideConcepts';
 
-// Import all constructed lecture slide decks
-import * as ConcreteLecture from '@/subjects/quantity-surveying/lectures/session-2026/lecture-1-concrete/lecture';
-import * as BrickworkLecture from '@/subjects/quantity-surveying/lectures/session-2026/lecture-2-brickwork/lecture';
-import * as SteelLecture from '@/subjects/quantity-surveying/lectures/session-2026/lecture-3-steel/lecture';
-import * as SlidevIntroLecture from '@/subjects/web-development/lectures/session-2026/lecture-1-slidev-intro/lecture';
-import * as EngineeringMechanicsOutline from '@/subjects/engineering-mechanics/lectures/session-2024/course-outline/lecture';
-
 export interface SlideProps {
   subject: Subject;
   lecture: Lecture;
@@ -35,23 +28,73 @@ export interface SlideMetadata {
   quizVisibilityMode?: 'stealth' | 'placeholder';
 }
 
-// Master registry of active lecture decks
-const LECTURE_DECKS: Record<string, {
+// Resolved decks cache
+const RESOLVED_DECKS: Record<string, {
   slides: Record<number, React.ComponentType<SlideProps>>;
   slideMetadata: Record<number, SlideMetadata>;
-}> = {
-  'concrete': ConcreteLecture,
-  'brickwork': BrickworkLecture,
-  'steel': SteelLecture,
-  'slidev_intro': SlidevIntroLecture,
-  'course-outline': EngineeringMechanicsOutline,
+}> = {};
+
+export const registerResolvedDeck = (
+  lectureId: string,
+  deck: {
+    slides: Record<number, React.ComponentType<SlideProps>>;
+    slideMetadata: Record<number, SlideMetadata>;
+  }
+) => {
+  RESOLVED_DECKS[lectureId] = deck;
+};
+
+// Glob map of all dynamic lecture loaders
+const DECK_LOADERS = import.meta.glob<{
+  slides: Record<number, React.ComponentType<SlideProps>>;
+  slideMetadata: Record<number, SlideMetadata>;
+}>('/src/subjects/*/lectures/session-*/lecture-*/lecture.tsx');
+
+// Eager glob map of metadata files to resolve quiz visibility modes synchronously
+const metadataModules = import.meta.glob<{
+  metadata: Lecture & { quizzes?: Record<string, 'stealth' | 'placeholder'> };
+}>('/src/subjects/*/lectures/session-*/lecture-*/metadata.ts', { eager: true });
+
+/**
+ * Dynamically resolves and loads a lecture deck on demand.
+ */
+export const loadLectureDeck = async (
+  subjectId: string,
+  sessionId: string,
+  lectureId: string
+): Promise<{
+  slides: Record<number, React.ComponentType<SlideProps>>;
+  slideMetadata: Record<number, SlideMetadata>;
+}> => {
+  // Look up matching loader path key
+  const targetKey = Object.keys(DECK_LOADERS).find((path) => {
+    const includesSubjectAndSession = path.includes(`/subjects/${subjectId}/`) && path.includes(`/${sessionId}/`);
+    if (!includesSubjectAndSession) return false;
+
+    // Matches e.g. "/lecture-1-concrete/lecture.tsx" or "/lecture-concrete/lecture.tsx" ending with lectureId
+    const regex = new RegExp(`\\/lecture-(?:\\d+-)?${lectureId}\\/lecture\\.tsx$`);
+    return regex.test(path);
+  });
+
+  if (targetKey && DECK_LOADERS[targetKey]) {
+    const module = await DECK_LOADERS[targetKey]();
+    RESOLVED_DECKS[lectureId] = module;
+    return module;
+  }
+
+  throw new Error(`Slide deck loader not found for subject: ${subjectId}, session: ${sessionId}, lecture: ${lectureId}`);
+};
+
+const EMPTY_FALLBACK: {
+  slides: Record<number, React.ComponentType<SlideProps>>;
+  slideMetadata: Record<number, SlideMetadata>;
+} = {
+  slides: {},
+  slideMetadata: {},
 };
 
 export const getLectureDeck = (lectureId: string) => {
-  return (LECTURE_DECKS[lectureId] || SlidevIntroLecture) as {
-    slides: Record<number, React.ComponentType<SlideProps>>;
-    slideMetadata: Record<number, SlideMetadata>;
-  };
+  return RESOLVED_DECKS[lectureId] || EMPTY_FALLBACK;
 };
 
 /**
@@ -98,11 +141,9 @@ export const getSlideMetadata = (
  * Resolves the quiz visibility mode ('stealth' | 'placeholder') by its unique quizId.
  */
 export const getQuizVisibilityMode = (quizId: string): 'stealth' | 'placeholder' => {
-  for (const deck of Object.values(LECTURE_DECKS)) {
-    for (const meta of Object.values(deck.slideMetadata)) {
-      if (meta.quizId === quizId) {
-        return meta.quizVisibilityMode || 'placeholder';
-      }
+  for (const module of Object.values(metadataModules)) {
+    if (module.metadata?.quizzes && module.metadata.quizzes[quizId]) {
+      return module.metadata.quizzes[quizId];
     }
   }
   return 'placeholder';
