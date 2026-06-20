@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import { useTheme } from '@/context/useTheme';
  * ThemeToggle dropdown component for switching between light, dark, and system themes.
  */
 export const ThemeToggle: React.FC = () => {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -24,15 +24,18 @@ export const ThemeToggle: React.FC = () => {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme('light')}>
-          Light
+      <DropdownMenuContent align="end" className="w-36">
+        <DropdownMenuItem className="cursor-pointer flex items-center justify-between" onClick={() => setTheme('light')}>
+          <span>Light</span>
+          {theme === 'light' && <Check className="h-4 w-4" />}
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme('dark')}>
-          Dark
+        <DropdownMenuItem className="cursor-pointer flex items-center justify-between" onClick={() => setTheme('dark')}>
+          <span>Dark</span>
+          {theme === 'dark' && <Check className="h-4 w-4" />}
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer" onClick={() => setTheme('system')}>
-          System
+        <DropdownMenuItem className="cursor-pointer flex items-center justify-between" onClick={() => setTheme('system')}>
+          <span>System</span>
+          {theme === 'system' && <Check className="h-4 w-4" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -10,5 +10,11 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
       '@fix-webm-duration/fix': resolve(__dirname, './src/shared/mocks/fixWebmDuration.ts')
     }
+  },
+  server: {
+    host: true
+  },
+  build: {
+    sourcemap: false
   }
 });

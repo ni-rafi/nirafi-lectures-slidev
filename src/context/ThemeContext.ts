@@ -17,7 +17,7 @@ export interface ThemeProviderState {
 export const themeInitialState: ThemeProviderState = {
   theme: 'system',
   resolvedTheme: 'light',
-  colorScheme: 'neutral',
+  colorScheme: 'green',
   borderRadius: 4,
   setTheme: () => null,
   setColorScheme: () => null,

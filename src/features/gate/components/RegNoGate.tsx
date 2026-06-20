@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
 import { useUserContext } from '@/context/UserContext';
-import { GraduationCap, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { GraduationCap, Lock, ArrowRight, AlertCircle, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { validateRegistration, validateSession } from '@/cores/user/userValidation';
 
 /**
- * RollNumberGate displays a card interface gating access to the lectures portal.
+ * RegNoGate displays a card interface gating access to the lectures portal.
  * Requires a valid 10-digit registration number and session.
  */
-export const RollNumberGate: React.FC = () => {
+export const RegNoGate: React.FC = () => {
   const { login, error, clearError } = useUserContext();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [roll, setRoll] = useState('');
-  const [sessionVal, setSessionVal] = useState('2026-27'); // Default to target session
+  const [sessionVal, setSessionVal] = useState('2016-17'); // Default to target session
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+
+  const [rollTouched, setRollTouched] = useState(false);
+  const [sessionTouched, setSessionTouched] = useState(false);
+
+  const isRollValid = validateRegistration(roll);
+  const isSessionValid = validateSession(sessionVal);
+  const isFormValid = name.trim() !== '' && isRollValid && isSessionValid;
+
+  const showRollError = rollTouched && !isRollValid;
+  const showSessionError = sessionTouched && !isSessionValid;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,9 +39,13 @@ export const RollNumberGate: React.FC = () => {
       return;
     }
 
-    const digitsOnly = roll.replace(/\D/g, '');
-    if (digitsOnly.length !== 10) {
+    if (!isRollValid) {
       setValidationError('Registration number must be exactly 10 digits.');
+      return;
+    }
+
+    if (!isSessionValid) {
+      setValidationError('Invalid academic session. Standard format is YYYY-YY (e.g., 2016-17).');
       return;
     }
 
@@ -53,6 +68,22 @@ export const RollNumberGate: React.FC = () => {
     } catch (err) {
       console.error(err);
       setValidationError('Verification service encountered an error.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    clearError();
+    setValidationError(null);
+    setIsSubmitting(true);
+    try {
+      const success = await login('9999999999', '2016-17', 'Guest Student');
+      if (!success) {
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setValidationError('Guest login encountered an error.');
       setIsSubmitting(false);
     }
   };
@@ -116,16 +147,24 @@ export const RollNumberGate: React.FC = () => {
               id="roll"
               type="text"
               required
-              placeholder="e.g. 2020331001"
+              placeholder="e.g. 2016333012"
               value={roll}
               onChange={(e) => {
                 setRoll(e.target.value);
                 if (validationError) setValidationError(null);
                 clearError();
               }}
+              onBlur={() => setRollTouched(true)}
+              aria-invalid={showRollError}
               className="bg-muted/30 focus:bg-background transition-colors font-mono text-sm"
               disabled={isSubmitting}
             />
+            {showRollError && (
+              <span className="text-[11px] text-destructive flex items-center gap-1 mt-0.5 animate-in fade-in-50 duration-200">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                Registration number must be exactly 10 digits.
+              </span>
+            )}
           </div>
 
           {/* Email Input */}
@@ -154,25 +193,28 @@ export const RollNumberGate: React.FC = () => {
             <label htmlFor="session" className="text-xs font-semibold text-foreground/80">
               Academic Session
             </label>
-            <select
+            <Input
               id="session"
+              type="text"
               required
+              placeholder="e.g. 2026-27"
               value={sessionVal}
               onChange={(e) => {
                 setSessionVal(e.target.value);
+                if (validationError) setValidationError(null);
                 clearError();
               }}
-              className="flex h-9 w-full rounded-md border border-input bg-muted/30 px-3 py-1 text-xs shadow-xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 focus:bg-background"
+              onBlur={() => setSessionTouched(true)}
+              aria-invalid={showSessionError}
+              className="bg-muted/30 focus:bg-background transition-colors text-sm"
               disabled={isSubmitting}
-            >
-              <option value="2026-27">Session 2026-27</option>
-              <option value="2025-26">Session 2025-26</option>
-              <option value="2024-25">Session 2024-25</option>
-              <option value="2023-24">Session 2023-24</option>
-              <option value="2022-23">Session 2022-23</option>
-              <option value="2021-22">Session 2021-22</option>
-              <option value="2020-21">Session 2020-21</option>
-            </select>
+            />
+            {showSessionError && (
+              <span className="text-[11px] text-destructive flex items-center gap-1 mt-0.5 animate-in fade-in-50 duration-200">
+                <AlertCircle className="h-3 w-3 shrink-0" />
+                Session format must be YYYY-YY (e.g., 2016-17).
+              </span>
+            )}
           </div>
 
           {/* Alert messages */}
@@ -187,7 +229,7 @@ export const RollNumberGate: React.FC = () => {
           <Button
             type="submit"
             className="w-full font-semibold mt-1 group"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !isFormValid}
           >
             {isSubmitting ? (
               <span className="flex items-center gap-1.5">
@@ -201,10 +243,31 @@ export const RollNumberGate: React.FC = () => {
               </span>
             )}
           </Button>
+
+          {/* Guest Option */}
+          <div className="relative flex items-center justify-center py-1">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-muted-foreground/10" />
+            </div>
+            <span className="relative bg-card px-3 text-[10px] uppercase font-semibold text-muted-foreground/60 tracking-wider">
+              or
+            </span>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full font-semibold transition-colors flex items-center justify-center gap-1.5"
+            disabled={isSubmitting}
+            onClick={handleGuestLogin}
+          >
+            <User className="h-3.5 w-3.5 text-muted-foreground" />
+            Continue as Guest
+          </Button>
         </form>
       </div>
     </div>
   );
 };
 
-export default RollNumberGate;
+export default RegNoGate;

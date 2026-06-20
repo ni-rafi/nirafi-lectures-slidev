@@ -10,7 +10,7 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   children,
   defaultTheme = 'system',
-  defaultColorScheme = 'neutral',
+  defaultColorScheme = 'green',
 }) => {
   const [theme, _setTheme] = useState<Theme>(
     () => (localStorage.getItem('vite-ui-theme') as Theme) || defaultTheme

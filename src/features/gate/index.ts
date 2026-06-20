@@ -1,2 +1,2 @@
-export * from './components/RollNumberGate';
-export { default } from './components/RollNumberGate';
+export * from './components/RegNoGate';
+export { default } from './components/RegNoGate';

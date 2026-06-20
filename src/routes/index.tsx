@@ -5,7 +5,7 @@ import { useUserContext, useLectureStatus } from '@/context';
 import { PageLayout } from '@/shared/components/Layout/PageLayout';
 import LecturePortal from '@/features/portal';
 import { SlideViewer } from '@/features/presentation/components/core';
-import RollNumberGate from '@/features/gate/components/RollNumberGate';
+import RegNoGate from '@/features/gate/components/RegNoGate';
 import AdminClassDashboard from '@/features/portal/components/AdminClassDashboard';
 import SlideCustomizationDocs from '@/features/docs/SlideCustomizationDocs';
 import ShapeBuilderPlayground from '@/features/presentation/components/tools/playground/ShapeBuilderPlayground';
@@ -76,7 +76,7 @@ export const AppRoutes: React.FC = () => {
   }
 
   if (!isLoggedIn) {
-    return <RollNumberGate />;
+    return <RegNoGate />;
   }
 
   return (

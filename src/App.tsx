@@ -11,7 +11,7 @@ export const App: React.FC = () => {
     <FirebaseProvider>
       <UserProvider>
         <LectureStatusProvider>
-          <ThemeProvider defaultTheme="system" defaultColorScheme="neutral">
+          <ThemeProvider defaultTheme="system" defaultColorScheme="green">
             <TooltipProvider delayDuration={150}>
               <Router>
                 <AppRoutes />

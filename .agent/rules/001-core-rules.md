@@ -32,7 +32,7 @@ description: Core Architecture and File Size Rules
 ## 4. Naming Conventions
 - **Services**: Name in `camelCase` with the `Service` suffix (e.g., `firebaseService.ts`, `qsService.ts`). Do NOT use dot-separated suffixes like `.service.ts`.
 - **Interfaces**: Begin with the letter `I` in PascalCase (e.g., `IFirebaseService.ts`, `IQSEngine.ts`).
-- **Components**: PascalCase (e.g. `RollNumberGate.tsx`, `SlideDeck.tsx`, `StepConcrete.tsx`).
+- **Components**: PascalCase (e.g. `RegNoGate.tsx`, `SlideDeck.tsx`, `StepConcrete.tsx`).
 - **Hooks**: Name in `camelCase` with the `use` prefix (e.g. `useUserContext.ts`).
 - **Validation Schemas**: Put Zod schemas in `{serviceName}.schemas.ts` files, deriving types using `z.infer`.
 
@@ -43,6 +43,3 @@ description: Core Architecture and File Size Rules
   - Use `<SlideParagraph>` for slide paragraph styling.
   - Use `<SlideEquation>` or `<LatexFormula>` for mathematical equations, adhering to flat, unshadowed container styles.
 - **Lecture Organization**: Organize slide decks under `src/subjects/{subjectName}/lectures/session-{year}/` to enforce year-specific division. Keep slide structure presentation-only, importing estimate calculators or quizzes from subject `features/`.
-
-
-

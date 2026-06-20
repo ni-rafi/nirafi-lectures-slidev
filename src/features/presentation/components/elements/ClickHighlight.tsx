@@ -158,13 +158,18 @@ export const ClickHighlight: React.FC<ClickHighlightProps> = ({
     variant === 'marker' || variant === 'paint' ? 500 : 300;
   const duration = transitionDuration ?? defaultDuration;
 
-  const style: React.CSSProperties = {
+  const style: React.CSSProperties & Record<string, string | number> = {
     transitionDuration: `${duration}ms`,
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     // Each wrapped line segment renders its own independent background+padding
     boxDecorationBreak: 'clone',
     WebkitBoxDecorationBreak: 'clone',
   };
+
+  if (isActive) {
+    style['--foreground'] = 'currentColor';
+    style['--muted-foreground'] = 'currentColor';
+  }
 
   // ── Marker: organic SVG brush-stroke shape ────────────────────────────────
   // The SVG is always rendered at full size (100% × 130%). The SMIL <animate>
@@ -241,7 +246,7 @@ export const ClickHighlight: React.FC<ClickHighlightProps> = ({
     } else if (variant === 'text') {
       highlightClasses += ' text-primary';
     } else if (variant === 'rect') {
-      highlightClasses += ' text-primary dark:text-primary-foreground/90';
+      highlightClasses += ' text-primary';
     }
 
     // Scale
