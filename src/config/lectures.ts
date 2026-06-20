@@ -34,7 +34,7 @@ export type Subject = Course;
 
 // Eagerly import all lecture metadata configs across the workspace
 const metadataModules = import.meta.glob<{ metadata: Lecture }>(
-  '/src/subjects/*/lectures/session-*/*/metadata.ts',
+  '/src/subjects/*/lectures/*/*/metadata.ts',
   { eager: true }
 );
 
@@ -43,8 +43,8 @@ const COURSE_SHELLS: Record<string, Course> = {
   'quantity-surveying': {
     id: 'quantity-surveying',
     courseTitle: 'Quantity Surveying',
-    courseCode: 'CE-QS',
-    description: 'Structural estimation, material take-off, and project costing for civil engineering works.',
+    courseCode: 'CEE 0731 2224',
+    description: 'Quantity take-off, Bill of Quantities (BoQ), material and resource scheduling, and budget management for civil engineering works.',
     iconEmoji: '🏗️',
     color: '#f59e0b',
     sessions: [],
@@ -71,7 +71,7 @@ const COURSE_SHELLS: Record<string, Course> = {
 
 // Process modules to populate the COURSE_SHELLS
 Object.entries(metadataModules).forEach(([path, module]) => {
-  const match = path.match(/\/subjects\/([^/]+)\/lectures\/(session-[^/]+)\//);
+  const match = path.match(/\/subjects\/([^/]+)\/lectures\/((?:session-)?\d{4}(?:-\d{2,4})?)\//);
   if (!match) return;
 
   const subjectId = match[1];
@@ -84,7 +84,8 @@ Object.entries(metadataModules).forEach(([path, module]) => {
   // Find or create session
   let session = course.sessions.find((s: Session) => s.id === sessionId);
   if (!session) {
-    const year = sessionId.split('-')[1];
+    const yearMatch = sessionId.match(/\d{4}/);
+    const year = yearMatch ? yearMatch[0] : '';
     const nextYearShort = year ? String(Number(year) - 2000 + 1) : '';
     session = {
       id: sessionId,

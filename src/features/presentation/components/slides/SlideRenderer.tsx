@@ -48,12 +48,12 @@ export const registerResolvedDeck = (
 const DECK_LOADERS = import.meta.glob<{
   slides: Record<number, React.ComponentType<SlideProps>>;
   slideMetadata: Record<number, SlideMetadata>;
-}>('/src/subjects/*/lectures/session-*/*/lecture.tsx');
+}>('/src/subjects/*/lectures/*/*/lecture.tsx');
 
 // Eager glob map of metadata files to resolve quiz visibility modes synchronously
 const metadataModules = import.meta.glob<{
   metadata: Lecture & { quizzes?: Record<string, 'stealth' | 'placeholder'> };
-}>('/src/subjects/*/lectures/session-*/*/metadata.ts', { eager: true });
+}>('/src/subjects/*/lectures/*/*/metadata.ts', { eager: true });
 
 /**
  * Dynamically resolves and loads a lecture deck on demand.
