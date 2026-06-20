@@ -210,7 +210,7 @@ export const MaxShearStressChart: React.FC = () => {
               <g key={idx} opacity={0.85}>
                 {/* Baseline x tick */}
                 <line x1={px} y1={bottomY - 3} x2={px} y2={bottomY + 3} stroke="var(--border)" strokeWidth={1} />
-                <text x={px} y={bottomY + 11} textAnchor="middle" className="fill-muted-foreground/60 text-[8px] font-mono">
+                <text x={px} y={bottomY + 14} textAnchor="middle" className="fill-muted-foreground/60 text-[9px]">
                   {cp.x.toFixed(1)}m
                 </text>
 
@@ -219,9 +219,9 @@ export const MaxShearStressChart: React.FC = () => {
                     <circle cx={px} cy={py} r={3} className="fill-amber-500 stroke-background" strokeWidth={0.8} />
                     <text
                       x={px}
-                      y={py - 6}
+                      y={py - 8}
                       textAnchor="middle"
-                      className="fill-amber-500 text-[8px] font-mono font-bold"
+                      className="fill-amber-500 text-[10px] font-bold"
                     >
                       {(cp.maxShear / 1e6).toFixed(1)}
                     </text>

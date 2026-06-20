@@ -1,5 +1,6 @@
 import React from 'react';
 import { IStressState } from '@/cores/mechanics-of-solids/stress/stress.interface';
+import { StressTransformationEngine } from '@/cores/mechanics-of-solids/stress/stress-transformation.engine';
 
 interface StressElementBlockProps {
   state: IStressState;
@@ -7,7 +8,9 @@ interface StressElementBlockProps {
 }
 
 export const StressElementBlock: React.FC<StressElementBlockProps> = ({ state, thetaRad }) => {
-  const { sigmaX, sigmaY, tauXY } = state;
+  // Transform the stress state to the inspected rotation angle
+  const transformed = StressTransformationEngine.transform(state, thetaRad);
+  const { sigmaX, sigmaY, tauXY } = transformed;
 
   const width = 160;
   const height = 160;
@@ -33,7 +36,7 @@ export const StressElementBlock: React.FC<StressElementBlockProps> = ({ state, t
     value: number,
     label: string
   ) => {
-    if (Math.abs(value) < 1e-3) return null;
+    if (Math.abs(value) < 1e4) return null; // Hide if less than 0.01 MPa (10 kPa)
 
     const isTension = value > 0;
     const arrowDir = isTension ? 1 : -1;
@@ -81,7 +84,7 @@ export const StressElementBlock: React.FC<StressElementBlockProps> = ({ state, t
 
   // Render shear stress arrows (along the faces of the block)
   const renderShearArrows = (tauVal: number) => {
-    if (Math.abs(tauVal) < 1e-3) return null;
+    if (Math.abs(tauVal) < 1e4) return null; // Hide if less than 0.01 MPa (10 kPa)
 
     const isPositive = tauVal > 0;
     const dir = isPositive ? 1 : -1;
@@ -112,8 +115,13 @@ export const StressElementBlock: React.FC<StressElementBlockProps> = ({ state, t
             <polygon points={spec.points} fill="#f59e0b" />
           </g>
         ))}
-        {/* Label for shear */}
-        <text x={halfS + 14} y={0} className="fill-amber-500 text-[7px] font-bold text-center">
+        {/* Label for shear (positioned at the top-right corner to avoid normal stress arrow overlapping) */}
+        <text
+          x={halfS + 10}
+          y={-halfS - 6}
+          textAnchor="start"
+          className="fill-amber-500 text-[7.5px] font-mono font-bold"
+        >
           τ={Math.abs(parseFloat(format(tauVal)))}
         </text>
       </g>

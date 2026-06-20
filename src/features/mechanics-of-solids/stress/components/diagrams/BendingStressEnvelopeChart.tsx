@@ -233,7 +233,7 @@ export const BendingStressEnvelopeChart: React.FC = () => {
               <g key={idx} opacity={0.85}>
                 {/* Baseline x tick */}
                 <line x1={px} y1={midY - 3} x2={px} y2={midY + 3} stroke="var(--border)" strokeWidth={1} />
-                <text x={px} y={midY + 11} textAnchor="middle" className="fill-muted-foreground/60 text-[8px] font-mono">
+                <text x={px} y={midY + 14} textAnchor="middle" className="fill-muted-foreground/60 text-[9px]">
                   {cp.x.toFixed(1)}m
                 </text>
 
@@ -242,9 +242,9 @@ export const BendingStressEnvelopeChart: React.FC = () => {
                     <circle cx={px} cy={pyT} r={3} className="fill-emerald-500 stroke-background" strokeWidth={0.8} />
                     <text
                       x={px}
-                      y={pyT - 6}
+                      y={pyT - 8}
                       textAnchor="middle"
-                      className="fill-emerald-500 text-[8px] font-mono font-bold"
+                      className="fill-emerald-500 text-[10px] font-bold"
                     >
                       +{(cp.maxT / 1e6).toFixed(1)}
                     </text>
@@ -256,9 +256,9 @@ export const BendingStressEnvelopeChart: React.FC = () => {
                     <circle cx={px} cy={pyC} r={3} className="fill-blue-500 stroke-background" strokeWidth={0.8} />
                     <text
                       x={px}
-                      y={pyC + 11}
+                      y={pyC + 14}
                       textAnchor="middle"
-                      className="fill-blue-500 text-[8px] font-mono font-bold"
+                      className="fill-blue-500 text-[10px] font-bold"
                     >
                       {(cp.maxC / 1e6).toFixed(1)}
                     </text>

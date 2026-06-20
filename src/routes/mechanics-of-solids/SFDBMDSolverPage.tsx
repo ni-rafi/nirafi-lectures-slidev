@@ -16,6 +16,7 @@ import { useBeamWorkspace } from '@/features/mechanics-of-solids/sfd-bmd/context
 import { BendingStressEnvelopeChart } from '@/features/mechanics-of-solids/stress/components/diagrams/BendingStressEnvelopeChart';
 import { MaxShearStressChart } from '@/features/mechanics-of-solids/stress/components/diagrams/MaxShearStressChart';
 import { StressGradientProfile } from '@/features/mechanics-of-solids/stress/components/diagrams/StressGradientProfile';
+import { InteractiveStressTransformation } from '@/features/mechanics-of-solids/stress/components/diagrams/InteractiveStressTransformation';
 import { CrossSectionBuilder } from '@/features/mechanics-of-solids/stress/components/builder/CrossSectionBuilder';
 import { InteractiveProfileCanvas } from '@/features/mechanics-of-solids/stress/components/builder/InteractiveProfileCanvas';
 import { CrossSectionEngine } from '@/cores/mechanics-of-solids/stress/cross-section.engine';
@@ -74,6 +75,7 @@ const SFDBMDSolverInternal: React.FC = () => {
               <BendingStressEnvelopeChart />
               <MaxShearStressChart />
               <StressGradientProfile />
+              <InteractiveStressTransformation />
             </div>
           ) : (
             <div className="flex gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-xs text-destructive">

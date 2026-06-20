@@ -17,20 +17,17 @@ export const MohrsCircleChart: React.FC<MohrsCircleChartProps> = ({ state, theta
   const cy = 100;
 
   // Scaling factor to fit circle and reference points inside the 200x200 canvas
-  const maxVal = Math.max(
-    1e6,
-    Math.abs(center) + radius,
-    Math.abs(pointA.x),
-    Math.abs(pointB.x),
-    Math.abs(pointA.y),
-    Math.abs(pointB.y)
-  );
-  const scale = 65 / maxVal; // Map maximum absolute value to 65px radius
+  // Scale the circle to always be large and clear (55px radius), leaving enough room for labels.
+  const scale = 55 / Math.max(1e5, radius);
 
   const toPxX = (val: number) => cx + (val - center) * scale;
   const toPxY = (val: number) => cy - val * scale; // Standard Cartesian coordinate: +tau is upwards
 
   const rPx = radius * scale;
+
+  // Determine whether to show static initial points A & B to avoid overlapping when rotation is near zero
+  const distAPx = Math.hypot(toPxX(pointA.x) - toPxX(pointAPrime.x), toPxY(pointA.y) - toPxY(pointAPrime.y));
+  const showStaticAB = distAPx > 5;
 
   const format = (val: number) => (val / 1e6).toFixed(2); // MPa
 
@@ -46,6 +43,14 @@ export const MohrsCircleChart: React.FC<MohrsCircleChartProps> = ({ state, theta
         <line x1={cx} y1={height - 15} x2={cx} y2={15} stroke="var(--border)" strokeWidth={1} />
         <polygon points={`${cx},15 ${cx - 2.5},19 ${cx + 2.5},19`} fill="var(--border)" />
         <text x={cx} y={10} textAnchor="middle" className="fill-muted-foreground text-[8px] font-bold">τ</text>
+
+        {/* Actual Origin (σ = 0) line if within bounds */}
+        {toPxX(0) >= 15 && toPxX(0) <= width - 15 && (
+          <g opacity={0.35}>
+            <line x1={toPxX(0)} y1={15} x2={toPxX(0)} y2={height - 15} stroke="var(--foreground)" strokeWidth={0.8} strokeDasharray="2,2" />
+            <text x={toPxX(0) + 3} y={23} className="fill-muted-foreground text-[6px] font-mono">σ=0</text>
+          </g>
+        )}
 
         {/* Center of Circle (C) */}
         <circle cx={toPxX(center)} cy={cy} r={2} fill="var(--destructive)" />
@@ -65,28 +70,30 @@ export const MohrsCircleChart: React.FC<MohrsCircleChartProps> = ({ state, theta
         />
 
         {/* Reference points: original state diameter line AB */}
-        <g opacity={0.5}>
-          {/* Diameter line */}
-          <line
-            x1={toPxX(pointA.x)}
-            y1={toPxY(pointA.y)}
-            x2={toPxX(pointB.x)}
-            y2={toPxY(pointB.y)}
-            stroke="var(--muted-foreground)"
-            strokeWidth={1}
-            strokeDasharray="2,2"
-          />
-          {/* Reference point A */}
-          <circle cx={toPxX(pointA.x)} cy={toPxY(pointA.y)} r={2.5} fill="var(--muted-foreground)" />
-          <text x={toPxX(pointA.x) + 4} y={toPxY(pointA.y) - 4} className="fill-muted-foreground text-[7px] font-bold">
-            A({format(pointA.x)},{format(pointA.y)})
-          </text>
-          {/* Reference point B */}
-          <circle cx={toPxX(pointB.x)} cy={toPxY(pointB.y)} r={2.5} fill="var(--muted-foreground)" />
-          <text x={toPxX(pointB.x) - 4} y={toPxY(pointB.y) + 8} textAnchor="end" className="fill-muted-foreground text-[7px] font-bold">
-            B({format(pointB.x)},{format(pointB.y)})
-          </text>
-        </g>
+        {showStaticAB && (
+          <g opacity={0.5}>
+            {/* Diameter line */}
+            <line
+              x1={toPxX(pointA.x)}
+              y1={toPxY(pointA.y)}
+              x2={toPxX(pointB.x)}
+              y2={toPxY(pointB.y)}
+              stroke="var(--muted-foreground)"
+              strokeWidth={1}
+              strokeDasharray="2,2"
+            />
+            {/* Reference point A */}
+            <circle cx={toPxX(pointA.x)} cy={toPxY(pointA.y)} r={2.5} fill="var(--muted-foreground)" />
+            <text x={toPxX(pointA.x) + 4} y={toPxY(pointA.y) - 4} className="fill-muted-foreground text-[7px] font-bold">
+              A({format(pointA.x)},{format(pointA.y)})
+            </text>
+            {/* Reference point B */}
+            <circle cx={toPxX(pointB.x)} cy={toPxY(pointB.y)} r={2.5} fill="var(--muted-foreground)" />
+            <text x={toPxX(pointB.x) - 4} y={toPxY(pointB.y) + 8} textAnchor="end" className="fill-muted-foreground text-[7px] font-bold">
+              B({format(pointB.x)},{format(pointB.y)})
+            </text>
+          </g>
+        )}
 
         {/* Rotated state diameter line A'B' */}
         <g>

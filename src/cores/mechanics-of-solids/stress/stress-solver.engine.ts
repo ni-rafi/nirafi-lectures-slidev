@@ -81,18 +81,18 @@ export class StressSolverEngine {
     });
 
     // Sort points by y coordinate from bottom to top
-    // For identical y (junctions), sort by tau so the jump renders correctly in charts.
-    // If it's near the top junction, we go from web (high tau) to flange (low tau), so sort descending.
-    // If it's near the bottom junction, we go from flange (low tau) to web (high tau), so sort ascending.
+    // For identical y (junctions), sort by absolute value of tau so the jump renders correctly in charts.
+    // If it's near the top junction, we go from web (high |tau|) to flange (low |tau|), so sort descending.
+    // If it's near the bottom junction, we go from flange (low |tau|) to web (high |tau|), so sort ascending.
     points.sort((a, b) => {
       if (Math.abs(a.y - b.y) < 1e-4) {
         if (yTopJunction !== null && Math.abs(a.y - yTopJunction) < 1e-4) {
-          return b.tau - a.tau;
+          return Math.abs(b.tau) - Math.abs(a.tau);
         }
         if (yBotJunction !== null && Math.abs(a.y - yBotJunction) < 1e-4) {
-          return a.tau - b.tau;
+          return Math.abs(a.tau) - Math.abs(b.tau);
         }
-        return a.y > 0 ? b.tau - a.tau : a.tau - b.tau;
+        return a.y > 0 ? Math.abs(b.tau) - Math.abs(a.tau) : Math.abs(a.tau) - Math.abs(b.tau);
       }
       return a.y - b.y;
     });

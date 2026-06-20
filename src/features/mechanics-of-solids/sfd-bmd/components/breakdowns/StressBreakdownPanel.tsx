@@ -5,9 +5,7 @@ import { CrossSectionEngine } from '@/cores/mechanics-of-solids/stress/cross-sec
 import { StaticalMomentEngine } from '@/cores/mechanics-of-solids/stress/statical-moment.engine';
 import { StressTransformationEngine } from '@/cores/mechanics-of-solids/stress/stress-transformation.engine';
 import { MohrsCircleEngine } from '@/cores/mechanics-of-solids/stress/mohrs-circle.engine';
-import { StressElementBlock } from '@/features/mechanics-of-solids/stress/components/diagrams/StressElementBlock';
-import { MohrsCircleChart } from '@/features/mechanics-of-solids/stress/components/diagrams/MohrsCircleChart';
-import { InteractiveAngleDial } from '@/features/mechanics-of-solids/stress/components/diagrams/InteractiveAngleDial';
+
 import { StepRow } from './StepRow';
 import { StepListHeader } from './StepListHeader';
 import { Info } from 'lucide-react';
@@ -134,43 +132,9 @@ export const StressBreakdownPanel: React.FC = () => {
   return (
     <div className="flex flex-col gap-4">
       {/* Coordinates inspector inputs */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/40 pb-3">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-muted-foreground">Inspect x:</span>
-            <input
-              type="number"
-              min={0}
-              max={length}
-              step={0.1}
-              value={customInspectX !== null ? customInspectX : ''}
-              placeholder="x (m)"
-              onChange={(e) => {
-                const val = parseFloat(e.target.value);
-                setCustomInspectX(isNaN(val) ? null : Math.max(0, Math.min(length, val)));
-              }}
-              className="w-16 rounded-md border border-border bg-background px-2 py-0.5 text-xs text-foreground focus:border-primary focus:outline-none"
-            />
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-muted-foreground">Inspect y:</span>
-            <input
-              type="number"
-              min={parseFloat(yMinMm.toFixed(1))}
-              max={parseFloat(yMaxMm.toFixed(1))}
-              step={1}
-              value={parseFloat(clampedYMm.toFixed(1))}
-              onChange={(e) => {
-                const val = parseFloat(e.target.value);
-                if (!isNaN(val)) setInspectY(Math.max(yMinMm, Math.min(yMaxMm, val)));
-              }}
-              className="w-16 rounded-md border border-border bg-background px-2 py-0.5 text-xs text-foreground focus:border-primary focus:outline-none"
-            />
-            <span className="text-[9px] text-muted-foreground">mm (limits: {yMinMm.toFixed(0)} to {yMaxMm.toFixed(0)})</span>
-          </div>
-        </div>
-
-        {/* Sub-tab selectors */}
+      {/* Sub-tab selectors */}
+      <div className="flex items-center justify-between border-b border-border/40 pb-3 gap-3">
+        <span className="text-xs font-semibold text-muted-foreground">Select Derivation Tab</span>
         <div className="flex gap-1 rounded bg-muted/30 p-0.5 border border-border/20">
           {(['bending', 'shear', 'transformation'] as const).map(t => (
             <button
@@ -213,81 +177,6 @@ export const StressBreakdownPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Transformation graphics and dial */}
-      {subTab === 'transformation' && (
-        <div className="mt-4 flex flex-col gap-6 rounded-xl border border-border bg-muted/10 p-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center border-b border-border/40 pb-4">
-            <div className="md:col-span-2 flex flex-col gap-4">
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-primary">Interactive 2D Stress Transformation</span>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Snap to critical planes or use the fine-tuning dial to transform stresses</p>
-              </div>
-              
-              {/* Snap Controls */}
-              <div className="flex flex-col gap-2">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/75">Snap to Plane:</span>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setInspectAngle(0)}
-                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-semibold transition-all ${
-                      Math.round((inspectAngle * 180) / Math.PI) === 0
-                        ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                        : 'border-border bg-background hover:bg-muted hover:text-foreground'
-                    }`}
-                  >
-                    Original (0°)
-                  </button>
-                  <button
-                    onClick={() => setInspectAngle(principal.thetaP)}
-                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-semibold transition-all ${
-                      Math.round((inspectAngle * 180) / Math.PI) === thetaPDeg
-                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 shadow-sm'
-                        : 'border-border bg-background hover:bg-emerald-50/10 hover:text-emerald-500'
-                    }`}
-                  >
-                    Principal Plane (θp = {thetaPDeg}°)
-                  </button>
-                  <button
-                    onClick={() => setInspectAngle(principal.thetaS)}
-                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-semibold transition-all ${
-                      Math.round((inspectAngle * 180) / Math.PI) === thetaSDeg
-                        ? 'border-amber-500 bg-amber-500/10 text-amber-600 shadow-sm'
-                        : 'border-border bg-background hover:bg-amber-50/10 hover:text-amber-500'
-                    }`}
-                  >
-                    Max Shear Plane (θs = {thetaSDeg}°)
-                  </button>
-                  <button
-                    onClick={() => setInspectAngle(45 * Math.PI / 180)}
-                    className={`rounded-lg border px-2.5 py-1 text-[10px] font-semibold transition-all ${
-                      Math.round((inspectAngle * 180) / Math.PI) === 45
-                        ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                        : 'border-border bg-background hover:bg-muted hover:text-foreground'
-                    }`}
-                  >
-                    45° Plane
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-center md:col-span-1">
-              <InteractiveAngleDial angleRad={inspectAngle} onChange={setInspectAngle} />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch justify-center pt-2">
-            <div className="flex flex-col gap-2 items-center bg-muted/5 border border-border/30 rounded-2xl p-5 shadow-sm">
-              <span className="text-[9px] font-black tracking-widest text-muted-foreground/60 uppercase">Rotated Element Block</span>
-              <StressElementBlock state={stressState} thetaRad={inspectAngle} />
-            </div>
-            <div className="flex flex-col gap-2 items-center bg-muted/5 border border-border/30 rounded-2xl p-5 shadow-sm">
-              <span className="text-[9px] font-black tracking-widest text-muted-foreground/60 uppercase">Mohr's Stress Circle</span>
-              <MohrsCircleChart state={stressState} thetaRad={inspectAngle} />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
