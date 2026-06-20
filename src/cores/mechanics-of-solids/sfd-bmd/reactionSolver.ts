@@ -1,156 +1,9 @@
-import { IBeam, IReaction, ILoad } from './types';
+import { IBeam, IReaction } from './types';
+import { solveLinearSystem } from './utils/linearSystemSolver';
+import { getLoadForceAndMoment, getLoadsLeftOf } from './utils/loadCalculator';
 
-// Solves A * X = B using Gaussian elimination with partial pivoting
-function solveLinearSystem(A: number[][], B: number[]): number[] | null {
-  const n = B.length;
-  for (let i = 0; i < n; i++) {
-    // Search for maximum in this column
-    let maxEl = Math.abs(A[i][i]);
-    let maxRow = i;
-    for (let k = i + 1; k < n; k++) {
-      if (Math.abs(A[k][i]) > maxEl) {
-        maxEl = Math.abs(A[k][i]);
-        maxRow = k;
-      }
-    }
-
-    // Swap maximum row with current row
-    const tempA = A[maxRow];
-    A[maxRow] = A[i];
-    A[i] = tempA;
-
-    const tempB = B[maxRow];
-    B[maxRow] = B[i];
-    B[i] = tempB;
-
-    // Check if matrix is singular
-    if (Math.abs(A[i][i]) < 1e-9) {
-      return null;
-    }
-
-    // Make all rows below this one 0 in current column
-    for (let k = i + 1; k < n; k++) {
-      const c = -A[k][i] / A[i][i];
-      for (let j = i; j < n; j++) {
-        if (i === j) {
-          A[k][j] = 0;
-        } else {
-          A[k][j] += c * A[i][j];
-        }
-      }
-      A[k][i] = 0; // force exact zero
-      B[k] += c * B[i];
-    }
-  }
-
-  // Solve equation Ax = B for an upper triangular matrix
-  const X = new Array(n).fill(0);
-  for (let i = n - 1; i >= 0; i--) {
-    let sum = 0;
-    for (let k = i + 1; k < n; k++) {
-      sum += A[i][k] * X[k];
-    }
-    X[i] = parseFloat(((B[i] - sum) / A[i][i]).toFixed(5));
-  }
-  return X;
-}
-
-// Compute load properties (force and moment about x=0)
-export function getLoadForceAndMoment(load: ILoad, referenceX: number = 0): { force: number; moment: number } {
-  let force = 0;
-  let moment = 0;
-
-  if (load.type === 'point') {
-    const mag = load.magnitude ?? 0;
-    const pos = load.position ?? 0;
-    force = mag; // Downward is positive force
-    moment = mag * (pos - referenceX);
-  } else if (load.type === 'udl') {
-    const mag = load.magnitude ?? 0;
-    const start = load.startPosition ?? 0;
-    const end = load.endPosition ?? 0;
-    const length = end - start;
-    const cg = (start + end) / 2;
-    force = mag * length;
-    moment = force * (cg - referenceX);
-  } else if (load.type === 'uvl') {
-    const start = load.startPosition ?? 0;
-    const end = load.endPosition ?? 0;
-    const length = end - start;
-    const w1 = load.startMagnitude ?? 0;
-    const w2 = load.endMagnitude ?? 0;
-    
-    // UVL is split into rectangular (w1) and triangular (w2-w1) parts
-    const fRect = w1 * length;
-    const cgRect = (start + end) / 2;
-    const fTri = 0.5 * (w2 - w1) * length;
-    const cgTri = start + (2 / 3) * length; // CG of triangle from start
-    
-    force = fRect + fTri;
-    moment = fRect * (cgRect - referenceX) + fTri * (cgTri - referenceX);
-  } else if (load.type === 'moment') {
-    const mag = load.magnitude ?? 0; // kNm (positive clockwise)
-    force = 0;
-    moment = -mag; // clockwise moment about any point is clockwise. Wait, signs: standard moment about a point adds clockwise moments. Let's keep signs consistent.
-  }
-
-  return { force, moment };
-}
-
-// Compute load properties to the left of a coordinate
-export function getLoadsLeftOf(beam: IBeam, xLimit: number): { force: number; moment: number } {
-  let force = 0;
-  let moment = 0;
-
-  beam.loads.forEach(load => {
-    if (load.type === 'point' || load.type === 'moment') {
-      const pos = load.position ?? 0;
-      if (pos < xLimit) {
-        const res = getLoadForceAndMoment(load, xLimit);
-        force += res.force;
-        moment += res.moment;
-      }
-    } else if (load.type === 'udl' || load.type === 'uvl') {
-      const start = load.startPosition ?? 0;
-      const end = load.endPosition ?? 0;
-
-      if (start >= xLimit) return; // Entirely to the right
-
-      if (end <= xLimit) {
-        // Entirely to the left
-        const res = getLoadForceAndMoment(load, xLimit);
-        force += res.force;
-        moment += res.moment;
-      } else {
-        // Cut UDL/UVL at xLimit
-        const length = xLimit - start;
-        if (load.type === 'udl') {
-          const mag = load.magnitude ?? 0;
-          const partialForce = mag * length;
-          const cg = start + length / 2;
-          force += partialForce;
-          moment += partialForce * (cg - xLimit);
-        } else {
-          // UVL
-          const w1 = load.startMagnitude ?? 0;
-          const w2 = load.endMagnitude ?? 0;
-          const totalLength = end - start;
-          const wx = w1 + ((w2 - w1) * length) / totalLength; // intensity at xLimit
-
-          const fRect = w1 * length;
-          const cgRect = start + length / 2;
-          const fTri = 0.5 * (wx - w1) * length;
-          const cgTri = start + (2 / 3) * length;
-
-          force += fRect + fTri;
-          moment += fRect * (cgRect - xLimit) + fTri * (cgTri - xLimit);
-        }
-      }
-    }
-  });
-
-  return { force, moment };
-}
+export { solveLinearSystem } from './utils/linearSystemSolver';
+export { getLoadForceAndMoment, getLoadsLeftOf } from './utils/loadCalculator';
 
 export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: string[]; success: boolean } {
   const steps: string[] = [];
@@ -165,12 +18,20 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
   }
 
   const vars: IReactionVariable[] = [];
-  beam.supports.forEach((s, idx) => {
+  const sortedSupports = [...beam.supports].sort((a, b) => a.position - b.position);
+  const supportIdToLetter = new Map<string, string>();
+  sortedSupports.forEach((s, idx) => {
+    const letter = String.fromCharCode(65 + idx); // A, B, C...
+    supportIdToLetter.set(s.id, letter);
+  });
+
+  sortedSupports.forEach((s) => {
+    const letter = supportIdToLetter.get(s.id)!;
     if (s.type === 'roller' || s.type === 'hinge') {
-      vars.push({ supportId: s.id, type: 'R_y', x: s.position, label: `R_{y${idx + 1}}` });
+      vars.push({ supportId: s.id, type: 'R_y', x: s.position, label: `R_{y${letter}}` });
     } else if (s.type === 'fixed') {
-      vars.push({ supportId: s.id, type: 'R_y', x: s.position, label: `R_{y${idx + 1}}` });
-      vars.push({ supportId: s.id, type: 'M', x: s.position, label: `M_{${idx + 1}}` });
+      vars.push({ supportId: s.id, type: 'R_y', x: s.position, label: `R_{y${letter}}` });
+      vars.push({ supportId: s.id, type: 'M', x: s.position, label: `M_{${letter}}` });
     }
   });
 
@@ -188,7 +49,7 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
   let eqFyStr = '';
   vars.forEach((v, idx) => {
     if (v.type === 'R_y') {
-      A[0][idx] = 1;
+      A[0]![idx] = 1;
       eqFyStr += `${eqFyStr ? ' + ' : ''}${v.label}`;
     }
   });
@@ -206,10 +67,10 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
   let eqMStr = '';
   vars.forEach((v, idx) => {
     if (v.type === 'R_y') {
-      A[1][idx] = v.x;
+      A[1]![idx] = v.x;
       eqMStr += `${eqMStr ? ' + ' : ''}${v.label}(${v.x})`;
     } else if (v.type === 'M') {
-      A[1][idx] = -1;
+      A[1]![idx] = -1;
       eqMStr += `${eqMStr ? ' - ' : ''}${v.label}`;
     }
   });
@@ -232,10 +93,10 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
       vars.forEach((v, vIdx) => {
         if (v.x < rel.position) {
           if (v.type === 'R_y') {
-            A[eqIdx][vIdx] = rel.position - v.x;
+            A[eqIdx]![vIdx] = rel.position - v.x;
             hMStr += `${hMStr ? ' + ' : ''}${v.label}(${(rel.position - v.x).toFixed(2)})`;
           } else if (v.type === 'M') {
-            A[eqIdx][vIdx] = -1;
+            A[eqIdx]![vIdx] = -1;
             hMStr += `${hMStr ? ' - ' : ''}${v.label}`;
           }
         }
@@ -252,7 +113,7 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
       let hVStr = '';
       vars.forEach((v, vIdx) => {
         if (v.x < rel.position && v.type === 'R_y') {
-          A[eqIdx][vIdx] = 1;
+          A[eqIdx]![vIdx] = 1;
           hVStr += `${hVStr ? ' + ' : ''}${v.label}`;
         }
       });
@@ -271,7 +132,7 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
 
   steps.push(`**Step ${eqIdx + 1}: Solved Support Reactions**`);
   vars.forEach((v, idx) => {
-    const val = parseFloat(solution[idx].toFixed(3));
+    const val = parseFloat(solution[idx]!.toFixed(3));
     reactions.push({
       supportId: v.supportId,
       type: v.type === 'R_y' ? 'R_y' : 'M',

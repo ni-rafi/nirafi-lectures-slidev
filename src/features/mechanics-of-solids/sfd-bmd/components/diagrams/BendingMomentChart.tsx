@@ -3,6 +3,7 @@ import { useBeamWorkspace } from '../../context/BeamWorkspaceContext';
 import { useBeamEngine } from '../../hooks/useBeamEngine';
 import { IIntervalEquation } from '@/cores/mechanics-of-solids/sfd-bmd/types';
 import { motion, AnimatePresence } from 'motion/react';
+import { splitIntoSignSegments, evalPoly } from '../../utils/chartUtils';
 
 export const BendingMomentChart: React.FC = () => {
   const { length, hoverX, setHoverX } = useBeamWorkspace();
@@ -20,14 +21,6 @@ export const BendingMomentChart: React.FC = () => {
 
   const toPixelX = (x: number) => paddingX + (x / length) * chartW;
   const toMeterX = (pixel: number) => ((pixel - paddingX) / chartW) * length;
-
-  const evalPoly = (coeffs: number[], xVal: number) => {
-    let val = 0;
-    for (let i = 0; i < coeffs.length; i++) {
-      val = val * xVal + coeffs[i];
-    }
-    return val;
-  };
 
   // Find overall maximum absolute value for scaling
   let maxAbsM = 1.0;
@@ -106,53 +99,58 @@ export const BendingMomentChart: React.FC = () => {
               segmentPoints.push({ x: currX, y: mVal });
             }
 
-            const midX = (inv.startX + inv.endX) / 2;
-            const mMid = evalPoly(inv.mCoeffs, midX);
-            const isPos = mMid >= 0;
+            const subSegments = splitIntoSignSegments(segmentPoints);
 
-            const strokeColor = isPos ? '#10b981' : '#ef4444';
-            const fillGradient = isPos ? 'url(#momentGradPos)' : 'url(#momentGradNeg)';
+            return subSegments.map((seg, subIdx) => {
+              const isPos = seg.isPos;
+              const strokeColor = isPos ? '#10b981' : '#ef4444';
+              const fillGradient = isPos ? 'url(#momentGradPos)' : 'url(#momentGradNeg)';
 
-            // Build local segment paths
-            let segAreaD = `M ${toPixelX(inv.startX)} ${midY}`;
-            let segLineD = '';
-            segmentPoints.forEach((p, sIdx) => {
-              const px = toPixelX(p.x);
-              const py = midY - p.y * scaleY;
-              segAreaD += ` L ${px} ${py}`;
-              if (sIdx === 0) {
-                segLineD = `M ${px} ${py}`;
-              } else {
-                segLineD += ` L ${px} ${py}`;
-              }
+              const firstPt = seg.points[0];
+              const lastPt = seg.points[seg.points.length - 1];
+              if (!firstPt || !lastPt) return null;
+
+              let segAreaD = `M ${toPixelX(firstPt.x)} ${midY}`;
+              let segLineD = '';
+              seg.points.forEach((p, sIdx) => {
+                const px = toPixelX(p.x);
+                const py = midY - p.y * scaleY;
+                segAreaD += ` L ${px} ${py}`;
+                if (sIdx === 0) {
+                  segLineD = `M ${px} ${py}`;
+                } else {
+                  segLineD += ` L ${px} ${py}`;
+                }
+              });
+              segAreaD += ` L ${toPixelX(lastPt.x)} ${midY} Z`;
+
+              return (
+                <g key={`${idx}-${subIdx}`}>
+                  <motion.path
+                    layout
+                    d={segAreaD}
+                    fill={fillGradient}
+                    transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                  />
+                  <motion.path
+                    layout
+                    d={segLineD}
+                    fill="none"
+                    stroke={strokeColor}
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                  />
+                </g>
+              );
             });
-            segAreaD += ` L ${toPixelX(inv.endX)} ${midY} Z`;
-
-            return (
-              <g key={idx}>
-                <motion.path
-                  layout
-                  d={segAreaD}
-                  fill={fillGradient}
-                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                />
-                <motion.path
-                  layout
-                  d={segLineD}
-                  fill="none"
-                  stroke={strokeColor}
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-                />
-              </g>
-            );
           })}
 
           {/* Labels at key points */}
           {solverResult.criticalPoints.map((cp, idx) => {
-            if (idx > 0 && Math.abs(cp.x - solverResult.criticalPoints[idx - 1].x) < 0.25) return null;
+            const prevPt = solverResult.criticalPoints[idx - 1];
+            if (idx > 0 && prevPt && Math.abs(cp.x - prevPt.x) < 0.25) return null;
             const px = toPixelX(cp.x);
             const py = midY - cp.m * scaleY;
             const isAbove = cp.m >= 0;

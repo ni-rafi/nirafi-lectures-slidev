@@ -9,7 +9,10 @@ import { calculateGraphicalMethod } from './graphicalMethodEngine';
 function evalPoly(coeffs: number[], x: number): number {
   let val = 0;
   for (let i = 0; i < coeffs.length; i++) {
-    val = val * x + coeffs[i];
+    const c = coeffs[i];
+    if (c !== undefined) {
+      val = val * x + c;
+    }
   }
   return val;
 }

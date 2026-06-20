@@ -1,11 +1,19 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { ISupport, IInternalRelease, ILoad, SupportType, ReleaseType, LoadType } from '@/cores/mechanics-of-solids/sfd-bmd/types';
+import { IEISegment } from '@/cores/mechanics-of-solids/deflection/types';
+import { useSupportsState } from '../hooks/workspace/useSupportsState';
+import { useReleasesState } from '../hooks/workspace/useReleasesState';
+import { useLoadsState } from '../hooks/workspace/useLoadsState';
+import { useEISegmentsState } from '../hooks/workspace/useEISegmentsState';
 
 interface BeamWorkspaceContextProps {
   length: number;
   supports: ISupport[];
   releases: IInternalRelease[];
   loads: ILoad[];
+  eiSegments: IEISegment[];
+  deflMethod: 'double-integration' | 'moment-area' | 'conjugate-beam';
+  customInspectX: number | null;
   selectedId: string | null;
   hoverX: number | null;
   setLength: (len: number) => void;
@@ -18,6 +26,11 @@ interface BeamWorkspaceContextProps {
   addLoad: (type: LoadType, position: number) => void;
   updateLoad: (id: string, updates: Partial<ILoad>) => void;
   deleteLoad: (id: string) => void;
+  splitEISegment: (id?: string | null) => void;
+  updateEISegment: (id: string, updates: Partial<IEISegment>) => void;
+  deleteEISegment: (id: string) => void;
+  setDeflMethod: (method: 'double-integration' | 'moment-area' | 'conjugate-beam') => void;
+  setCustomInspectX: (x: number | null) => void;
   setSelectedId: (id: string | null) => void;
   setHoverX: (x: number | null) => void;
 }
@@ -26,116 +39,61 @@ const BeamWorkspaceContext = createContext<BeamWorkspaceContextProps | undefined
 
 export const BeamWorkspaceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [length, setLengthState] = useState<number>(6);
-  const [supports, setSupports] = useState<ISupport[]>([
-    { id: 's-hinge', type: 'hinge', position: 0 },
-    { id: 's-roller', type: 'roller', position: 6 },
-  ]);
-  const [releases, setReleases] = useState<IInternalRelease[]>([]);
-  const [loads, setLoads] = useState<ILoad[]>([
-    { id: 'l-point', type: 'point', position: 3, magnitude: 10 },
-  ]);
+  const [deflMethod, setDeflMethod] = useState<'double-integration' | 'moment-area' | 'conjugate-beam'>('double-integration');
+  const [customInspectX, setCustomInspectX] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoverX, setHoverX] = useState<number | null>(null);
 
+  const { supports, setSupports, addSupport, updateSupport, deleteSupport } = useSupportsState(length, selectedId, setSelectedId);
+  const { releases, setReleases, addRelease, updateRelease, deleteRelease } = useReleasesState(length, selectedId, setSelectedId);
+  const { loads, setLoads, addLoad, updateLoad, deleteLoad } = useLoadsState(length, selectedId, setSelectedId);
+  const { eiSegments, setEISegments, splitEISegment, updateEISegment, deleteEISegment } = useEISegmentsState(length, selectedId, setSelectedId);
+
   const setLength = (len: number) => {
-    setLengthState(Math.max(1, len));
-    // Bound existing supports/loads to new length
-    setSupports(prev => prev.map(s => ({ ...s, position: Math.min(s.position, len) })));
-    setReleases(prev => prev.map(r => ({ ...r, position: Math.min(r.position, len) })));
+    const newLen = Math.max(1, len);
+    const scaleFactor = newLen / length;
+    setLengthState(newLen);
+
+    setSupports(prev => prev.map(s => ({
+      ...s,
+      position: parseFloat((s.position * scaleFactor).toFixed(2))
+    })));
+    
+    setReleases(prev => prev.map(r => ({
+      ...r,
+      position: parseFloat((r.position * scaleFactor).toFixed(2))
+    })));
+
     setLoads(prev => prev.map(l => {
       const updates = { ...l };
-      if (l.position !== undefined) updates.position = Math.min(l.position, len);
-      if (l.startPosition !== undefined) updates.startPosition = Math.min(l.startPosition, len);
-      if (l.endPosition !== undefined) updates.endPosition = Math.min(l.endPosition, len);
+      if (l.position !== undefined) {
+        updates.position = parseFloat((l.position * scaleFactor).toFixed(2));
+      }
+      if (l.startPosition !== undefined) {
+        updates.startPosition = parseFloat((l.startPosition * scaleFactor).toFixed(2));
+      }
+      if (l.endPosition !== undefined) {
+        updates.endPosition = parseFloat((l.endPosition * scaleFactor).toFixed(2));
+      }
       return updates;
     }));
-  };
 
-  const addSupport = (type: SupportType, position: number) => {
-    const id = `support-${Date.now()}`;
-    setSupports(prev => [...prev, { id, type, position: Math.min(Math.max(0, position), length) }]);
-    setSelectedId(id);
-  };
-
-  const updateSupport = (id: string, updates: Partial<ISupport>) => {
-    setSupports(prev => prev.map(s => {
-      if (s.id !== id) return s;
-      const updated = { ...s, ...updates };
-      if (updated.position !== undefined) {
-        updated.position = Math.min(Math.max(0, updated.position), length);
+    setEISegments(prev => {
+      const scaled = prev.map(s => ({
+        ...s,
+        startPosition: parseFloat((s.startPosition * scaleFactor).toFixed(2)),
+        endPosition: parseFloat((s.endPosition * scaleFactor).toFixed(2))
+      }));
+      scaled.sort((a, b) => a.startPosition - b.startPosition);
+      scaled[0]!.startPosition = 0;
+      for (let i = 0; i < scaled.length - 1; i++) {
+        scaled[i + 1]!.startPosition = scaled[i]!.endPosition;
       }
-      return updated;
-    }));
-  };
+      scaled[scaled.length - 1]!.endPosition = newLen;
+      return scaled;
+    });
 
-  const deleteSupport = (id: string) => {
-    setSupports(prev => prev.filter(s => s.id !== id));
-    if (selectedId === id) setSelectedId(null);
-  };
-
-  const addRelease = (type: ReleaseType, position: number) => {
-    const id = `release-${Date.now()}`;
-    setReleases(prev => [...prev, { id, type, position: Math.min(Math.max(0, position), length) }]);
-    setSelectedId(id);
-  };
-
-  const updateRelease = (id: string, updates: Partial<IInternalRelease>) => {
-    setReleases(prev => prev.map(r => {
-      if (r.id !== id) return r;
-      const updated = { ...r, ...updates };
-      if (updated.position !== undefined) {
-        updated.position = Math.min(Math.max(0, updated.position), length);
-      }
-      return updated;
-    }));
-  };
-
-  const deleteRelease = (id: string) => {
-    setReleases(prev => prev.filter(r => r.id !== id));
-    if (selectedId === id) setSelectedId(null);
-  };
-
-  const addLoad = (type: LoadType, position: number) => {
-    const id = `load-${Date.now()}`;
-    const p = Math.min(Math.max(0, position), length);
-    const newLoad: ILoad = { id, type };
-    if (type === 'point' || type === 'moment') {
-      newLoad.position = p;
-      newLoad.magnitude = type === 'point' ? 10 : 5;
-    } else {
-      newLoad.startPosition = p;
-      newLoad.endPosition = Math.min(p + 2, length);
-      if (type === 'udl') {
-        newLoad.magnitude = 4;
-      } else {
-        newLoad.startMagnitude = 0;
-        newLoad.endMagnitude = 6;
-      }
-    }
-    setLoads(prev => [...prev, newLoad]);
-    setSelectedId(id);
-  };
-
-  const updateLoad = (id: string, updates: Partial<ILoad>) => {
-    setLoads(prev => prev.map(l => {
-      if (l.id !== id) return l;
-      const updated = { ...l, ...updates };
-      if (updated.position !== undefined) {
-        updated.position = Math.min(Math.max(0, updated.position), length);
-      }
-      if (updated.startPosition !== undefined) {
-        updated.startPosition = Math.min(Math.max(0, updated.startPosition), length);
-      }
-      if (updated.endPosition !== undefined) {
-        updated.endPosition = Math.min(Math.max(0, updated.endPosition), length);
-      }
-      return updated;
-    }));
-  };
-
-  const deleteLoad = (id: string) => {
-    setLoads(prev => prev.filter(l => l.id !== id));
-    if (selectedId === id) setSelectedId(null);
+    setCustomInspectX(prev => prev !== null ? parseFloat((prev * scaleFactor).toFixed(2)) : null);
   };
 
   return (
@@ -145,6 +103,9 @@ export const BeamWorkspaceProvider: React.FC<{ children: ReactNode }> = ({ child
         supports,
         releases,
         loads,
+        eiSegments,
+        deflMethod,
+        customInspectX,
         selectedId,
         hoverX,
         setLength,
@@ -157,6 +118,11 @@ export const BeamWorkspaceProvider: React.FC<{ children: ReactNode }> = ({ child
         addLoad,
         updateLoad,
         deleteLoad,
+        splitEISegment,
+        updateEISegment,
+        deleteEISegment,
+        setDeflMethod,
+        setCustomInspectX,
         setSelectedId,
         setHoverX,
       }}

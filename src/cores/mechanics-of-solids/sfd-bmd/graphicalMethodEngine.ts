@@ -37,39 +37,40 @@ export function calculateGraphicalMethod(
     // 1. Calculate change in shear from previous point due to distributed loads
     if (idx > 0) {
       const prevX = sortedPoints[idx - 1];
-      
-      // Calculate distributed load on this segment
-      let loadArea = 0;
-      beam.loads.forEach(load => {
-        if (load.type === 'udl') {
-          const s = load.startPosition ?? 0;
-          const e = load.endPosition ?? 0;
-          const mag = load.magnitude ?? 0;
-          const overlap = Math.max(0, Math.min(e, x) - Math.max(s, prevX));
-          loadArea += mag * overlap;
-        } else if (load.type === 'uvl') {
-          const s = load.startPosition ?? 0;
-          const e = load.endPosition ?? 0;
-          const w1 = load.startMagnitude ?? 0;
-          const w2 = load.endMagnitude ?? 0;
-          if (x > s && prevX < e) {
-            const startLimit = Math.max(s, prevX);
-            const endLimit = Math.min(e, x);
-            const l = e - s;
-            const h1 = w1 + ((w2 - w1) * (startLimit - s)) / l;
-            const h2 = w1 + ((w2 - w1) * (endLimit - s)) / l;
-            loadArea += 0.5 * (h1 + h2) * (endLimit - startLimit);
+      if (prevX !== undefined) {
+        // Calculate distributed load on this segment
+        let loadArea = 0;
+        beam.loads.forEach(load => {
+          if (load.type === 'udl') {
+            const s = load.startPosition ?? 0;
+            const e = load.endPosition ?? 0;
+            const mag = load.magnitude ?? 0;
+            const overlap = Math.max(0, Math.min(e, x) - Math.max(s, prevX));
+            loadArea += mag * overlap;
+          } else if (load.type === 'uvl') {
+            const s = load.startPosition ?? 0;
+            const e = load.endPosition ?? 0;
+            const w1 = load.startMagnitude ?? 0;
+            const w2 = load.endMagnitude ?? 0;
+            if (x > s && prevX < e) {
+              const startLimit = Math.max(s, prevX);
+              const endLimit = Math.min(e, x);
+              const l = e - s;
+              const h1 = w1 + ((w2 - w1) * (startLimit - s)) / l;
+              const h2 = w1 + ((w2 - w1) * (endLimit - s)) / l;
+              loadArea += 0.5 * (h1 + h2) * (endLimit - startLimit);
+            }
           }
-        }
-      });
+        });
 
-      if (loadArea !== 0) {
-        const nextV = currentV - loadArea;
-        steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** UDL/UVL Load Area = $${loadArea.toFixed(2)}\\text{ kN}$.`);
-        steps.push(`  $$V(${x.toFixed(2)}^-) = V(${prevX.toFixed(2)}^+) - \\text{Load Area} = ${currentV.toFixed(2)} - ${loadArea.toFixed(2)} = ${nextV.toFixed(2)}\\text{ kN}$$`);
-        currentV = nextV;
-      } else {
-        steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** No distributed load. $V(${x.toFixed(2)}^-) = V(${prevX.toFixed(2)}^+) = ${currentV.toFixed(2)}\\text{ kN}$.`);
+        if (loadArea !== 0) {
+          const nextV = currentV - loadArea;
+          steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** UDL/UVL Load Area = $${loadArea.toFixed(2)}\\text{ kN}$.`);
+          steps.push(`  $$V(${x.toFixed(2)}^-) = V(${prevX.toFixed(2)}^+) - \\text{Load Area} = ${currentV.toFixed(2)} - ${loadArea.toFixed(2)} = ${nextV.toFixed(2)}\\text{ kN}$$`);
+          currentV = nextV;
+        } else {
+          steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** No distributed load. $V(${x.toFixed(2)}^-) = V(${prevX.toFixed(2)}^+) = ${currentV.toFixed(2)}\\text{ kN}$.`);
+        }
       }
     }
 
@@ -115,19 +116,21 @@ export function calculateGraphicalMethod(
     // 1. Calculate change in moment from previous point due to area of Shear Diagram
     if (idx > 0) {
       const prevX = sortedPoints[idx - 1];
-      const interval = intervals.find(inv => Math.abs(inv.startX - prevX) < 1e-9 && Math.abs(inv.endX - x) < 1e-9);
+      if (prevX !== undefined) {
+        const interval = intervals.find(inv => Math.abs(inv.startX - prevX) < 1e-9 && Math.abs(inv.endX - x) < 1e-9);
 
-      if (interval) {
-        // Integrate V(x) = a*x^2 + b*x + c over [prevX, x]
-        const [a, b, c] = interval.vCoeffs;
-        
-        const F = (val: number) => (a / 3) * Math.pow(val, 3) + (b / 2) * Math.pow(val, 2) + c * val;
-        const shearArea = F(x) - F(prevX);
-        const nextM = currentM + shearArea;
+        if (interval) {
+          // Integrate V(x) = a*x^2 + b*x + c over [prevX, x]
+          const [a, b, c] = interval.vCoeffs;
+          
+          const F = (val: number) => (a / 3) * Math.pow(val, 3) + (b / 2) * Math.pow(val, 2) + c * val;
+          const shearArea = F(x) - F(prevX);
+          const nextM = currentM + shearArea;
 
-        steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** Shear diagram area = $${shearArea.toFixed(2)}\\text{ kNm}$.`);
-        steps.push(`  $$M(${x.toFixed(2)}^-) = M(${prevX.toFixed(2)}^+) + \\text{Shear Area} = ${currentM.toFixed(2)} + (${shearArea.toFixed(2)}) = ${nextM.toFixed(2)}\\text{ kNm}$$`);
-        currentM = nextM;
+          steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** Shear diagram area = $${shearArea.toFixed(2)}\\text{ kNm}$.`);
+          steps.push(`  $$M(${x.toFixed(2)}^-) = M(${prevX.toFixed(2)}^+) + \\text{Shear Area} = ${currentM.toFixed(2)} + (${shearArea.toFixed(2)}) = ${nextM.toFixed(2)}\\text{ kNm}$$`);
+          currentM = nextM;
+        }
       }
     }
 

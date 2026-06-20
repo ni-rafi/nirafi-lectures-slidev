@@ -2,7 +2,7 @@ import React from 'react';
 import { useBeamWorkspace } from '../../context/BeamWorkspaceContext';
 
 export const ToolBar: React.FC = () => {
-  const { length, addSupport, addRelease, addLoad } = useBeamWorkspace();
+  const { length, addSupport, addRelease, addLoad, splitEISegment } = useBeamWorkspace();
 
   const toolbarSections = [
     {
@@ -27,6 +27,12 @@ export const ToolBar: React.FC = () => {
         { label: 'Bending Moment', action: () => addLoad('moment', length / 2) },
         { label: 'UDL (Uniform)', action: () => addLoad('udl', length / 3) },
         { label: 'UVL (Varying)', action: () => addLoad('uvl', length / 3) },
+      ],
+    },
+    {
+      title: 'Stiffness (EI)',
+      items: [
+        { label: 'Split Segment', action: () => splitEISegment() },
       ],
     },
   ];

@@ -6,9 +6,10 @@ import { ToolBar } from '@/features/mechanics-of-solids/sfd-bmd/components/build
 import { ElementConfigurator } from '@/features/mechanics-of-solids/sfd-bmd/components/builder/ElementConfigurator';
 import { ShearForceChart } from '@/features/mechanics-of-solids/sfd-bmd/components/diagrams/ShearForceChart';
 import { BendingMomentChart } from '@/features/mechanics-of-solids/sfd-bmd/components/diagrams/BendingMomentChart';
-import { DOIBreakdown } from '@/features/mechanics-of-solids/sfd-bmd/components/breakdowns/DOIBreakdown';
-import { ReactionSolverBreakdown } from '@/features/mechanics-of-solids/sfd-bmd/components/breakdowns/ReactionSolverBreakdown';
-import { MethodSolverBreakdown } from '@/features/mechanics-of-solids/sfd-bmd/components/breakdowns/MethodSolverBreakdown';
+import { SlopeChart } from '@/features/mechanics-of-solids/sfd-bmd/components/diagrams/SlopeChart';
+import { DeflectionChart } from '@/features/mechanics-of-solids/sfd-bmd/components/diagrams/DeflectionChart';
+import { CalculationBreakdowns } from '@/features/mechanics-of-solids/sfd-bmd/components/breakdowns/CalculationBreakdowns';
+import { MathTextRenderer } from '@/features/mechanics-of-solids/sfd-bmd/components/breakdowns/MathTextRenderer';
 import { ArrowLeft, RefreshCw, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -52,15 +53,17 @@ const SFDBMDSolverInternal: React.FC = () => {
             <div className="flex flex-col gap-6">
               <ShearForceChart />
               <BendingMomentChart />
+              <SlopeChart />
+              <DeflectionChart />
             </div>
           ) : (
             <div className="flex gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-xs text-destructive">
               <Info className="h-4 w-4 shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold">Solving Halted</p>
-                <p className="mt-1 text-muted-foreground text-destructive">
-                  {"Diagrams and detailed equations are only solved for statically determinate structures (\\(\\text{DOI} = 0\\)). Please adjust supports or internal hinges to resolve."}
-                </p>
+                <div className="mt-1 text-muted-foreground text-destructive">
+                  <MathTextRenderer text="Diagrams and detailed equations are only solved for statically determinate structures ($\text{DOI} = 0$). Please adjust supports or internal hinges to resolve." />
+                </div>
               </div>
             </div>
           )}
@@ -72,15 +75,9 @@ const SFDBMDSolverInternal: React.FC = () => {
         </div>
       </div>
 
-      {/* Mathematical Explanations */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-        <div className="flex flex-col gap-6">
-          <DOIBreakdown />
-          {solverResult.success && <ReactionSolverBreakdown />}
-        </div>
-        <div>
-          {solverResult.success && <MethodSolverBreakdown />}
-        </div>
+      {/* Unified Mathematical Explanations & Deflection Breakdowns */}
+      <div className="mt-2">
+        <CalculationBreakdowns />
       </div>
     </div>
   );

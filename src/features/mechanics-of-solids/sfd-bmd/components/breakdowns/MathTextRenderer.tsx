@@ -1,5 +1,4 @@
 import React from 'react';
-import { useBeamEngine } from '../../hooks/useBeamEngine';
 import { LatexFormula } from '@/features/presentation/components/elements/LatexFormula';
 
 // Helper to render bold text and inline math within a segment
@@ -9,11 +8,9 @@ const MathTextInner: React.FC<{ text: string }> = ({ text }) => {
     <>
       {inlines.map((segment, sIdx) => {
         if (sIdx % 2 === 1) {
-          // Inline KaTeX
           return <LatexFormula key={sIdx} math={segment} />;
         }
 
-        // Even index - contains normal text with potential bold tags **bold**
         const bolds = segment.split('**');
         return (
           <span key={sIdx}>
@@ -30,17 +27,21 @@ const MathTextInner: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-// A lightweight parser for rendering inline ($...$), block ($$...$$) KaTeX, bold tags (**), and list tags (-) in strings
+// Lightweight markdown and latex text parser
 export const MathTextRenderer: React.FC<{ text: string }> = ({ text }) => {
-  const trimmed = text.trim();
+  const preprocess = (str: string) => {
+    let res = str.replace(/\\\[/g, '$$$$').replace(/\\\]/g, '$$$$');
+    res = res.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
+    return res;
+  };
 
-  // 1. Check for LaTeX block format $$formula$$
+  const trimmed = preprocess(text).trim();
+
   if (trimmed.startsWith('$$') && trimmed.endsWith('$$')) {
     const math = trimmed.slice(2, -2);
     return <LatexFormula math={math} block />;
   }
 
-  // 2. Check for markdown headings
   if (trimmed.startsWith('### ')) {
     const content = trimmed.slice(4);
     return (
@@ -58,7 +59,6 @@ export const MathTextRenderer: React.FC<{ text: string }> = ({ text }) => {
     );
   }
 
-  // 3. Check for list items
   if (trimmed.startsWith('- ')) {
     const content = trimmed.slice(2);
     return (
@@ -71,7 +71,6 @@ export const MathTextRenderer: React.FC<{ text: string }> = ({ text }) => {
     );
   }
 
-  // 4. Default plain paragraph
   const blocks = trimmed.split('$$');
   return (
     <div className="math-text-block leading-relaxed py-1">
@@ -81,41 +80,6 @@ export const MathTextRenderer: React.FC<{ text: string }> = ({ text }) => {
         }
         return <MathTextInner key={idx} text={block} />;
       })}
-    </div>
-  );
-};
-
-export const DOIBreakdown: React.FC = () => {
-  const { solverResult } = useBeamEngine();
-
-  const { explanationSteps, doi, isDeterminate, isUnstable } = solverResult.doiResult;
-
-  let alertClass = 'border-emerald-500/20 bg-emerald-500/5 text-emerald-600';
-  let alertTitle = 'Statically Determinate';
-  if (isUnstable) {
-    alertClass = 'border-destructive/20 bg-destructive/5 text-destructive';
-    alertTitle = 'Statically Unstable';
-  } else if (!isDeterminate) {
-    alertClass = 'border-amber-500/20 bg-amber-500/5 text-amber-600';
-    alertTitle = 'Statically Indeterminate';
-  }
-
-  return (
-    <div className="flex flex-col gap-4 rounded-xl border border-border bg-card/30 p-5 backdrop-blur-md">
-      <div className="flex items-center justify-between border-b border-border/60 pb-3">
-        <h3 className="text-sm font-semibold text-primary">Degree of Static Indeterminacy (DOI)</h3>
-        <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${alertClass}`}>
-          {alertTitle} (DOI = {doi})
-        </span>
-      </div>
-
-      <div className="flex flex-col gap-2.5 text-xs text-foreground/80">
-        {explanationSteps.map((step, idx) => (
-          <div key={idx} className="flex flex-col gap-1 border-l-2 border-primary/20 pl-3.5 py-1">
-            <MathTextRenderer text={step} />
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

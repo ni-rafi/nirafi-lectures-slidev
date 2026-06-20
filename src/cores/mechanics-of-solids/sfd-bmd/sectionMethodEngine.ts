@@ -194,9 +194,11 @@ export function generateIntervals(beam: IBeam, reactions: IReaction[]): IInterva
   for (let i = 0; i < sortedBounds.length - 1; i++) {
     const startX = sortedBounds[i];
     const endX = sortedBounds[i + 1];
-    // Avoid zero-length intervals
-    if (endX - startX > 1e-9) {
-      intervals.push(getIntervalEquations(beam, reactions, startX, endX));
+    if (startX !== undefined && endX !== undefined) {
+      // Avoid zero-length intervals
+      if (endX - startX > 1e-9) {
+        intervals.push(getIntervalEquations(beam, reactions, startX, endX));
+      }
     }
   }
 

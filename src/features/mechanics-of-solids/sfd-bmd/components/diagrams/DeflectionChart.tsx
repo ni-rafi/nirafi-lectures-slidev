@@ -1,0 +1,216 @@
+import React, { useRef } from 'react';
+import { useBeamWorkspace } from '../../context/BeamWorkspaceContext';
+import { useBeamEngine } from '../../hooks/useBeamEngine';
+import { IDeflectionPoint } from '@/cores/mechanics-of-solids/deflection/types';
+import { motion, AnimatePresence } from 'motion/react';
+import { splitIntoSignSegments } from '../../utils/chartUtils';
+
+export const DeflectionChart: React.FC = () => {
+  const { length, hoverX, setHoverX } = useBeamWorkspace();
+  const { solverResult, deflectionResult } = useBeamEngine();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  if (!deflectionResult.success || deflectionResult.points.length === 0 || !solverResult.success) return null;
+
+  const paddingX = 60;
+  const width = 800;
+  const height = 150;
+  const chartW = width - paddingX * 2;
+  const midY = height / 2;
+
+  const toPixelX = (x: number) => paddingX + (x / length) * chartW;
+  const toMeterX = (pixel: number) => ((pixel - paddingX) / chartW) * length;
+
+  const { points } = deflectionResult;
+  const firstPoint = points[0];
+  if (!firstPoint) return null;
+
+  // Find max absolute deflection value for scaling
+  let maxAbsD = 1e-4;
+  points.forEach((p: IDeflectionPoint) => {
+    if (Math.abs(p.deflection) > maxAbsD) {
+      maxAbsD = Math.abs(p.deflection);
+    }
+  });
+  const scaleY = 55 / maxAbsD;
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!svgRef.current) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const clientX = e.clientX - rect.left;
+    const xMeter = Math.max(0, Math.min(length, toMeterX(clientX)));
+    setHoverX(parseFloat(xMeter.toFixed(2)));
+  };
+
+  // Evaluate value at hoverX
+  let hoverData = null;
+  if (hoverX !== null) {
+    let closest = firstPoint;
+    let minDist = Math.abs(firstPoint.x - hoverX);
+    points.forEach(p => {
+      const dist = Math.abs(p.x - hoverX);
+      if (dist < minDist) {
+        minDist = dist;
+        closest = p;
+      }
+    });
+
+    const projX = toPixelX(hoverX);
+    const projY = midY - closest.deflection * scaleY;
+    hoverData = {
+      x: hoverX,
+      deflection: closest.deflection,
+      px: (projX / width) * 100,
+      py: (projY / height) * 100,
+    };
+  }
+
+  return (
+    <div ref={containerRef} className="relative w-full rounded-xl border border-border bg-card/40 p-4 backdrop-blur-md">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Deflection Diagram (Δ) - mm</div>
+      
+      <div className="relative">
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${width} ${height}`}
+          className="w-full overflow-visible"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => setHoverX(null)}
+        >
+          <defs>
+            <linearGradient id="deflGradPos" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0.02" />
+            </linearGradient>
+            <linearGradient id="deflGradNeg" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#ef4444" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#ef4444" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+
+          {/* Grid lines */}
+          <line x1={paddingX} y1={midY - 40} x2={paddingX + chartW} y2={midY - 40} stroke="var(--border)" strokeWidth={0.5} strokeDasharray="4,4" opacity={0.4} />
+          <line x1={paddingX} y1={midY + 40} x2={paddingX + chartW} y2={midY + 40} stroke="var(--border)" strokeWidth={0.5} strokeDasharray="4,4" opacity={0.4} />
+          
+          {/* Baseline */}
+          <line x1={paddingX} y1={midY} x2={paddingX + chartW} y2={midY} stroke="var(--border)" strokeWidth={1.5} />
+
+          {/* Render continuous sign-based segments with zero-crossing detection */}
+          {splitIntoSignSegments(points.map(p => ({ x: p.x, y: p.deflection }))).map((seg, idx) => {
+            const isPos = seg.isPos;
+            const strokeColor = isPos ? '#10b981' : '#ef4444';
+            const fillGradient = isPos ? 'url(#deflGradPos)' : 'url(#deflGradNeg)';
+
+            const firstPt = seg.points[0];
+            const lastPt = seg.points[seg.points.length - 1];
+            if (!firstPt || !lastPt) return null;
+
+            let segAreaD = `M ${toPixelX(firstPt.x)} ${midY}`;
+            let segLineD = '';
+            seg.points.forEach((p, sIdx) => {
+              const px = toPixelX(p.x);
+              const py = midY - p.y * scaleY;
+              segAreaD += ` L ${px} ${py}`;
+              if (sIdx === 0) {
+                segLineD = `M ${px} ${py}`;
+              } else {
+                segLineD += ` L ${px} ${py}`;
+              }
+            });
+            segAreaD += ` L ${toPixelX(lastPt.x)} ${midY} Z`;
+
+            return (
+              <g key={idx}>
+                <motion.path
+                  layout
+                  d={segAreaD}
+                  fill={fillGradient}
+                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                />
+                <motion.path
+                  layout
+                  d={segLineD}
+                  fill="none"
+                  stroke={strokeColor}
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                />
+              </g>
+            );
+          })}
+
+          {/* Labels at key points */}
+          {deflectionResult.criticalPoints.map((cp, idx) => {
+            const px = toPixelX(cp.x);
+            const py = midY - cp.deflection * scaleY;
+            const isAbove = cp.deflection >= 0;
+            const ptColor = cp.deflection >= 0 ? '#10b981' : '#ef4444';
+            return (
+              <g key={idx}>
+                <circle cx={px} cy={py} r={3.5} fill={ptColor} />
+                <text
+                  x={px}
+                  y={isAbove ? py - 8 : py + 14}
+                  textAnchor="middle"
+                  className="fill-muted-foreground text-[10px] font-bold"
+                >
+                  {cp.deflection.toFixed(3)}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Vertical indicator line and hover dot inside SVG */}
+          {hoverData && (
+            <g>
+              <motion.line
+                x1={toPixelX(hoverData.x)}
+                y1={10}
+                x2={toPixelX(hoverData.x)}
+                y2={height - 10}
+                stroke={hoverData.deflection >= 0 ? '#10b981' : '#ef4444'}
+                strokeWidth={1}
+                strokeDasharray="3,3"
+                transition={{ type: 'spring', stiffness: 260, damping: 30 }}
+              />
+              <motion.circle
+                cx={toPixelX(hoverData.x)}
+                cy={midY - hoverData.deflection * scaleY}
+                r={4}
+                fill={hoverData.deflection >= 0 ? '#10b981' : '#ef4444'}
+                transition={{ type: 'spring', stiffness: 260, damping: 30 }}
+              />
+            </g>
+          )}
+        </svg>
+
+        {/* HTML Tooltip Box */}
+        <AnimatePresence>
+          {hoverData && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.1 }}
+              className="absolute pointer-events-none rounded-xl border border-border/80 bg-background/85 px-3 py-2 text-left shadow-lg backdrop-blur-md"
+              style={{
+                left: `${hoverData.px}%`,
+                top: `${hoverData.py}%`,
+                transform: `translate(${hoverData.px > 80 ? '-110%' : '15px'}, -50%)`,
+              }}
+            >
+              <div className="text-[10px] font-semibold text-muted-foreground">Coordinate: {hoverData.x} m</div>
+              <div className="text-xs font-bold text-emerald-500" style={{ color: hoverData.deflection >= 0 ? '#10b981' : '#ef4444' }}>
+                Deflection: {hoverData.deflection.toFixed(4)} mm
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+export default DeflectionChart;
