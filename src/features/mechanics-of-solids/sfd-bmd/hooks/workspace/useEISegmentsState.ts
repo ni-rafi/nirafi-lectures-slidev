@@ -40,7 +40,14 @@ export const useEISegmentsState = (
 
       const targetSeg = prev[idx]!;
       const s1: IEISegment = { ...targetSeg, endPosition: mid };
-      const s2: IEISegment = { id: newId, startPosition: mid, endPosition: targetSeg.endPosition, E: targetSeg.E, I: targetSeg.I };
+      const s2: IEISegment = {
+        id: newId,
+        startPosition: mid,
+        endPosition: targetSeg.endPosition,
+        E: targetSeg.E,
+        I: targetSeg.I,
+        shape: targetSeg.shape ? { ...targetSeg.shape } : undefined,
+      };
 
       const next = [...prev];
       next.splice(idx, 1, s1, s2);

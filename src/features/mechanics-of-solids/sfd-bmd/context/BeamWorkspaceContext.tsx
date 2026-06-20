@@ -33,6 +33,12 @@ interface BeamWorkspaceContextProps {
   setCustomInspectX: (x: number | null) => void;
   setSelectedId: (id: string | null) => void;
   setHoverX: (x: number | null) => void;
+  inspectY: number;
+  setInspectY: (y: number) => void;
+  inspectAngle: number;
+  setInspectAngle: (angle: number) => void;
+  isSectionBuilderOpen: boolean;
+  setIsSectionBuilderOpen: (open: boolean) => void;
 }
 
 const BeamWorkspaceContext = createContext<BeamWorkspaceContextProps | undefined>(undefined);
@@ -43,6 +49,9 @@ export const BeamWorkspaceProvider: React.FC<{ children: ReactNode }> = ({ child
   const [customInspectX, setCustomInspectX] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoverX, setHoverX] = useState<number | null>(null);
+  const [inspectY, setInspectY] = useState<number>(0);
+  const [inspectAngle, setInspectAngle] = useState<number>(0);
+  const [isSectionBuilderOpen, setIsSectionBuilderOpen] = useState<boolean>(false);
 
   const { supports, setSupports, addSupport, updateSupport, deleteSupport } = useSupportsState(length, selectedId, setSelectedId);
   const { releases, setReleases, addRelease, updateRelease, deleteRelease } = useReleasesState(length, selectedId, setSelectedId);
@@ -125,6 +134,12 @@ export const BeamWorkspaceProvider: React.FC<{ children: ReactNode }> = ({ child
         setCustomInspectX,
         setSelectedId,
         setHoverX,
+        inspectY,
+        setInspectY,
+        inspectAngle,
+        setInspectAngle,
+        isSectionBuilderOpen,
+        setIsSectionBuilderOpen,
       }}
     >
       {children}

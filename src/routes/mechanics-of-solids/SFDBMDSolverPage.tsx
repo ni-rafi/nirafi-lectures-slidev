@@ -12,10 +12,26 @@ import { CalculationBreakdowns } from '@/features/mechanics-of-solids/sfd-bmd/co
 import { MathTextRenderer } from '@/features/mechanics-of-solids/sfd-bmd/components/breakdowns/MathTextRenderer';
 import { ArrowLeft, RefreshCw, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useBeamWorkspace } from '@/features/mechanics-of-solids/sfd-bmd/context/BeamWorkspaceContext';
+import { BendingStressEnvelopeChart } from '@/features/mechanics-of-solids/stress/components/diagrams/BendingStressEnvelopeChart';
+import { MaxShearStressChart } from '@/features/mechanics-of-solids/stress/components/diagrams/MaxShearStressChart';
+import { StressGradientProfile } from '@/features/mechanics-of-solids/stress/components/diagrams/StressGradientProfile';
+import { CrossSectionBuilder } from '@/features/mechanics-of-solids/stress/components/builder/CrossSectionBuilder';
+import { InteractiveProfileCanvas } from '@/features/mechanics-of-solids/stress/components/builder/InteractiveProfileCanvas';
+import { CrossSectionEngine } from '@/cores/mechanics-of-solids/stress/cross-section.engine';
 
 const SFDBMDSolverInternal: React.FC = () => {
   const { solverResult } = useBeamEngine();
+  const {
+    isSectionBuilderOpen,
+    setIsSectionBuilderOpen,
+    selectedId,
+    eiSegments,
+    updateEISegment,
+  } = useBeamWorkspace();
   const navigate = useNavigate();
+
+  const activeEISegment = eiSegments.find(s => s.id === selectedId);
 
   return (
     <div className="flex flex-col gap-6 p-6 max-w-7xl mx-auto">
@@ -45,7 +61,7 @@ const SFDBMDSolverInternal: React.FC = () => {
 
       {/* Main Builder Area */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="flex flex-col gap-6 lg:col-span-3">
+        <div className={`flex flex-col gap-6 ${isSectionBuilderOpen ? 'lg:col-span-2' : 'lg:col-span-3'}`}>
           <BeamCanvas />
           
           {/* Diagrams Output */}
@@ -55,6 +71,9 @@ const SFDBMDSolverInternal: React.FC = () => {
               <BendingMomentChart />
               <SlopeChart />
               <DeflectionChart />
+              <BendingStressEnvelopeChart />
+              <MaxShearStressChart />
+              <StressGradientProfile />
             </div>
           ) : (
             <div className="flex gap-3 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-xs text-destructive">
@@ -69,8 +88,49 @@ const SFDBMDSolverInternal: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-col gap-6 lg:col-span-1">
-          <ElementConfigurator />
+        <div className={`flex flex-col gap-6 ${isSectionBuilderOpen ? 'lg:col-span-2' : 'lg:col-span-1'}`}>
+          {isSectionBuilderOpen ? (
+            <div className="flex flex-col gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <ElementConfigurator />
+                {activeEISegment && (
+                  <CrossSectionBuilder
+                    activeEISegment={activeEISegment}
+                    updateEISegment={updateEISegment}
+                    onClose={() => setIsSectionBuilderOpen(false)}
+                  />
+                )}
+              </div>
+
+              {/* Separate Canvas Container for Interactive profile builder */}
+              {activeEISegment && activeEISegment.shape && activeEISegment.shape.type !== 'custom' && (
+                <div className="flex flex-col gap-3 rounded-xl border border-border bg-card/60 p-5 backdrop-blur-md">
+                  <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-primary">Interactive Profile Dimensions Editor</span>
+                    <span className="text-[10px] text-muted-foreground">Click labels on the diagram to edit dimensions in millimeters</span>
+                  </div>
+                  <div className="flex flex-col gap-2 pt-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/75 text-center">
+                      Click dimensions to edit (mm)
+                    </label>
+                    <InteractiveProfileCanvas
+                      shape={activeEISegment.shape}
+                      onChange={(updates) => {
+                        const updatedShape = { ...activeEISegment.shape!, ...updates };
+                        const props = CrossSectionEngine.calculateProperties(updatedShape);
+                        updateEISegment(activeEISegment.id, {
+                          shape: updatedShape,
+                          I: parseFloat((props.I * 1e6).toFixed(3)), // Sync calculated I in 10^6 mm^4
+                        });
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <ElementConfigurator />
+          )}
           <ToolBar />
         </div>
       </div>

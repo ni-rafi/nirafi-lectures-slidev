@@ -3,6 +3,7 @@ import { useBeamWorkspace } from '../../context/BeamWorkspaceContext';
 import { useBeamEngine } from '../../hooks/useBeamEngine';
 import { StepRow } from './StepRow';
 import { StepListHeader } from './StepListHeader';
+import { StressBreakdownPanel } from './StressBreakdownPanel';
 
 type TabType = 
   | 'doi' 
@@ -11,7 +12,8 @@ type TabType =
   | 'graphical' 
   | 'double-integration' 
   | 'moment-area' 
-  | 'conjugate-beam';
+  | 'conjugate-beam'
+  | 'stress';
 
 export const CalculationBreakdowns: React.FC = () => {
   const { setDeflMethod, customInspectX, setCustomInspectX, length } = useBeamWorkspace();
@@ -49,6 +51,7 @@ export const CalculationBreakdowns: React.FC = () => {
     { id: 'double-integration', label: 'Double Integration' },
     { id: 'moment-area', label: 'Moment-Area' },
     { id: 'conjugate-beam', label: 'Conjugate Beam' },
+    { id: 'stress', label: 'Stress Analysis' },
   ];
 
   return (
@@ -299,6 +302,11 @@ export const CalculationBreakdowns: React.FC = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* STRESS TAB */}
+        {activeTab === 'stress' && isSolved && (
+          <StressBreakdownPanel />
         )}
 
       </div>

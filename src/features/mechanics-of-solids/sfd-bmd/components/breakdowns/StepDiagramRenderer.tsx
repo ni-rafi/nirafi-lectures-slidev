@@ -6,6 +6,9 @@ import { GraphicalStepVisual } from './diagrams/GraphicalStepVisual';
 import { DoubleIntegrationStepVisual } from './diagrams/DoubleIntegrationStepVisual';
 import { MomentAreaStepVisual } from './diagrams/MomentAreaStepVisual';
 import { ConjugateBeamStepVisual } from './diagrams/ConjugateBeamStepVisual';
+import { MicroStressWedge } from './diagrams/MicroStressWedge';
+import { MicroMohrRadiusTriangle } from './diagrams/MicroMohrRadiusTriangle';
+import { MicroPrincipalRotation } from './diagrams/MicroPrincipalRotation';
 
 interface StepDiagramRendererProps {
   text: string;
@@ -47,6 +50,17 @@ export const StepDiagramRenderer: React.FC<StepDiagramRendererProps> = ({ text, 
       return <MomentAreaStepVisual text={text} />;
     case 'conjugate-beam':
       return <ConjugateBeamStepVisual text={text} />;
+    case 'stress':
+      if (text.includes('R = \\sqrt') || text.includes('radius') || text.includes('radius $R$') || text.includes("Mohr's Circle")) {
+        return <MicroMohrRadiusTriangle text={text} />;
+      }
+      if (text.includes('orientation') || text.includes('principal plane') || text.includes('rotation') || text.includes('theta_p') || text.includes('theta_s')) {
+        return <MicroPrincipalRotation text={text} />;
+      }
+      if (text.includes('wedge') || text.includes('inclined plane')) {
+        return <MicroStressWedge text={text} />;
+      }
+      return null;
     default:
       return null;
   }

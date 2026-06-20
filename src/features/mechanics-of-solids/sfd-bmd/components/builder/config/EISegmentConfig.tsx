@@ -1,5 +1,6 @@
 import React from 'react';
 import { IEISegment } from '@/cores/mechanics-of-solids/deflection/types';
+import { useBeamWorkspace } from '../../../context/BeamWorkspaceContext';
 
 interface EISegmentConfigProps {
   activeEISegment: IEISegment;
@@ -16,9 +17,12 @@ export const EISegmentConfig: React.FC<EISegmentConfigProps> = ({
   deleteEISegment,
   splitEISegment,
 }) => {
+  const { isSectionBuilderOpen, setIsSectionBuilderOpen } = useBeamWorkspace();
   const activeIdx = eiSegments.findIndex(s => s.id === activeEISegment.id);
   const prevSeg = activeIdx > 0 ? eiSegments[activeIdx - 1] : null;
   const nextSeg = activeIdx < eiSegments.length - 1 ? eiSegments[activeIdx + 1] : null;
+
+  const isCalculated = activeEISegment.shape && activeEISegment.shape.type !== 'custom';
 
   return (
     <div className="flex flex-col gap-4">
@@ -39,16 +43,45 @@ export const EISegmentConfig: React.FC<EISegmentConfigProps> = ({
         />
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">I (Moment of Inertia in 10^6 mm^4)</label>
+        <label className="text-xs font-medium text-muted-foreground flex justify-between items-center">
+          <span>I (Moment of Inertia in 10^6 mm^4)</span>
+          {isCalculated && (
+            <span className="text-[9px] bg-emerald-500/10 text-emerald-500 px-1.5 py-0.2 rounded font-bold uppercase">
+              Calculated
+            </span>
+          )}
+        </label>
         <input
           type="number"
           min={1}
           max={10000}
           step={10}
           value={activeEISegment.I}
+          disabled={!!isCalculated}
           onChange={(e) => updateEISegment(activeEISegment.id, { I: parseFloat(e.target.value) || 100 })}
-          className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
+          className={`rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none ${
+            isCalculated ? 'opacity-65 cursor-not-allowed bg-muted/20 text-muted-foreground' : ''
+          }`}
         />
+      </div>
+
+      <div className="flex flex-col gap-2 border-b border-border/20 pb-3 mt-1">
+        <button
+          type="button"
+          onClick={() => setIsSectionBuilderOpen(!isSectionBuilderOpen)}
+          className={`w-full rounded-lg border px-3 py-2 text-xs font-semibold transition-all ${
+            isSectionBuilderOpen
+              ? 'border-primary bg-primary/10 text-primary hover:bg-primary/15'
+              : 'border-border bg-background hover:bg-muted text-foreground'
+          }`}
+        >
+          {isSectionBuilderOpen ? 'Close Profile Builder' : 'Configure Beam Shape Profile'}
+        </button>
+        {activeEISegment.shape && activeEISegment.shape.type !== 'custom' && (
+          <div className="text-[10px] text-emerald-500 font-semibold text-center mt-0.5">
+            Shape: {activeEISegment.shape.type.toUpperCase()} (Properties active)
+          </div>
+        )}
       </div>
       
       {prevSeg && (

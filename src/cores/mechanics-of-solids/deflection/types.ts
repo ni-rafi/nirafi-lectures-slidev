@@ -1,9 +1,12 @@
+import { ICrossSection } from '../stress/stress.interface';
+
 export interface IEISegment {
   id: string;
   startPosition: number;
   endPosition: number;
   E: number; // in GPa (e.g. 200)
   I: number; // in 10^6 mm^4 (e.g. 100)
+  shape?: ICrossSection;
 }
 
 export interface IDeflectionPoint {
