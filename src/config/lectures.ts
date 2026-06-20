@@ -49,15 +49,7 @@ const COURSE_SHELLS: Record<string, Course> = {
     color: '#f59e0b',
     sessions: [],
   },
-  'web-development': {
-    id: 'web-development',
-    courseTitle: 'Web App Development',
-    courseCode: 'CS-WAD',
-    description: 'Modern web application development with Vue 3, TypeScript, Firebase, and Slidev.',
-    iconEmoji: '💻',
-    color: '#6366f1',
-    sessions: [],
-  },
+
   'engineering-mechanics': {
     id: 'engineering-mechanics',
     courseTitle: 'Engineering Mechanics II',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { BookOpen, LayoutDashboard, LogOut, Presentation, ChevronLeft, Calculator, Code2, Compass, User, ChevronsUpDown } from 'lucide-react';
+import { BookOpen, LayoutDashboard, LogOut, Presentation, ChevronLeft, Calculator, Compass, User, ChevronsUpDown } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -157,8 +157,6 @@ export const AppSidebar: React.FC = () => {
                     let SubjectIcon = BookOpen;
                     if (sub.id === 'quantity-surveying') {
                       SubjectIcon = Calculator;
-                    } else if (sub.id === 'web-development') {
-                      SubjectIcon = Code2;
                     } else if (sub.id === 'engineering-mechanics') {
                       SubjectIcon = Compass;
                     }
