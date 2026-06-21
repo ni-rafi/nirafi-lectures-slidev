@@ -43,3 +43,4 @@ description: Core Architecture and File Size Rules
   - Use `<SlideParagraph>` for slide paragraph styling.
   - Use `<SlideEquation>` or `<LatexFormula>` for mathematical equations, adhering to flat, unshadowed container styles.
 - **Lecture Organization**: Organize slide decks under `src/subjects/{subjectName}/lectures/session-{year}/` to enforce year-specific division. Keep slide structure presentation-only, importing estimate calculators or quizzes from subject `features/`.
+- **Modularity & Drawing Parameterization**: Do not couple raw drawing markup (like SVG elements) directly inside slide files. Deconstruct complex slide designs into reusable, parameterized components that receive coordinates, dimensions, and states as type-safe props/JSON parameters. Keep sessional presentation components isolated, single-responsibility, and presentational.

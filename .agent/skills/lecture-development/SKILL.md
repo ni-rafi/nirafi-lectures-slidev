@@ -9,6 +9,19 @@ This skill guides creating a new sessional lecture slide deck, structuring UI fe
 
 ---
 
+## 0. Core Presentation Design & Modularity Principles
+
+To maintain clean slide definitions and support multi-mode publishing (Slide, Scroll, and Blog Modes):
+* **No Hardcoding on Slides**: Do not hardcode presentational layouts, large SVGs, or custom visual content directly inside individual slide components.
+* **Modularity & Reusability**: Deconstruct complex slide visuals into isolated, reusable components with a granular file structure. Design every widget so it can be re-imported and reused across different lectures or outlines.
+* **Single Responsibility Principle (SRP)**: Keep each element component small and focused on a single logical duty or drawing.
+* **Separation of Concerns**: Keep presentational UI logic entirely separate from sessional orchestration logic. Do not mix data fetching, global stores, or raw side-effects inside elements.
+* **Type Safety**: Define explicit, strict TypeScript interfaces for all component props. Reject any implicit `any` usage.
+* **SVG Parameterization**: Do not embed raw SVG markup inside slide files. Instead, extract drawings into dedicated components, parameterizing coordinates, dimensions, and visual states using type-safe JSON/props inputs.
+
+---
+
+
 ## 1. Directory Topology
 
 All sessional academic presentation files must conform to the project structure to maintain strict isolation of domains.
@@ -125,23 +138,39 @@ Refer to the blueprint code at [substructure-slides-example.tsx](file:///.agent/
 
 ## 9. Comprehensive Slide & Component Compatibility Checklist
 
-When authoring or modifying slides and interactive presentation widgets, always verify the following:
+### A. New Reusable Item Addition Checklist
+When adding a new reusable layout, presentational element, or interactive control:
+- [ ] **No Hardcoded Styles**: Component conforms to dynamic theme tokens (no static slate/gray text or backgrounds).
+- [ ] **Blog Mode Compliance**: Backgrounds and borders are stripped in Blog Mode, and layout stacks cleanly on mobile devices.
+- [ ] **Single Responsibility Principle (SRP)**: Keep each element small and focused on a single logical duty or drawing.
+- [ ] **Separation of UI & Logic**: Keep presentational UI logic separate from orchestration logic (no data fetching or store integrations in elements).
+- [ ] **Type Safety & Parameterization**: Props interface is explicitly defined and exported. SVG coordinates, dimensions, and visual states are parameterized.
+- [ ] **Skill & Reference Update**: Update `SKILL.md` and the appropriate reference document (`layouts.md`, `presentational-elements.md`, or `interactive-controls.md`) with the new component's description, prop signatures, code snippet, and best practices.
 
-### A. Dynamic Theme Compliance
+### B. Slide Creation Checklist
+When authoring or modifying slides:
+- [ ] **Modularity & Reusability**: Slide elements are deconstructed into reusable components rather than hardcoding layouts, SVGs, or custom content directly inside individual slide files.
+- [ ] **Layout Delegation**: Headers/footers delegated to `<LayoutHeader>` and `<LayoutFooter>` to guarantee transitions.
+- [ ] **Semantic Presentational Elements**: No raw HTML `<p>`, `<ul>`, `<li>`, or `<table>` tags are used; use `<SlideParagraph>`, `<SlideBullet>`, `<SlideTable>`, etc.
+- [ ] **SVG & Drawings Separation**: No raw SVG markup is coupled directly inside the slide file. Drawings are imported as reusable components and driven by JSON parameters.
+- [ ] **Cross-Window Sync**: All interactive parameters and values (inputs, sliders, dropdown choices) are declared via `useUrlSyncedState` (not `useState`).
+- [ ] **Draggables**: Every draggable element is assigned a stable, explicit string for `syncKey`.
+- [ ] **Theme Contrast**: Slide content is fully readable in both Light and Dark modes.
+
+
+### C. Technical Compliance Details
+#### Dynamic Theme Compliance
 - [ ] **No Static Grays/Slates**: Verify that no container or component wraps content with static colors like `bg-slate-900`, `bg-gray-800`, or `border-white/10`.
 - [ ] **Standard Design Tokens**: Use `bg-muted/60 dark:bg-muted/20 border border-border/40 rounded-xl` for slide containers, and standard button style tokens like `bg-muted border-border/50 text-foreground hover:bg-muted/80`.
 - [ ] **Light Mode Contrast**: Test slide elements in both light and dark modes to guarantee text (e.g., inside morphing code headers or text inputs) remains readable.
 
-### B. Mode Adaptation (Slide vs. Blog Mode)
+#### Mode Adaptation (Slide vs. Blog Mode)
 - [ ] **Strip Backgrounds**: Verify components strip backgrounds (`bg-transparent`), borders, and drop-shadows when `viewMode === 'blog'`.
 - [ ] **No Hardcoded card classes in Lectures**: Ensure slide files inside `src/lectures/` do not define custom structural containers. Delegate them to reusable layouts and interactive cards.
 - [ ] **Responsive Stacking**: Grid columns and parameter panels must fold vertically on mobile screen viewports (using `flex flex-col md:flex-row`).
 
-### C. State Synchronization
+#### State Synchronization
 - [ ] **Cross-Window Sync**: Verify that any value that can change based on user interactions (inputs, preset buttons, sandbox parameters, toggles) is declared via `useUrlSyncedState`.
 - [ ] **Stable syncKeys**: Ensure every draggable widget has a stable, explicit string declared for `syncKey`.
 - [ ] **No Infinite Loops**: Verify that default values passed to hooks do not trigger infinite rendering loops. Avoid updating state parameters inside render paths.
 
-### D. Layout Consistency
-- [ ] **Header & Footer Delegation**: Ensure headers and footers are delegated to `<LayoutHeader>` and `<LayoutFooter>` to preserve view-transition morphing animation effects.
-- [ ] **Semantic Elements**: Ensure list items use `<SlideBullet>`, paragraphs use `<SlideParagraph>`, and equations use `<LatexFormula>` or `<SlideEquation>` (no raw HTML equivalents like `<p>` or `<li>`).
