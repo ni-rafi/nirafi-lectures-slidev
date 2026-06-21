@@ -25,23 +25,32 @@ export interface ICriticalDeflectionPoint {
 export interface IDoubleIntegrationInterval {
   startX: number;
   endX: number;
-  equationM: string;       // LaTeX equation of moment
-  equationSlope: string;   // LaTeX equation of slope (with C1)
-  equationDeflection: string; // LaTeX equation of deflection (with C1, C2)
+  mCoeffs: number[];
+  slopeCoeffs: number[];
+  deflCoeffs: number[];
   C1: number;
   C2: number;
+  EI: number;
+  latexM: string;
+}
+
+export interface IDoubleIntegrationBC {
+  type: 'deflection-support' | 'slope-fixed' | 'deflection-continuity' | 'slope-continuity' | 'hinge-discontinuity';
+  position: number;
+  segmentIndex1: number;
+  segmentIndex2?: number;
+  supportType?: string;
 }
 
 export interface IDoubleIntegrationDetails {
   intervals: IDoubleIntegrationInterval[];
-  boundaryConditions: string[];
+  boundaryConditions: IDoubleIntegrationBC[];
   solvedConstants: { name: string; value: number }[];
 }
 
 export interface IMomentAreaSegment {
   startX: number;
   endX: number;
-  description: string;
   area: number;             // Area under M/EI curve
   centroidX: number;        // Centroid coordinate x
   momentOfAreaAboutLeft: number;  // Area * (x - startX)
@@ -51,7 +60,10 @@ export interface IMomentAreaSegment {
 export interface IMomentAreaDetails {
   segments: IMomentAreaSegment[];
   referencePoint: number;
-  calculations: string[];
+  referencePointB?: number;
+  tBA?: number;
+  thetaA?: number;
+  isCantilever: boolean;
 }
 
 export interface IConjugateReaction {
@@ -63,15 +75,14 @@ export interface IConjugateReaction {
 export interface IConjugateBeamDetails {
   supports: { position: number; type: string }[];
   reactions: IConjugateReaction[];
-  steps: string[];
 }
 
 export interface IDeflectionResult {
   success: boolean;
   points: IDeflectionPoint[];
   criticalPoints: ICriticalDeflectionPoint[];
-  steps: string[];
   doubleIntegration?: IDoubleIntegrationDetails;
   momentArea?: IMomentAreaDetails;
   conjugateBeam?: IConjugateBeamDetails;
 }
+

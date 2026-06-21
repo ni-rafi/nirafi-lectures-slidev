@@ -3,59 +3,39 @@ import { BeamWorkspaceContext } from '@/subjects/mechanics-of-solids/features/sf
 import { InfluenceLinesWorkspaceContext } from '@/subjects/structural-analysis/features/influence-lines/context/InfluenceLinesWorkspaceContext';
 import { MiniBeamVisual } from './MiniBeamVisual';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface DoiStepVisualProps {
-  text: string;
+  step: ICalculationStep;
 }
 
-export const DoiStepVisual: React.FC<DoiStepVisualProps> = ({ text }) => {
+export const DoiStepVisual: React.FC<DoiStepVisualProps> = ({ step }) => {
   const beamCtx = useContext(BeamWorkspaceContext);
   const influenceCtx = useContext(InfluenceLinesWorkspaceContext);
 
   const supports = beamCtx ? beamCtx.supports : (influenceCtx ? influenceCtx.supports : []);
   const releases = beamCtx ? beamCtx.releases : (influenceCtx ? influenceCtx.releases : []);
 
-  // 1. Identify which support or release is being targeted by parsing coordinate (e.g. "x = 4" or "x = 4.00")
-  let targetPosition: number | null = null;
-  const posMatch = text.match(/x\s*=\s*([\d.]+)/);
-  if (posMatch && posMatch[1]) {
-    targetPosition = parseFloat(posMatch[1]);
-  }
+  const isSupportStep = step.type === 'doi-support-reaction';
+  const isInternalStep = step.type === 'doi-release-condition';
+  const isSummaryStep = step.type === 'doi-summary';
 
-  // 2. Identify step type
-  const isSupportStep = text.toLowerCase().includes('support');
-  const isInternalStep = text.toLowerCase().includes('internal');
-  const isTotalReactionsStep = text.toLowerCase().includes('total unknown support reactions');
-  const isTotalConditionsStep = text.toLowerCase().includes('total equations of condition');
-  const isFormulaStep = text.includes('DOI =') || text.includes('r - 3 - c');
-  const isConclusionStep = text.includes('determinate') || text.includes('indeterminate') || text.includes('unstable') || text.includes('equations of equilibrium');
+  const highlightedSupportId = step.highlightSupportId ?? null;
+  const highlightedReleaseId = step.highlightReleaseId ?? null;
 
-  // Highlight matching support
-  let highlightedSupportId: string | null = null;
-  if (isSupportStep && targetPosition !== null) {
-    const s = supports.find(sup => Math.abs(sup.position - targetPosition!) < 0.05);
-    if (s) highlightedSupportId = s.id;
-  }
-
-  // Highlight matching release
-  let highlightedReleaseId: string | null = null;
-  if (isInternalStep && targetPosition !== null) {
-    const r = releases.find(rel => Math.abs(rel.position - targetPosition!) < 0.05);
-    if (r) highlightedReleaseId = r.id;
-  }
-
-  const showSupportReactions = (_sId: string, sPosition: number) => {
-    if (isTotalReactionsStep || isFormulaStep || isConclusionStep) return true;
-    if (isSupportStep && targetPosition !== null && Math.abs(sPosition - targetPosition) < 0.05) return true;
+  const showSupportReactions = (sId: string) => {
+    if (isSummaryStep) return true;
+    if (isSupportStep && highlightedSupportId === sId) return true;
     return false;
   };
 
-  const showReleaseHighlights = (rPosition: number) => {
-    if (isTotalConditionsStep || isFormulaStep || isConclusionStep) return true;
-    if (isInternalStep && targetPosition !== null && Math.abs(rPosition - targetPosition) < 0.05) return true;
+  const showReleaseHighlights = (rId: string) => {
+    if (isSummaryStep) return true;
+    if (isInternalStep && highlightedReleaseId === rId) return true;
     return false;
   };
 
-  const showEquilibriumEquations = isConclusionStep || text.toLowerCase().includes('equilibrium');
+  const showEquilibriumEquations = isSummaryStep;
 
   const handleRenderOverlay = (toPixel: (x: number) => number) => {
     const yBeam = 70; // matches MiniBeamVisual base line coordinate
@@ -64,7 +44,7 @@ export const DoiStepVisual: React.FC<DoiStepVisualProps> = ({ text }) => {
         {/* Support reaction badges & arrows */}
         {supports.map(s => {
           const px = toPixel(s.position);
-          const showArrows = showSupportReactions(s.id, s.position);
+          const showArrows = showSupportReactions(s.id);
           const isHighlighted = highlightedSupportId === s.id;
 
           let rxCount = 0;
@@ -75,7 +55,7 @@ export const DoiStepVisual: React.FC<DoiStepVisualProps> = ({ text }) => {
           return (
             <g key={s.id}>
               {/* Count badge */}
-              {isHighlighted && !isFormulaStep && !isConclusionStep && (
+              {isHighlighted && !isSummaryStep && (
                 <g transform={`translate(${px}, ${yBeam + 22})`}>
                   <rect x={-10} y={0} width={20} height={8} rx={1.5} className="fill-primary/10 stroke-primary/30" strokeWidth={0.5} />
                   <text x={0} y={6} textAnchor="middle" className="fill-primary text-[5px] font-extrabold">
@@ -115,7 +95,7 @@ export const DoiStepVisual: React.FC<DoiStepVisualProps> = ({ text }) => {
         {/* Releases highlight glow & count badge */}
         {releases.map((r, i) => {
           const px = toPixel(r.position);
-          const active = showReleaseHighlights(r.position);
+          const active = showReleaseHighlights(r.id);
           const condCount = r.type === 'hinge' ? 1 : 2;
 
           return (
@@ -123,7 +103,7 @@ export const DoiStepVisual: React.FC<DoiStepVisualProps> = ({ text }) => {
               {active && (
                 <circle cx={px} cy={yBeam} r={10} fill="none" stroke="var(--destructive)" strokeWidth={0.5} strokeDasharray="1.5,1.5" />
               )}
-              {active && !isFormulaStep && !isConclusionStep && (
+              {active && !isSummaryStep && (
                 <g transform={`translate(${px}, ${yBeam - 22})`}>
                   <rect x={-10} y={-8} width={20} height={8} rx={1.5} className="fill-destructive/10 stroke-destructive/30" strokeWidth={0.5} />
                   <text x={0} y={-2} textAnchor="middle" className="fill-destructive text-[5px] font-extrabold">

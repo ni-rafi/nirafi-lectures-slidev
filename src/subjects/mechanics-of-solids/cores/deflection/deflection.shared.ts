@@ -141,6 +141,12 @@ export function getCriticalCoords(
       criticalCoords.add(s.position);
     }
   });
+
+  beam.releases.forEach(r => {
+    if (r.position >= 0 && r.position <= N) {
+      criticalCoords.add(r.position);
+    }
+  });
   
   beam.loads.forEach(l => {
     if (l.position !== undefined && l.position >= 0 && l.position <= N) {
@@ -179,12 +185,14 @@ export function getCriticalLabel(
   N: number,
   maxDeflX: number,
   supports: { position: number }[],
-  eiSegments: IEISegment[]
+  eiSegments: IEISegment[],
+  releases?: { position: number }[]
 ): string {
   if (x === 0) return 'Left End';
   if (x === N) return 'Right End';
   if (Math.abs(x - maxDeflX) < 1e-4) return 'Max Deflection';
   if (supports.some(s => Math.abs(s.position - x) < 1e-4)) return 'Support';
+  if (releases && releases.some(r => Math.abs(r.position - x) < 1e-4)) return 'Internal Hinge';
   if (eiSegments.some(seg => Math.abs(seg.startPosition - x) < 1e-4 || Math.abs(seg.endPosition - x) < 1e-4)) return 'Stiffness Joint';
   return 'Point';
 }

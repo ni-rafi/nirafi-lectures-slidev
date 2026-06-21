@@ -1,16 +1,14 @@
 import React from 'react';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface MicroPrincipalRotationProps {
-  text: string;
+  step: ICalculationStep;
 }
 
-export const MicroPrincipalRotation: React.FC<MicroPrincipalRotationProps> = ({ text }) => {
-  // Parse angle theta from text (defaults to 26.6 degrees if principal thetaP matches our test case)
-  let angleDeg = 26.6;
-  const match = text.match(/theta_p\s*=\s*([\d.-]+)/) || text.match(/angle\s*([\d.-]+)/) || text.match(/orientation:\s*([\d.-]+)/);
-  if (match && match[1]) {
-    angleDeg = parseFloat(match[1]);
-  }
+export const MicroPrincipalRotation: React.FC<MicroPrincipalRotationProps> = ({ step }) => {
+  const thetaP = (step.metadata?.thetaP as number) ?? 0;
+  const angleDeg = thetaP * 180 / Math.PI;
 
   const width = 160;
   const height = 110;

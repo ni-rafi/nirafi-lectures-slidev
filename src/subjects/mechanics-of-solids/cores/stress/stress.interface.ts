@@ -42,14 +42,4 @@ export interface ITransformedState extends IStressState {
   theta: number;   // Rotation angle (rad)
 }
 
-export interface IStressTransformationResult {
-  originalState: IStressState;
-  transformedState: ITransformedState;
-  principal: IPrincipalResult;
-  analyticalSteps: string[];
-  mohrsCircle: {
-    center: number; // Center coordinate on sigma axis (Pa)
-    radius: number; // Radius of Mohr's circle (Pa)
-    steps: string[];
-  };
-}
+

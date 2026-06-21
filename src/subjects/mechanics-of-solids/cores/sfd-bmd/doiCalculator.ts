@@ -8,13 +8,13 @@ export function calculateDOI(beam: IBeam): IDOIResult {
     let count = 0;
     if (s.type === 'roller') {
       count = 1;
-      steps.push(`Support Roller at $x = ${s.position}\\text{ m}$: provides $1$ vertical reaction ($R_{y}$).`);
+      steps.push(`Support Roller at $x = ${s.position.toFixed(2)}\\text{ m}$: provides $1$ vertical reaction ($R_{y}$).`);
     } else if (s.type === 'hinge') {
       count = 2;
-      steps.push(`Support Hinge at $x = ${s.position}\\text{ m}$: provides $2$ reactions ($R_x, R_y$).`);
+      steps.push(`Support Hinge at $x = ${s.position.toFixed(2)}\\text{ m}$: provides $2$ reactions ($R_x, R_y$).`);
     } else if (s.type === 'fixed') {
       count = 3;
-      steps.push(`Support Fixed at $x = ${s.position}\\text{ m}$: provides $3$ reactions ($R_x, R_y, M$).`);
+      steps.push(`Support Fixed at $x = ${s.position.toFixed(2)}\\text{ m}$: provides $3$ reactions ($R_x, R_y, M$).`);
     }
     r += count;
   });
@@ -24,10 +24,10 @@ export function calculateDOI(beam: IBeam): IDOIResult {
   beam.releases.forEach(rel => {
     if (rel.type === 'hinge') {
       c += 1;
-      steps.push(`Internal Hinge at $x = ${rel.position}\\text{ m}$: releases bending moment, providing $1$ equation of condition ($M = 0$).`);
+      steps.push(`Internal Hinge at $x = ${rel.position.toFixed(2)}\\text{ m}$: releases bending moment, providing $1$ equation of condition ($M = 0$).`);
     } else if (rel.type === 'roller') {
       c += 2;
-      steps.push(`Internal Roller at $x = ${rel.position}\\text{ m}$: releases bending moment and shear force, providing $2$ equations of condition ($M = 0, V = 0$).`);
+      steps.push(`Internal Roller at $x = ${rel.position.toFixed(2)}\\text{ m}$: releases bending moment and shear force, providing $2$ equations of condition ($M = 0, V = 0$).`);
     }
   });
 
@@ -74,6 +74,8 @@ export function calculateDOI(beam: IBeam): IDOIResult {
     isDeterminate,
     isIndeterminate,
     isUnstable,
+    hasHorizontalRestraint,
     explanationSteps: steps,
   };
 }
+

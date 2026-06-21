@@ -45,7 +45,8 @@ export interface IDOIResult {
   isDeterminate: boolean;
   isIndeterminate: boolean;
   isUnstable: boolean;
-  explanationSteps: string[];
+  hasHorizontalRestraint: boolean;
+  explanationSteps?: string[];
 }
 
 export interface IIntervalEquation {
@@ -67,13 +68,56 @@ export interface ICriticalPoint {
   label?: string;
 }
 
+export interface IReactionVariable {
+  supportId: string;
+  type: 'R_y' | 'M';
+  x: number;
+  label: string;
+}
+
+export interface IReactionEquation {
+  title: string;
+  type: 'hinge-moment' | 'roller-shear' | 'moment-equilibrium' | 'vertical-equilibrium' | 'horizontal-equilibrium';
+  position?: number;
+  side?: 'left' | 'right';
+  coefs: number[];
+  rhsValue: number;
+  hMStr: string;
+  loadsDetailTerms: string;
+  loadsDetailSteps: string;
+}
+
+export interface IReactionEquationDetails {
+  variables: IReactionVariable[];
+  equations: IReactionEquation[];
+  solvedValues: { name: string; value: number }[];
+}
+
+export interface IGraphicalStepData {
+  type: 'sfd-start' | 'sfd-segment' | 'sfd-jump' | 'bmd-start' | 'bmd-segment' | 'bmd-jump';
+  x?: number;
+  startX?: number;
+  endX?: number;
+  v?: number;
+  m?: number;
+  vStart?: number;
+  vEnd?: number;
+  mStart?: number;
+  mEnd?: number;
+  loadArea?: number;
+  shearArea?: number;
+  jump?: number;
+  source?: 'support' | 'point-load' | 'moment-load';
+  description?: string;
+}
+
 export interface ISolverOutput {
   success: boolean;
   doiResult: IDOIResult;
   reactions: IReaction[];
   intervals: IIntervalEquation[];
   criticalPoints: ICriticalPoint[];
-  reactionSteps: string[];
-  sectionSteps: string[];
-  graphicalSteps: string[];
+  reactionEquations?: IReactionEquationDetails;
+  graphicalStepsData?: IGraphicalStepData[];
 }
+

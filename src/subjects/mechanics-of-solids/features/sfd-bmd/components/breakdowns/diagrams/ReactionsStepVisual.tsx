@@ -5,11 +5,13 @@ import { useBeamEngine } from '../../../hooks/useBeamEngine';
 import { processReactionsForces } from './helpers/reactionsLoadHelper';
 import { ReactionsOverlay } from './components/ReactionsOverlay';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface ReactionsStepVisualProps {
-  text: string;
+  step: ICalculationStep;
 }
 
-export const ReactionsStepVisual: React.FC<ReactionsStepVisualProps> = ({ text }) => {
+export const ReactionsStepVisual: React.FC<ReactionsStepVisualProps> = ({ step }) => {
   const beamCtx = useContext(BeamWorkspaceContext);
   const { solverResult } = useBeamEngine();
   if (!beamCtx) return null;
@@ -23,7 +25,7 @@ export const ReactionsStepVisual: React.FC<ReactionsStepVisualProps> = ({ text }
     activeLoadVisuals,
     activeReactions,
     dimTargets,
-  } = processReactionsForces(text, supports, loads);
+  } = processReactionsForces(step.text, supports, loads);
 
   const dimCount = dimTargets.length;
   const yBeam = Math.max(90, 69 + Math.max(0, dimCount - 1) * 12);

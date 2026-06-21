@@ -1,5 +1,5 @@
 import { IBeam, IReaction, IIntervalEquation } from '../sfd-bmd/types';
-import { IEISegment, IDeflectionResult, IDoubleIntegrationInterval, ICriticalDeflectionPoint, IDeflectionPoint } from './types';
+import { IEISegment, IDeflectionResult, IDoubleIntegrationInterval, ICriticalDeflectionPoint, IDeflectionPoint, IDoubleIntegrationBC } from './types';
 import { IDeflectionMethod } from './deflection.interface';
 import { getMergedIntervals, evalPoly, integratePolyOnce, integratePolyTwice, getCriticalCoords, getCriticalLabel } from './deflection.shared';
 import { solveLinearSystem } from '../sfd-bmd/reactionSolver';
@@ -39,7 +39,7 @@ export class DoubleIntegrationMethod implements IDeflectionMethod {
     const B: number[] = new Array(numEq).fill(0);
     let eq = 0;
 
-    const bcSteps: string[] = [];
+    const boundaryConditions: IDoubleIntegrationBC[] = [];
 
     // Helper to find segment index containing coordinate x
     const getSegIndex = (x: number) => {
@@ -65,7 +65,12 @@ export class DoubleIntegrationMethod implements IDeflectionMethod {
       A[eq]![2 * k] = s.position;
       A[eq]![2 * k + 1] = 1;
       B[eq] = -valF;
-      bcSteps.push(`Deflection at support ${s.type} at $x = ${s.position.toFixed(2)}\\text{ m}$: $v_{${k + 1}}(${s.position.toFixed(2)}) = 0$`);
+      boundaryConditions.push({
+        type: 'deflection-support',
+        position: s.position,
+        segmentIndex1: k,
+        supportType: s.type,
+      });
       eq++;
     });
 
@@ -80,7 +85,11 @@ export class DoubleIntegrationMethod implements IDeflectionMethod {
         
         A[eq]![2 * k] = 1;
         B[eq] = -valF;
-        bcSteps.push(`Slope at fixed support at $x = ${s.position.toFixed(2)}\\text{ m}$: $\\theta_{${k + 1}}(${s.position.toFixed(2)}) = 0$`);
+        boundaryConditions.push({
+          type: 'slope-fixed',
+          position: s.position,
+          segmentIndex1: k,
+        });
         eq++;
       }
     });
@@ -105,7 +114,12 @@ export class DoubleIntegrationMethod implements IDeflectionMethod {
       A[eq]![2 * (j + 1)] = -x_b / EI_j1;
       A[eq]![2 * (j + 1) + 1] = -1 / EI_j1;
       B[eq] = valFj1 / EI_j1 - valFj / EI_j;
-      bcSteps.push(`Deflection continuity at $x = ${x_b.toFixed(2)}\\text{ m}$: $v_{${j + 1}}(${x_b.toFixed(2)}) = v_{${j + 2}}(${x_b.toFixed(2)})$`);
+      boundaryConditions.push({
+        type: 'deflection-continuity',
+        position: x_b,
+        segmentIndex1: j,
+        segmentIndex2: j + 1,
+      });
       eq++;
 
       // Slope continuity: theta_j(x_b) = theta_j+1(x_b) (only if there is no internal release hinge)
@@ -119,10 +133,20 @@ export class DoubleIntegrationMethod implements IDeflectionMethod {
         A[eq]![2 * j] = 1 / EI_j;
         A[eq]![2 * (j + 1)] = -1 / EI_j1;
         B[eq] = valSj1 / EI_j1 - valSj / EI_j;
-        bcSteps.push(`Slope continuity at $x = ${x_b.toFixed(2)}\\text{ m}$: $\\theta_{${j + 1}}(${x_b.toFixed(2)}) = \\theta_{${j + 2}}(${x_b.toFixed(2)})$`);
+        boundaryConditions.push({
+          type: 'slope-continuity',
+          position: x_b,
+          segmentIndex1: j,
+          segmentIndex2: j + 1,
+        });
         eq++;
       } else {
-        bcSteps.push(`Internal Hinge at $x = ${x_b.toFixed(2)}\\text{ m}$: allows slope discontinuity $\\theta_{${j + 1}} \\neq \\theta_{${j + 2}}$`);
+        boundaryConditions.push({
+          type: 'hinge-discontinuity',
+          position: x_b,
+          segmentIndex1: j,
+          segmentIndex2: j + 1,
+        });
       }
     }
 
@@ -133,11 +157,6 @@ export class DoubleIntegrationMethod implements IDeflectionMethod {
         success: false,
         points: [],
         criticalPoints: [],
-        steps: [
-          '### Boundary Conditions Solve Failed',
-          'Error: The deflection system of equations is singular or unstable.',
-          'Please verify that the beam is stable and has sufficient supports. For example, a hinge or internal release requires a corresponding support or restraint to prevent collapse.'
-        ]
       };
     }
 
@@ -192,7 +211,7 @@ export class DoubleIntegrationMethod implements IDeflectionMethod {
 
       const slope = (evalPoly(slopePolys[k]!, x) + c1) / EI;
       const deflection = ((evalPoly(deflPolys[k]!, x) + c1 * x + c2) / EI) * 1000;
-      const label = getCriticalLabel(x, N, maxDeflPoint.x, beam.supports, eiSegments);
+      const label = getCriticalLabel(x, N, maxDeflPoint.x, beam.supports, eiSegments, beam.releases);
 
       return {
         x: parseFloat(x.toFixed(3)),
@@ -207,66 +226,29 @@ export class DoubleIntegrationMethod implements IDeflectionMethod {
       const c1 = constants[2 * idx]!;
       const c2 = constants[2 * idx + 1]!;
 
-      // Formulate equations
-      // M(x) = ax^3 + bx^2 + cx + d
-      const mStr = inv.latexM;
-
-      const slopeEq = `\\theta_{${idx + 1}}(x) = \\frac{1}{EI_{${idx + 1}}} \\left( \\int M(x) dx + C_{1,${idx + 1}} \\right) = \\frac{1}{${inv.EI.toFixed(1)}} \\left( \\text{integrated Moment} + (${c1.toFixed(3)}) \\right)`;
-      const deflEq = `v_{${idx + 1}}(x) = \\frac{1}{EI_{${idx + 1}}} \\left( \\iint M(x) dx + C_{1,${idx + 1}}x + C_{2,${idx + 1}} \\right) = \\frac{1}{${inv.EI.toFixed(1)}} \\left( \\text{integrated twice} + (${c1.toFixed(3)})x + (${c2.toFixed(3)}) \\right)`;
-
       return {
         startX: inv.startX,
         endX: inv.endX,
-        equationM: `M(x) = ${mStr}`,
-        equationSlope: slopeEq,
-        equationDeflection: deflEq,
+        mCoeffs: inv.mCoeffs,
+        slopeCoeffs: slopePolys[idx]!,
+        deflCoeffs: deflPolys[idx]!,
         C1: parseFloat(c1.toFixed(4)),
         C2: parseFloat(c2.toFixed(4)),
+        EI: inv.EI,
+        latexM: inv.latexM,
       };
-    });
-
-    // Compile step-by-step markdown explanations
-    const steps: string[] = [];
-    steps.push(`### Double Integration Calculation Steps`);
-    steps.push(`The Double Integration Method solves the differential equation:`);
-    steps.push(`$$EI \\frac{d^2v}{dx^2} = M(x)$$`);
-    steps.push(`Integrating once gives the slope $\\theta(x)$, and twice gives the deflection $v(x)$:`);
-    steps.push(`$$EI \\theta(x) = \\int M(x) dx + C_1$$`);
-    steps.push(`$$EI v(x) = \\iint M(x) dx + C_1 x + C_2$$`);
-
-    steps.push(`#### Step 1: Segmentation of the beam`);
-    steps.push(`Based on moment intervals and $EI$ segments, the beam is divided into $${numSegs}$ segment(s):`);
-    mergedIntervals.forEach((inv, idx) => {
-      steps.push(`- **Segment ${idx + 1}** ($x \\in [${inv.startX.toFixed(2)}, ${inv.endX.toFixed(2)}]\\text{ m}$): $EI = ${inv.EI.toFixed(1)}\\text{ kN}\\cdot\\text{m}^2$ ($E = ${inv.E}\\text{ GPa}$, $I = ${inv.I}\\text{ }10^6\\text{ mm}^4$).`);
-    });
-
-    steps.push(`#### Step 2: Formulate integration equations`);
-    intervalsDetails.forEach((invDetails, idx) => {
-      steps.push(`- **Segment ${idx + 1}** ($x \\in [${invDetails.startX.toFixed(2)}, ${invDetails.endX.toFixed(2)}]\\text{ m}$):`);
-      steps.push(`  - Bending Moment: $${invDetails.equationM}$`);
-      steps.push(`  - Slope: $EI_{${idx + 1}} \\theta_{${idx + 1}}(x) = F_{\\theta, ${idx + 1}}(x) + C_{1, ${idx + 1}}$`);
-      steps.push(`  - Deflection: $EI_{${idx + 1}} v_{${idx + 1}}(x) = F_{v, ${idx + 1}}(x) + C_{1, ${idx + 1}}x + C_{2, ${idx + 1}}$`);
-    });
-
-    steps.push(`#### Step 3: Set up boundary and continuity conditions`);
-    steps.push(`We have $${numEq}$ unknowns constants $C_{1,i}, C_{2,i}$ ($i = 1 \\dots ${numSegs}$) solved by:`);
-    bcSteps.forEach(bc => steps.push(`- ${bc}`));
-
-    steps.push(`#### Step 4: Solved constants of integration`);
-    solvedConstants.forEach(c => {
-      steps.push(`- $${c.name} = ${c.value.toFixed(4)}$`);
     });
 
     return {
       success: true,
       points,
       criticalPoints,
-      steps,
       doubleIntegration: {
         intervals: intervalsDetails,
-        boundaryConditions: bcSteps,
+        boundaryConditions,
         solvedConstants,
       },
+
     };
   }
 }

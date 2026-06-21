@@ -1,14 +1,12 @@
 import React from 'react';
 import { StepListHeader } from '../StepListHeader';
 import { StepRow } from '../StepRow';
+import { useBeamWorkspace } from '@/subjects/mechanics-of-solids/features/sfd-bmd/context/BeamWorkspaceContext';
+import { IDOIResult } from '@/subjects/mechanics-of-solids/cores/sfd-bmd/types';
+import { generateDoiStepsUI } from '../../../helpers/stepFormatters';
 
 interface DoiPanelProps {
-  doiResult: {
-    isUnstable: boolean;
-    isDeterminate: boolean;
-    doi: number;
-    explanationSteps: string[];
-  };
+  doiResult: IDOIResult;
   expandedDiagrams: Record<string, boolean>;
   setExpandedDiagrams: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
   alertClass: string;
@@ -22,11 +20,14 @@ export const DoiPanel: React.FC<DoiPanelProps> = ({
   alertClass,
   alertTitle,
 }) => {
+  const { supports, releases, length } = useBeamWorkspace();
+  const steps = generateDoiStepsUI(doiResult, { length, supports, releases, loads: [] });
+
   return (
     <div id="breakdown-doi" className="flex flex-col gap-3">
       <StepListHeader
         title="Static Restraints Analysis"
-        steps={doiResult.explanationSteps}
+        steps={steps}
         tab="doi"
         expandedDiagrams={expandedDiagrams}
         setExpandedDiagrams={setExpandedDiagrams}
@@ -37,9 +38,9 @@ export const DoiPanel: React.FC<DoiPanelProps> = ({
         }
       />
       <div className="flex flex-col gap-2.5">
-        {doiResult.explanationSteps.map((step, idx) => (
+        {steps.map((step, idx) => (
           <StepRow
-            key={idx}
+            key={step.id}
             step={step}
             tab="doi"
             isExpanded={!!expandedDiagrams[`doi-${idx}`]}
@@ -55,3 +56,4 @@ export const DoiPanel: React.FC<DoiPanelProps> = ({
     </div>
   );
 };
+

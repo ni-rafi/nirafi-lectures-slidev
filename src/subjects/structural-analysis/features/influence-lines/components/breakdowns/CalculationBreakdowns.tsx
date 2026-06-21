@@ -85,7 +85,7 @@ export const CalculationBreakdowns: React.FC = () => {
                     <div id="il-breakdown-doi" className="flex flex-col gap-3">
                         <StepListHeader
                             title="Static Restraints Analysis"
-                            steps={doiResult.explanationSteps}
+                            steps={doiResult.explanationSteps || []}
                             tab="doi"
                             expandedDiagrams={expandedDiagrams}
                             setExpandedDiagrams={setExpandedDiagrams}
@@ -96,7 +96,7 @@ export const CalculationBreakdowns: React.FC = () => {
                             }
                         />
                         <div className="flex flex-col gap-2.5">
-                            {doiResult.explanationSteps.map((step, idx) => (
+                            {(doiResult.explanationSteps || []).map((step, idx) => (
                                 <StepRow
                                     key={idx}
                                     step={step}

@@ -1,35 +1,37 @@
 import React from 'react';
 import { StepListHeader } from '../StepListHeader';
 import { StepRow } from '../StepRow';
+import { IGraphicalStepData } from '@/subjects/mechanics-of-solids/cores/sfd-bmd/types';
+import { generateGraphicalStepsUI } from '../../../helpers/stepFormatters';
 
 interface GraphicalPanelProps {
-  graphicalSteps: string[];
+  graphicalStepsData: IGraphicalStepData[];
   expandedDiagrams: Record<string, boolean>;
   setExpandedDiagrams: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 export const GraphicalPanel: React.FC<GraphicalPanelProps> = ({
-  graphicalSteps,
+  graphicalStepsData,
   expandedDiagrams,
   setExpandedDiagrams,
 }) => {
+  const steps = generateGraphicalStepsUI(graphicalStepsData);
+
   return (
     <div id="breakdown-graphical" className="flex flex-col gap-3">
       <StepListHeader
         title="Curvatures integration & shear jumps"
-        steps={graphicalSteps}
+        steps={steps}
         tab="graphical"
         expandedDiagrams={expandedDiagrams}
         setExpandedDiagrams={setExpandedDiagrams}
       />
       <div className="flex flex-col gap-2.5">
-        {graphicalSteps.map((step, idx) => (
+        {steps.map((step, idx) => (
           <StepRow
-            key={idx}
+            key={step.id}
             step={step}
             tab="graphical"
-            stepIndex={idx}
-            allSteps={graphicalSteps}
             isExpanded={!!expandedDiagrams[`graphical-${idx}`]}
             onToggle={() =>
               setExpandedDiagrams(prev => ({
@@ -43,3 +45,4 @@ export const GraphicalPanel: React.FC<GraphicalPanelProps> = ({
     </div>
   );
 };
+

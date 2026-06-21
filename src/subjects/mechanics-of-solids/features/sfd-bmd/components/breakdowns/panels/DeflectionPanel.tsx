@@ -1,16 +1,17 @@
 import React from 'react';
 import { StepListHeader } from '../StepListHeader';
 import { StepRow } from '../StepRow';
+import { IDeflectionResult } from '@/subjects/mechanics-of-solids/cores/deflection/types';
+import { generateDoubleIntegrationStepsUI, generateMomentAreaStepsUI, generateConjugateBeamStepsUI } from '../../../helpers/stepFormatters';
+import { useBeamWorkspace } from '@/subjects/mechanics-of-solids/features/sfd-bmd/context/BeamWorkspaceContext';
+import { ICalculationStep } from '../../../types/stepTypes';
 
 interface DeflectionPanelProps {
   currentTab: 'double-integration' | 'moment-area' | 'conjugate-beam';
   length: number;
   customInspectX: number | null;
   setCustomInspectX: (x: number | null) => void;
-  deflectionResult: {
-    criticalPoints: Array<{ x: number; label: string; slope: number; deflection: number }>;
-    steps: string[];
-  };
+  deflectionResult: IDeflectionResult;
   expandedDiagrams: Record<string, boolean>;
   setExpandedDiagrams: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
@@ -24,6 +25,28 @@ export const DeflectionPanel: React.FC<DeflectionPanelProps> = ({
   expandedDiagrams,
   setExpandedDiagrams,
 }) => {
+  const { supports, releases, loads } = useBeamWorkspace();
+
+  let steps: ICalculationStep[] = [];
+  if (currentTab === 'double-integration' && deflectionResult.doubleIntegration) {
+    steps = generateDoubleIntegrationStepsUI(deflectionResult.doubleIntegration);
+  } else if (currentTab === 'moment-area' && deflectionResult.momentArea) {
+    // If Moment-Area solver fell back to Double Integration (due to hinges)
+    if (releases.length > 0) {
+      steps = [
+        {
+          id: 'ma-gerber-fallback',
+          type: 'ma-fallback-message',
+          text: `### Moment-Area Method Calculation Steps\n\nThe Moment-Area Method utilizes Mohr's Theorems to compute slopes and deflections.\n\n**Note:** This structure is a Gerber Beam with internal hinges ($H > 0$).\n\nBecause internal hinges introduce slope discontinuities (angles/hinge rotations), the moment-area theorems cannot be applied as a single continuous integration across the entire beam.\n\nInstead, the slope and deflection curves are solved segment-by-segment using the Double Integration method (refer to the Double Integration tab).`,
+        }
+      ];
+    } else if (deflectionResult.momentArea) {
+      steps = generateMomentAreaStepsUI(deflectionResult.momentArea);
+    }
+  } else if (currentTab === 'conjugate-beam' && deflectionResult.conjugateBeam) {
+    steps = generateConjugateBeamStepsUI(deflectionResult.conjugateBeam, { length, supports, releases, loads });
+  }
+
   return (
     <div id="breakdown-deflection" className="flex flex-col gap-4">
       {/* Deflection Header Controls */}
@@ -92,19 +115,17 @@ export const DeflectionPanel: React.FC<DeflectionPanelProps> = ({
       <div className="flex flex-col gap-2.5 mt-2">
         <StepListHeader
           title="Mathematical Derivation steps"
-          steps={deflectionResult.steps}
+          steps={steps}
           tab={currentTab}
           expandedDiagrams={expandedDiagrams}
           setExpandedDiagrams={setExpandedDiagrams}
         />
         <div className="flex flex-col gap-3">
-          {deflectionResult.steps.map((step, idx) => (
+          {steps.map((step, idx) => (
             <StepRow
-              key={idx}
+              key={step.id}
               step={step}
               tab={currentTab}
-              stepIndex={idx}
-              allSteps={deflectionResult.steps}
               isExpanded={!!expandedDiagrams[`${currentTab}-${idx}`]}
               onToggle={() =>
                 setExpandedDiagrams(prev => ({
@@ -119,3 +140,4 @@ export const DeflectionPanel: React.FC<DeflectionPanelProps> = ({
     </div>
   );
 };
+

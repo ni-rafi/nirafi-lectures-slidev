@@ -2,40 +2,21 @@ import React, { useContext } from 'react';
 import { BeamWorkspaceContext } from '@/subjects/mechanics-of-solids/features/sfd-bmd/context/BeamWorkspaceContext';
 import { MiniBeamVisual } from './MiniBeamVisual';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface DoubleIntegrationStepVisualProps {
-  text: string;
+  step: ICalculationStep;
 }
 
-export const DoubleIntegrationStepVisual: React.FC<DoubleIntegrationStepVisualProps> = ({ text }) => {
+export const DoubleIntegrationStepVisual: React.FC<DoubleIntegrationStepVisualProps> = ({ step }) => {
   const beamCtx = useContext(BeamWorkspaceContext);
   if (!beamCtx) return null;
 
   const { supports } = beamCtx;
 
-  // Parse boundary condition coordinate from step text (e.g., "y(0.00) = 0" or "y(6.00) = 0" or "theta(0) = 0")
-  let lockPos: number | null = null;
-  let isSlopeLock = false;
+  const lockPos = step.highlightX !== undefined ? step.highlightX : null;
+  const isSlopeLock = step.text.toLowerCase().includes('slope');
 
-  const matchDeflection = text.match(/y\(([\d.]+)\)\s*=\s*0/) || text.match(/v\(([\d.]+)\)\s*=\s*0/);
-  const matchSlope = text.match(/theta\(([\d.]+)\)\s*=\s*0/) || text.match(/\\theta_A\s*=\s*0/);
-
-  if (matchDeflection && matchDeflection[1]) {
-    lockPos = parseFloat(matchDeflection[1]);
-  } else if (matchSlope) {
-    if (matchSlope[1]) {
-      lockPos = parseFloat(matchSlope[1]);
-    } else {
-      lockPos = 0; // default for theta_A
-    }
-    isSlopeLock = true;
-  } else {
-    // Check if the step mentions fixed support or boundary conditions
-    const fixedSupport = supports.find(s => s.type === 'fixed');
-    if (fixedSupport) {
-      lockPos = fixedSupport.position;
-      isSlopeLock = text.includes('slope') || text.includes('tangent');
-    }
-  }
 
   const hasLock = lockPos !== null;
 

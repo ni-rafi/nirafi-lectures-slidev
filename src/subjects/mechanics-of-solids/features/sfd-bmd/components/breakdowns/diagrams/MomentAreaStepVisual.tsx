@@ -3,11 +3,13 @@ import { BeamWorkspaceContext } from '@/subjects/mechanics-of-solids/features/sf
 import { useBeamEngine } from '../../../hooks/useBeamEngine';
 import { MiniBeamVisual } from './MiniBeamVisual';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface MomentAreaStepVisualProps {
-  text: string;
+  step: ICalculationStep;
 }
 
-export const MomentAreaStepVisual: React.FC<MomentAreaStepVisualProps> = ({ text }) => {
+export const MomentAreaStepVisual: React.FC<MomentAreaStepVisualProps> = ({ step }) => {
   const beamCtx = useContext(BeamWorkspaceContext);
   const { solverResult } = useBeamEngine();
   if (!beamCtx) return null;
@@ -19,11 +21,10 @@ export const MomentAreaStepVisual: React.FC<MomentAreaStepVisualProps> = ({ text
   const paddingX = 40;
   const beamW = width - paddingX * 2;
 
-
   const toPixelX = (x: number) => paddingX + (x / length) * beamW;
 
-  const isDeviation = text.includes('deviation') || text.includes('t_{') || text.includes('t_');
-  const isCentroid = text.includes('centroid') || text.includes('Theorem II') || text.includes('M/EI');
+  const isDeviation = step.type === 'ma-reference-tangent';
+  const isCentroid = step.type === 'ma-segment';
 
   // Find supports
   const sortedSupports = [...supports].sort((a, b) => a.position - b.position);

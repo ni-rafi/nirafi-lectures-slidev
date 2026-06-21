@@ -20,7 +20,6 @@ export class DeflectionService implements IDeflectionService {
         success: false,
         points: [],
         criticalPoints: [],
-        steps: ['Error: Invalid input data for deflection calculations.']
       };
     }
 
@@ -48,7 +47,6 @@ export class DeflectionService implements IDeflectionService {
         success: false,
         points: [],
         criticalPoints: [],
-        steps: [`Error: Deflection calculations failed: ${err instanceof Error ? err.message : String(err)}`]
       };
     }
   }

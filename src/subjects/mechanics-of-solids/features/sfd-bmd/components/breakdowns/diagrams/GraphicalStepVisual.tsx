@@ -2,11 +2,13 @@ import React from 'react';
 import { useBeamWorkspace } from '@/subjects/mechanics-of-solids/features/sfd-bmd/context/BeamWorkspaceContext';
 import { useBeamEngine } from '../../../hooks/useBeamEngine';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface GraphicalStepVisualProps {
-  text: string;
+  step: ICalculationStep;
 }
 
-export const GraphicalStepVisual: React.FC<GraphicalStepVisualProps> = ({ text }) => {
+export const GraphicalStepVisual: React.FC<GraphicalStepVisualProps> = ({ step }) => {
   const { length } = useBeamWorkspace();
   const { solverResult } = useBeamEngine();
 
@@ -42,28 +44,14 @@ export const GraphicalStepVisual: React.FC<GraphicalStepVisualProps> = ({ text }
 
   const scaleY = (v: number) => ySFD - (v / maxV) * 25;
 
-  // Parse shading bounds from text (e.g., "[0.00, 3.00]" or "between x = 0.00 and x = 3.00" or "from 0.00m to 3.00m")
-  let shadeStart = 0;
-  let shadeEnd = length;
-  let hasShading = false;
+  // Shading bounds from step metadata
+  const hasShading = step.metadata?.startX !== undefined && step.metadata?.endX !== undefined;
+  const shadeStart = hasShading ? (step.metadata!.startX as number) : 0;
+  const shadeEnd = hasShading ? (step.metadata!.endX as number) : length;
 
-  const match = text.match(/\[([\d.]+),\s*([\d.]+)\]/) ||
-                text.match(/x\s*=\s*([\d.]+)\s*and\s*x\s*=\s*([\d.]+)/) ||
-                text.match(/from\s*([\d.]+)\s*to\s*([\d.]+)/);
-
-  if (match && match[1] && match[2]) {
-    shadeStart = parseFloat(match[1]);
-    shadeEnd = parseFloat(match[2]);
-    hasShading = true;
-  }
-
-  let isPointJump = false;
-  let jumpX = 0;
-  const pointMatch = text.match(/at\s+\$x\s*=\s*([\d.]+)/i);
-  if (pointMatch && pointMatch[1]) {
-    isPointJump = true;
-    jumpX = parseFloat(pointMatch[1]);
-  }
+  // Jump coordinates from step highlightX
+  const isPointJump = step.id.includes('jump');
+  const jumpX = step.highlightX ?? 0;
 
   // Build the SFD polygon path
   let pathD = `M ${toPixelX(0)} ${scaleY(0)}`;

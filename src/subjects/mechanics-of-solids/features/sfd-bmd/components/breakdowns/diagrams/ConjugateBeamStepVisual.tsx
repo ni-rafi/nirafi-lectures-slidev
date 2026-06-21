@@ -5,11 +5,13 @@ import { MiniBeamVisual } from './MiniBeamVisual';
 import { ISupport, IInternalRelease } from '@/subjects/mechanics-of-solids/cores/sfd-bmd/types';
 import { IConjugateReaction } from '@/subjects/mechanics-of-solids/cores/deflection/types';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface ConjugateBeamStepVisualProps {
-  text: string;
+  step: ICalculationStep;
 }
 
-export const ConjugateBeamStepVisual: React.FC<ConjugateBeamStepVisualProps> = ({ text }) => {
+export const ConjugateBeamStepVisual: React.FC<ConjugateBeamStepVisualProps> = ({ step }) => {
   const beamCtx = useContext(BeamWorkspaceContext);
   const { solverResult, deflectionResult } = useBeamEngine();
   const conjugateBeam = deflectionResult.conjugateBeam;
@@ -18,9 +20,9 @@ export const ConjugateBeamStepVisual: React.FC<ConjugateBeamStepVisualProps> = (
 
   const { length, supports, releases } = beamCtx;
 
-  const isTransformStep = text.includes('transform') || text.includes('becomes') || text.includes('remains') || text.includes('Step 1');
-  const isReactionStep = text.includes('reaction') || text.includes('reactions') || text.includes('Step 2');
-  const isShearMomentStep = text.includes('Step 3') || text.includes('shear and moment') || text.includes('represents');
+  const isTransformStep = step.type === 'cb-transformation';
+  const isReactionStep = step.type === 'cb-reaction';
+  const isShearMomentStep = step.id === 'cb-shear-header';
 
   // Map conjugate supports to ISupport and IInternalRelease
   const mappedSupports: ISupport[] = conjugateBeam.supports
@@ -60,12 +62,7 @@ export const ConjugateBeamStepVisual: React.FC<ConjugateBeamStepVisualProps> = (
   };
 
   if (isTransformStep) {
-    // Parse highlight position
-    let highlightPos: number | null = null;
-    const posMatch = text.match(/at \$x = ([\d.]+)\$/) || text.match(/x\s*=\s*([\d.]+)/);
-    if (posMatch && posMatch[1]) {
-      highlightPos = parseFloat(posMatch[1]);
-    }
+    const highlightPos = step.highlightX !== undefined ? step.highlightX : null;
 
     const matchingRealSupport = highlightPos !== null ? supports.find(s => Math.abs(s.position - highlightPos!) < 0.05) : null;
     const matchingRealRelease = highlightPos !== null ? releases.find(r => Math.abs(r.position - highlightPos!) < 0.05) : null;

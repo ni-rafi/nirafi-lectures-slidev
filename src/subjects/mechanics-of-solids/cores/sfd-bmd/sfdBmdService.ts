@@ -57,9 +57,6 @@ export class SFDBmdService implements ISFDBmdService {
         reactions: [],
         intervals: [],
         criticalPoints: [],
-        reactionSteps: doiResult.explanationSteps,
-        sectionSteps: ['No equations available: structure is unstable or indeterminate.'],
-        graphicalSteps: ['No equations available: structure is unstable or indeterminate.'],
       };
     }
 
@@ -72,9 +69,6 @@ export class SFDBmdService implements ISFDBmdService {
         reactions: [],
         intervals: [],
         criticalPoints: [],
-        reactionSteps: rxnResult.steps,
-        sectionSteps: ['Reactions could not be solved.'],
-        graphicalSteps: ['Reactions could not be solved.'],
       };
     }
 
@@ -133,11 +127,6 @@ export class SFDBmdService implements ISFDBmdService {
         mRight = evalPoly(rightInv.mCoeffs, x);
       }
 
-      // We average them or take max absolute for chart, but let's record both or use standard definitions.
-      // For graphing, it's a piecewise function.
-      // We will record the primary value at x.
-      // Bending moment is continuous except at concentrated couples.
-      // Shear is piecewise constant or linear, with jumps at point loads/supports.
       const vVal = Math.abs(vLeft) > Math.abs(vRight) ? vLeft : vRight;
       const mVal = Math.abs(mLeft) > Math.abs(mRight) ? mLeft : mRight;
 
@@ -152,27 +141,14 @@ export class SFDBmdService implements ISFDBmdService {
       });
     });
 
-    // 6. Section method explanation steps
-    const sectionSteps: string[] = [];
-    sectionSteps.push(`### Section Method Calculation Steps`);
-    sectionSteps.push(`The Section Method cuts the beam into segments and applies local equations of equilibrium.`);
-    intervals.forEach((inv, idx) => {
-      sectionSteps.push(`#### Interval ${idx + 1}: $x \\in [${inv.startX.toFixed(2)}, ${inv.endX.toFixed(2)}]\\text{ m}$`);
-      sectionSteps.push(`- **Shear Force Equation:**`);
-      sectionSteps.push(`  $$${inv.latexV}$$`);
-      sectionSteps.push(`- **Bending Moment Equation:**`);
-      sectionSteps.push(`  $$${inv.latexM}$$`);
-    });
-
     return {
       success: true,
       doiResult,
       reactions,
       intervals,
       criticalPoints,
-      reactionSteps: rxnResult.steps,
-      sectionSteps,
-      graphicalSteps: graphResult.steps,
+      reactionEquations: rxnResult.reactionEquations,
+      graphicalStepsData: graphResult.graphicalSteps,
     };
   }
 }

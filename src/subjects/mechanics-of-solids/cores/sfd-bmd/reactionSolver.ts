@@ -1,4 +1,4 @@
-import { IBeam, IReaction, ILoad } from './types';
+import { IBeam, IReaction, ILoad, IReactionVariable, IReactionEquationDetails } from './types';
 import { solveLinearSystem } from './utils/linearSystemSolver';
 import { getLoadForceAndMoment, getLoadsLeftOf } from './utils/loadCalculator';
 
@@ -284,17 +284,12 @@ function getLoadsRightOf(beam: IBeam, xLimit: number): { force: number; moment: 
   return { force, moment };
 }
 
-export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: string[]; success: boolean } {
-  const steps: string[] = [];
+export function solveReactions(beam: IBeam): {
+  reactions: IReaction[];
+  reactionEquations?: IReactionEquationDetails;
+  success: boolean;
+} {
   const reactions: IReaction[] = [];
-
-  // Identify vertical & moment reactions
-  interface IReactionVariable {
-    supportId: string;
-    type: 'R_y' | 'M';
-    x: number;
-    label: string;
-  }
 
   const vars: IReactionVariable[] = [];
   const sortedSupports = [...beam.supports].sort((a, b) => a.position - b.position);
@@ -316,14 +311,19 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
 
   const n = vars.length;
   if (n === 0) {
-    return { reactions: [], steps: ['No supports to solve.'], success: false };
+    return { reactions: [], success: false };
   }
 
   interface IEquationData {
     title: string;
+    type: 'hinge-moment' | 'roller-shear' | 'moment-equilibrium' | 'vertical-equilibrium' | 'horizontal-equilibrium';
+    position?: number;
+    side?: 'left' | 'right';
     coefs: number[];
     rhsValue: number;
-    latex: string;
+    hMStr: string;
+    loadsDetailTerms: string;
+    loadsDetailSteps: string;
   }
 
   const condEqs: IEquationData[] = [];
@@ -363,24 +363,16 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
       const loadsMoment = useLeft ? getLoadsLeftOf(beam, rel.position).moment : getLoadsRightOf(beam, rel.position).moment;
       const rhsVal = useLeft ? -loadsMoment : loadsMoment;
 
-      let hingeEqText = '';
-      if (loadsDetail.steps && loadsDetail.steps !== loadsDetail.terms && loadsDetail.terms !== '0') {
-        hingeEqText = useLeft
-          ? ` = -[${loadsDetail.terms}] = -[${loadsDetail.steps}] = ${formatNumber(rhsVal)}\\text{ kNm}`
-          : ` = ${loadsDetail.terms} = ${loadsDetail.steps} = ${formatNumber(rhsVal)}\\text{ kNm}`;
-      } else if (loadsDetail.terms !== '0') {
-        hingeEqText = useLeft
-          ? ` = -[${loadsDetail.terms}] = ${formatNumber(rhsVal)}\\text{ kNm}`
-          : ` = ${loadsDetail.terms} = ${formatNumber(rhsVal)}\\text{ kNm}`;
-      } else {
-        hingeEqText = ` = ${formatNumber(rhsVal)}\\text{ kNm}`;
-      }
-
       condEqs.push({
         title,
+        type: 'hinge-moment',
+        position: rel.position,
+        side,
         coefs,
         rhsValue: rhsVal,
-        latex: `$$${hMStr || '0'}${hingeEqText}$$`,
+        hMStr: hMStr || '0',
+        loadsDetailTerms: loadsDetail.terms,
+        loadsDetailSteps: loadsDetail.steps,
       });
     }
 
@@ -409,20 +401,16 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
       const loadsForce = useLeft ? getLoadsLeftOf(beam, rel.position).force : getLoadsRightOf(beam, rel.position).force;
       const rhsVal = loadsForce;
 
-      let rollerEqText = '';
-      if (loadsDetail.steps && loadsDetail.steps !== loadsDetail.terms && loadsDetail.terms !== '0') {
-        rollerEqText = ` = ${loadsDetail.terms} = ${loadsDetail.steps} = ${formatNumber(rhsVal)}\\text{ kN}`;
-      } else if (loadsDetail.terms !== '0') {
-        rollerEqText = ` = ${loadsDetail.terms} = ${formatNumber(rhsVal)}\\text{ kN}`;
-      } else {
-        rollerEqText = ` = ${formatNumber(rhsVal)}\\text{ kN}`;
-      }
-
       condEqs.push({
         title,
+        type: 'roller-shear',
+        position: rel.position,
+        side,
         coefs,
         rhsValue: rhsVal,
-        latex: `$$${hVStr || '0'}${rollerEqText}$$`,
+        hMStr: hVStr || '0',
+        loadsDetailTerms: loadsDetail.terms,
+        loadsDetailSteps: loadsDetail.steps,
       });
     }
   });
@@ -450,20 +438,15 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
   });
 
   const momentDetail = getLoadsDetailedMomentSum(beam.loads, 0);
-  let momentEqText = '';
-  if (momentDetail.steps && momentDetail.steps !== momentDetail.terms && momentDetail.terms !== '0') {
-    momentEqText = ` = ${momentDetail.terms} = ${momentDetail.steps} = ${formatNumber(totalMomentsAboutZero)}\\text{ kNm}`;
-  } else if (momentDetail.terms !== '0') {
-    momentEqText = ` = ${momentDetail.terms} = ${formatNumber(totalMomentsAboutZero)}\\text{ kNm}`;
-  } else {
-    momentEqText = ` = ${formatNumber(totalMomentsAboutZero)}\\text{ kNm}`;
-  }
 
   const momentEq: IEquationData = {
     title: titleMoment,
+    type: 'moment-equilibrium',
     coefs: coefsMoment,
     rhsValue: totalMomentsAboutZero,
-    latex: `$$${eqMStr}${momentEqText}$$`,
+    hMStr: eqMStr,
+    loadsDetailTerms: momentDetail.terms,
+    loadsDetailSteps: momentDetail.steps,
   };
 
   // 3. Vertical equilibrium (sum Fy = 0)
@@ -486,27 +469,22 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
   });
 
   const verticalDetail = getLoadsDetailedSum(beam.loads);
-  let verticalEqText = '';
-  if (verticalDetail.steps && verticalDetail.steps !== verticalDetail.terms && verticalDetail.terms !== '0') {
-    verticalEqText = ` = ${verticalDetail.terms} = ${verticalDetail.steps} = ${formatNumber(totalDownwardForce)}\\text{ kN}`;
-  } else if (verticalDetail.terms !== '0') {
-    verticalEqText = ` = ${verticalDetail.terms} = ${formatNumber(totalDownwardForce)}\\text{ kN}`;
-  } else {
-    verticalEqText = ` = ${formatNumber(totalDownwardForce)}\\text{ kN}`;
-  }
 
   const verticalEq: IEquationData = {
     title: titleVertical,
+    type: 'vertical-equilibrium',
     coefs: coefsVertical,
     rhsValue: totalDownwardForce,
-    latex: `$$${eqFyStr}${verticalEqText}$$`,
+    hMStr: eqFyStr,
+    loadsDetailTerms: verticalDetail.terms,
+    loadsDetailSteps: verticalDetail.steps,
   };
 
   const allEqs = [...condEqs, momentEq, verticalEq];
   const eqCount = allEqs.length;
 
   if (eqCount !== n) {
-    return { reactions: [], steps: ['Error: Support system is unstable or statically redundant.'], success: false };
+    return { reactions: [], success: false };
   }
 
   const A: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
@@ -515,17 +493,14 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
   allEqs.forEach((eq, eqIdx) => {
     A[eqIdx] = eq.coefs;
     B[eqIdx] = eq.rhsValue;
-    steps.push(eq.title);
-    steps.push(eq.latex);
   });
 
   // Solve the system of equations
   const solution = solveLinearSystem(A, B);
   if (!solution) {
-    return { reactions: [], steps: [...steps, 'Error: Support system is unstable or statically redundant.'], success: false };
+    return { reactions: [], success: false };
   }
 
-  steps.push(`**Step ${stepNum}: Solved Support Reactions**`);
   vars.forEach((v, idx) => {
     const val = parseFloat(solution[idx]!.toFixed(3));
     reactions.push({
@@ -533,7 +508,6 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
       type: v.type === 'R_y' ? 'R_y' : 'M',
       value: val,
     });
-    steps.push(`- $${v.label} = ${formatNumber(val)}\\text{ ${v.type === 'R_y' ? 'kN' : 'kNm'}}$`);
   });
 
   // Add horizontal reaction as 0
@@ -543,5 +517,26 @@ export function solveReactions(beam: IBeam): { reactions: IReaction[]; steps: st
     }
   });
 
-  return { reactions, steps, success: true };
+  return {
+    reactions,
+    reactionEquations: {
+      variables: vars,
+      equations: allEqs.map(eq => ({
+        title: eq.title,
+        type: eq.type,
+        position: eq.position,
+        side: eq.side,
+        coefs: eq.coefs,
+        rhsValue: eq.rhsValue,
+        hMStr: eq.hMStr,
+        loadsDetailTerms: eq.loadsDetailTerms,
+        loadsDetailSteps: eq.loadsDetailSteps,
+      })),
+      solvedValues: vars.map((v, idx) => ({
+        name: v.label,
+        value: parseFloat(solution[idx]!.toFixed(3)),
+      })),
+    },
+    success: true,
+  };
 }

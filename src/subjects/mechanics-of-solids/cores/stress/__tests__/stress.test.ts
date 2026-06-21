@@ -136,6 +136,5 @@ describe('MohrsCircleEngine', () => {
     expect(res.radius / 1e6).toBeCloseTo(50, 1);
     expect(res.pointAPrime.x / 1e6).toBeCloseTo(99.641, 3);
     expect(res.pointAPrime.y / 1e6).toBeCloseTo(5.981, 3); // y-coordinate is -tauXY' = 5.981 MPa
-    expect(res.steps.length).toBeGreaterThan(0);
   });
 });

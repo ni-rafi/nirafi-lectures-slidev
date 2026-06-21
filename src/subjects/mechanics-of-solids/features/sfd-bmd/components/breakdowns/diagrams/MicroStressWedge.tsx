@@ -1,16 +1,14 @@
 import React from 'react';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface MicroStressWedgeProps {
-  text: string;
+  step: ICalculationStep;
 }
 
-export const MicroStressWedge: React.FC<MicroStressWedgeProps> = ({ text }) => {
-  // Parse angle theta from text
-  let theta = 30;
-  const match = text.match(/theta\s*=\s*([\d.-]+)/) || text.match(/angle\s*([\d.-]+)/);
-  if (match && match[1]) {
-    theta = parseFloat(match[1]);
-  }
+export const MicroStressWedge: React.FC<MicroStressWedgeProps> = ({ step }) => {
+  const thetaRad = (step.metadata?.theta as number) ?? 0;
+  const theta = thetaRad * 180 / Math.PI;
 
   const width = 160;
   const height = 110;

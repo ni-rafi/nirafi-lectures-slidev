@@ -5,6 +5,7 @@ import { CrossSectionEngine } from '@/subjects/mechanics-of-solids/cores/stress/
 import { StaticalMomentEngine } from '@/subjects/mechanics-of-solids/cores/stress/statical-moment.engine';
 import { StressTransformationEngine } from '@/subjects/mechanics-of-solids/cores/stress/stress-transformation.engine';
 import { MohrsCircleEngine } from '@/subjects/mechanics-of-solids/cores/stress/mohrs-circle.engine';
+import { ICalculationStep } from '../../types/stepTypes';
 
 import { StepRow } from './StepRow';
 import { StepListHeader } from './StepListHeader';
@@ -82,43 +83,134 @@ export const StressBreakdownPanel: React.FC = () => {
 
 
   // Analytical steps generators
-  const getBendingSteps = () => {
+  const getBendingSteps = (): ICalculationStep[] => {
     const sigmaMPa = sigmaX / 1e6;
     return [
-      `### Bending Stress Derivation (Flexure Formula)`,
-      `- Inspected coordinate: $x = ${inspectX.toFixed(2)}\\text{ m}$, distance from neutral axis: $y = ${inspectYM.toFixed(4)}\\text{ m}$`,
-      `- Bending moment at $x$: $M = ${(M / 1e3).toFixed(3)}\\text{ kN}\\cdot\\text{m}$`,
-      `- Moment of Inertia: $I = ${(I * 1e6).toFixed(3)} \\times 10^{-6}\\text{ m}^4$, Centroid: $\\bar{y} = ${ybar.toFixed(3)}\\text{ m}$`,
-      `#### Flexure Stress Formula:`,
-      `$$\\sigma = -\\frac{M \\cdot y}{I}$$`,
-      `- Resulting normal stress: $\\sigma_x = -\\frac{${M.toFixed(1)} \\cdot ${inspectYM.toFixed(4)}}{${I.toExponential(4)}} = ${sigmaMPa.toFixed(3)}\\text{ MPa}$`
+      {
+        id: 'stress-bending-1',
+        type: 'stress-bending-step',
+        text: `### Bending Stress Derivation (Flexure Formula)\n\n- Inspected coordinate: $x = ${inspectX.toFixed(2)}\\text{ m}$, distance from neutral axis: $y = ${inspectYM.toFixed(4)}\\text{ m}$\n- Bending moment at $x$: $M = ${(M / 1e3).toFixed(3)}\\text{ kN}\\cdot\\text{m}$\n- Moment of Inertia: $I = ${(I * 1e6).toFixed(3)} \\times 10^{-6}\\text{ m}^4$, Centroid: $\\bar{y} = ${ybar.toFixed(3)}\\text{ m}$`,
+      },
+      {
+        id: 'stress-bending-2',
+        type: 'stress-bending-step',
+        text: `#### Flexure Stress Formula:\n\n$$\\sigma = -\\frac{M \\cdot y}{I}$$`,
+        latex: `\\sigma_x = -\\frac{${M.toFixed(1)} \\cdot ${inspectYM.toFixed(4)}}{${I.toExponential(4)}} = ${sigmaMPa.toFixed(3)}\\text{ MPa}`,
+        highlightX: inspectX,
+      }
     ];
   };
 
-  const getShearSteps = () => {
+  const getShearSteps = (): ICalculationStep[] => {
     const tauMPa = tauXY / 1e6;
     return [
-      `### Shear Stress Derivation (Shear Formula)`,
-      `- Inspected coordinate: $x = ${inspectX.toFixed(2)}\\text{ m}$, height: $y = ${inspectYM.toFixed(4)}\\text{ m}$`,
-      `- Shear force at $x$: $V = ${(V / 1e3).toFixed(3)}\\text{ kN}$`,
-      `- First Moment of Area at $y$: $Q = ${(Q * 1e6).toFixed(3)} \\times 10^{-6}\\text{ m}^3$`,
-      `- Width of cross-section at $y$: $t(y) = ${(t * 1000).toFixed(1)}\\text{ mm}$`,
-      `#### Shear Stress Formula:`,
-      `$$\\tau = \\frac{V \\cdot Q}{I \\cdot t}$$`,
-      `- Resulting shear stress: $\\tau_{xy} = \\frac{${V.toFixed(1)} \\cdot ${Q.toExponential(4)}}{${I.toExponential(4)} \\cdot ${t.toFixed(4)}} = ${tauMPa.toFixed(3)}\\text{ MPa}$`
+      {
+        id: 'stress-shear-1',
+        type: 'stress-shear-step',
+        text: `### Shear Stress Derivation (Shear Formula)\n\n- Inspected coordinate: $x = ${inspectX.toFixed(2)}\\text{ m}$, height: $y = ${inspectYM.toFixed(4)}\\text{ m}$\n- Shear force at $x$: $V = ${(V / 1e3).toFixed(3)}\\text{ kN}$\n- First Moment of Area at $y$: $Q = ${(Q * 1e6).toFixed(3)} \\times 10^{-6}\\text{ m}^3$\n- Width of cross-section at $y$: $t(y) = ${(t * 1000).toFixed(1)}\\text{ mm}$`,
+      },
+      {
+        id: 'stress-shear-2',
+        type: 'stress-shear-step',
+        text: `#### Shear Stress Formula:\n\n$$\\tau = \\frac{V \\cdot Q}{I \\cdot t}$$`,
+        latex: `\\tau_{xy} = \\frac{${V.toFixed(1)} \\cdot ${Q.toExponential(4)}}{${I.toExponential(4)} \\cdot ${t.toFixed(4)}} = ${tauMPa.toFixed(3)}\\text{ MPa}`,
+        highlightX: inspectX,
+      }
     ];
   };
 
-  const getTransformationSteps = () => {
-    const steps = [
-      ...StressTransformationEngine.generateSteps(stressState, inspectAngle),
-      ...MohrsCircleEngine.solveCircle(stressState, inspectAngle).steps
+  const getTransformationSteps = (): ICalculationStep[] => {
+    const principal = StressTransformationEngine.calculatePrincipal(stressState);
+    const transformed = StressTransformationEngine.transform(stressState, inspectAngle);
+    const circle = MohrsCircleEngine.solveCircle(stressState, inspectAngle);
+
+    const radToDeg = (r: number) => (r * 180 / Math.PI).toFixed(1);
+    const fmt = StressTransformationEngine.formatMPa;
+
+    const avg = (sigmaX + sigmaY) / 2;
+    const diff = (sigmaX - sigmaY) / 2;
+    const R = Math.sqrt(diff * diff + tauXY * tauXY);
+
+    return [
+      {
+        id: 'trans-intro',
+        type: 'stress-trans-intro',
+        text: `### Stress Transformation Analytical Steps`,
+      },
+      {
+        id: 'trans-state',
+        type: 'stress-trans-state',
+        text: `#### Step 1: Identify the original stress state\n\nFrom the beam internal loading at the inspected point:\n- Normal stress in x-direction: $\\sigma_x = ${fmt(sigmaX)}\\text{ MPa}$\n- Normal stress in y-direction: $\\sigma_y = ${fmt(sigmaY)}\\text{ MPa}$\n- Shear stress in xy-plane: $\\tau_{xy} = ${fmt(tauXY)}\\text{ MPa}$`,
+      },
+      {
+        id: 'trans-wedge-graphic',
+        type: 'stress-wedge-graphic',
+        text: `Original stress block state elements on inclined wedge plane.`,
+        highlightX: inspectX,
+        metadata: { theta: inspectAngle },
+      },
+      {
+        id: 'trans-avg',
+        type: 'stress-trans-avg',
+        text: `#### Step 2: Calculate average and differential normal stresses\n- Average normal stress: $\\sigma_{\\text{avg}} = \\frac{\\sigma_x + \\sigma_y}{2} = ${fmt(avg)}\\text{ MPa}$\n- Differential normal stress: $\\sigma_{\\text{diff}} = \\frac{\\sigma_x - \\sigma_y}{2} = ${fmt(diff)}\\text{ MPa}$`,
+      },
+      {
+        id: 'trans-principal',
+        type: 'stress-trans-principal',
+        text: `#### Step 3: Calculate principal stresses and max shear stress\n- Maximum shear stress (Mohr's radius): $R = \\tau_{\\text{max}} = \\sqrt{\\left(\\frac{\\sigma_x - \\sigma_y}{2}\\right)^2 + \\tau_{xy}^2}$\n  $R = \\sqrt{${fmt(diff)}^2 + ${fmt(tauXY)}^2} = ${fmt(R)}\\text{ MPa}$\n- Maximum principal stress: $\\sigma_1 = \\sigma_{\\text{avg}} + R = ${fmt(avg)} + ${fmt(R)} = ${fmt(principal.sigma1)}\\text{ MPa}$\n- Minimum principal stress: $\\sigma_2 = \\sigma_{\\text{avg}} - R = ${fmt(avg)} - ${fmt(R)} = ${fmt(principal.sigma2)}\\text{ MPa}$`,
+      },
+      {
+        id: 'trans-circle-radius',
+        type: 'stress-circle-radius',
+        text: `Radius $R$ triangle construction parameters on Mohr's Circle graph.`,
+      },
+      {
+        id: 'trans-orientations',
+        type: 'stress-trans-orientations',
+        text: `#### Step 4: Calculate plane orientations\n- Principal plane angle: $\\theta_p = \\frac{1}{2} \\tan^{-1}\\left(\\frac{2\\tau_{xy}}{\\sigma_x - \\sigma_y}\\right) = ${radToDeg(principal.thetaP)}^\\circ$\n- Maximum shear plane angle: $\\theta_s = \\theta_p - 45^\\circ = ${radToDeg(principal.thetaS)}^\\circ$`,
+      },
+      {
+        id: 'trans-principal-rotation',
+        type: 'stress-principal-rotation',
+        text: `Principal plane rotation orientation showing theta_p angle.`,
+        metadata: { thetaP: principal.thetaP },
+      },
+      {
+        id: 'trans-transformed-val',
+        type: 'stress-trans-transformed-val',
+        text: `#### Step 5: Transformed stresses at selected angle $\\theta = ${radToDeg(inspectAngle)}^\\circ$\n- Transformed normal stress $\\sigma_{x'} = \\sigma_{\\text{avg}} + \\sigma_{\\text{diff}}\\cos(2\\theta) + \\tau_{xy}\\sin(2\\theta) = ${fmt(transformed.sigmaX)}\\text{ MPa}$\n- Transformed normal stress $\\sigma_{y'} = \\sigma_{\\text{avg}} - \\sigma_{\\text{diff}}\\cos(2\\theta) - \\tau_{xy}\\sin(2\\theta) = ${fmt(transformed.sigmaY)}\\text{ MPa}$\n- Transformed shear stress $\\tau_{x'y'} = -\\sigma_{\\text{diff}}\\sin(2\\theta) + \\tau_{xy}\\cos(2\\theta) = ${fmt(transformed.tauXY)}\\text{ MPa}$`,
+      },
+      {
+        id: 'trans-mohrs-intro',
+        type: 'stress-mohrs-intro',
+        text: `### Mohr's Circle Method Construction Steps\n\nMohr's Circle graphically represents 2D stress transformations as a circle in the $\\sigma$-$\\tau$ coordinate system:`,
+      },
+      {
+        id: 'trans-mohrs-center',
+        type: 'stress-mohrs-center',
+        text: `#### Step 1: Locate the Center of the circle\nThe center $C$ is on the normal stress axis (horizontal) at the average stress:\n$C = \\left(\\sigma_{\\text{avg}}, 0\\right) = \\left(\\frac{\\sigma_x + \\sigma_y}{2}, 0\\right) = \\left(${fmt(circle.center)}, 0\\right)\\text{ MPa}$`,
+      },
+      {
+        id: 'trans-mohrs-plot',
+        type: 'stress-mohrs-plot',
+        text: `#### Step 2: Plot reference points A and B\n- Reference point $A$ (represents the x-face stress state): $A(\\sigma_x, -\\tau_{xy}) = A(${fmt(sigmaX)}, ${fmt(-tauXY)})\\text{ MPa}$\n- Reference point $B$ (represents the y-face stress state): $B(\\sigma_y, \\tau_{xy}) = B(${fmt(sigmaY)}, ${fmt(tauXY)})\\text{ MPa}$`,
+      },
+      {
+        id: 'trans-mohrs-radius',
+        type: 'stress-mohrs-radius',
+        text: `#### Step 3: Calculate the Radius (Max Shear Stress)\nThe radius $R$ is the distance from Center $C$ to point $A$:\n$R = \\sqrt{\\left(\\frac{\\sigma_x - \\sigma_y}{2}\\right)^2 + \\tau_{xy}^2} = ${fmt(circle.radius)}\\text{ MPa}$`,
+      },
+      {
+        id: 'trans-mohrs-draw',
+        type: 'stress-mohrs-draw',
+        text: `#### Step 4: Draw the circle and identify principal stresses\nDrawing the circle centered at $C$ with radius $R$, the intersection points with the horizontal $\\sigma$-axis represent the principal stresses (where shear stress $\\tau = 0$):\n- Max principal stress: $\\sigma_1 = C + R = ${fmt(circle.center + circle.radius)}\\text{ MPa}$\n- Min principal stress: $\\sigma_2 = C - R = ${fmt(circle.center - circle.radius)}\\text{ MPa}$`,
+      },
+      {
+        id: 'trans-mohrs-rotate',
+        type: 'stress-mohrs-rotate',
+        text: `#### Step 5: Rotate coordinates by $2\\theta = ${radToDeg(2 * inspectAngle)}^\\circ$\nIn Mohr's Circle, physical rotations of angle $\\theta$ correspond to double angle $2\\theta$ rotations in the opposite direction. Rotating the diameter line $AB$ about Center $C$ by $2\\theta = ${radToDeg(2 * inspectAngle)}^\\circ$ yields the new transformed coordinates:\n- Point $A'(\\sigma_{x'}, -\\tau_{x'y'}) = A'(${fmt(transformed.sigmaX)}, ${fmt(-transformed.tauXY)})\\text{ MPa}$\n- Point $B'(\\sigma_{y'}, \\tau_{x'y'}) = B'(${fmt(transformed.sigmaY)}, ${fmt(transformed.tauXY)})\\text{ MPa}$`,
+      }
     ];
-    // Add dummy tags to trigger wedge/rotation/mohr-radius graphics in StepDiagramRenderer
-    steps.splice(2, 0, `Original stress block state elements on inclined wedge plane.`);
-    steps.splice(6, 0, `Radius $R$ triangle construction parameters on Mohr's Circle graph.`);
-    steps.splice(10, 0, `Principal plane rotation orientation showing theta_p angle.`);
-    return steps;
   };
 
   const steps = subTab === 'bending' ? getBendingSteps() : subTab === 'shear' ? getShearSteps() : getTransformationSteps();
@@ -158,8 +250,6 @@ export const StressBreakdownPanel: React.FC = () => {
               key={idx}
               step={step}
               tab="stress"
-              stepIndex={idx}
-              allSteps={steps}
               isExpanded={!!expandedDiagrams[`stress-${idx}`]}
               onToggle={() =>
                 setExpandedDiagrams(prev => ({

@@ -20,14 +20,6 @@ export class MomentAreaMethod implements IDeflectionMethod {
     if (hasHinges) {
       const diSolver = new DoubleIntegrationMethod();
       const result = diSolver.solve(beam, reactions, sfdBmdIntervals, eiSegments, customInspectX);
-      if (!result.success) return result;
-      result.steps = [
-        `### Moment-Area Method Calculation Steps`,
-        `The Moment-Area Method utilizes Mohr's Theorems to compute slopes and deflections.`,
-        `**Note:** This structure is a Gerber Beam with internal hinges ($H > 0$).`,
-        `Because internal hinges introduce slope discontinuities (angles/hinge rotations), the moment-area theorems cannot be applied as a single continuous integration across the entire beam.`,
-        `Instead, the slope and deflection curves are solved segment-by-segment using the Double Integration method (refer to the Double Integration tab).`
-      ];
       return result;
     }
 
@@ -109,22 +101,11 @@ export class MomentAreaMethod implements IDeflectionMethod {
     };
 
     // Solve for reference tangent slope thetaA if simply supported
-    const calculations: string[] = [];
+    let t_BA: number | undefined;
     if (!isCantilever) {
       const { area: A_AB, moment: M_AB } = getAreaAndMoment(xA, xB);
-      // t_B/A = x_B * Area - Moment
-      const t_BA = xB * A_AB - M_AB;
+      t_BA = xB * A_AB - M_AB;
       thetaA = -t_BA / (xB - xA);
-
-      calculations.push(`Reference supports chosen at $A = ${xA.toFixed(2)}\\text{ m}$ and $B = ${xB.toFixed(2)}\\text{ m}$.`);
-      calculations.push(`Tangential deviation of $B$ relative to $A$ ($t_{B/A}$):`);
-      calculations.push(`$$t_{B/A} = \\int_{${xA.toFixed(2)}}^{${xB.toFixed(2)}} \\frac{M(x)}{EI} (${xB.toFixed(2)} - x) dx = ${t_BA.toFixed(6)}\\text{ m}$$`);
-      calculations.push(`Initial slope of the tangent at $A$ ($\\theta_A$):`);
-      calculations.push(`$$\\theta_A = -\\frac{t_{B/A}}{x_B - x_A} = -\\frac{${t_BA.toFixed(6)}}{${(xB - xA).toFixed(2)}} = ${thetaA.toFixed(6)}\\text{ rad}$$`);
-    } else {
-      calculations.push(`Fixed support at $A = ${xA.toFixed(2)}\\text{ m}$ selected as the reference point.`);
-      calculations.push(`Since support $A$ is fixed, the tangent line is horizontal:`);
-      calculations.push(`$$\\theta_A = 0\\text{ rad}$$`);
     }
 
     // Evaluate deflection at 100 points
@@ -147,14 +128,13 @@ export class MomentAreaMethod implements IDeflectionMethod {
     }
 
     // Centroid segments compilation for the breakdown UI
-    const segments: IMomentAreaSegment[] = mergedIntervals.map((inv, idx) => {
+    const segments: IMomentAreaSegment[] = mergedIntervals.map((inv) => {
       const { area, moment } = integrateSegment(inv.startX, inv.endX, inv);
       const centroidX = Math.abs(area) > 1e-7 ? moment / area : (inv.startX + inv.endX) / 2;
 
       return {
         startX: inv.startX,
         endX: inv.endX,
-        description: `Segment ${idx + 1} ($x \\in [${inv.startX.toFixed(2)}, ${inv.endX.toFixed(2)}]$)`,
         area,
         centroidX,
         momentOfAreaAboutLeft: area * (centroidX - inv.startX),
@@ -176,7 +156,7 @@ export class MomentAreaMethod implements IDeflectionMethod {
       const t_xA = x * A_Ax - M_Ax;
       const slope = thetaA + A_Ax;
       const deflection = (thetaA * (x - xA) + t_xA) * 1000;
-      const label = getCriticalLabel(x, N, maxDeflPoint.x, beam.supports, eiSegments);
+      const label = getCriticalLabel(x, N, maxDeflPoint.x, beam.supports, eiSegments, beam.releases);
 
       return {
         x: parseFloat(x.toFixed(3)),
@@ -186,36 +166,19 @@ export class MomentAreaMethod implements IDeflectionMethod {
       };
     });
 
-    // Step-by-step descriptions
-    const steps: string[] = [];
-    steps.push(`### Moment-Area Calculation Steps`);
-    steps.push(`Mohr's theorems are applied using the geometric area and centroid of the $M/EI$ curve:`);
-    steps.push(`- **Theorem I (Slope change):** $\\theta_B - \\theta_A = \\text{Area under } \\frac{M}{EI} \\text{ curve}$`);
-    steps.push(`- **Theorem II (Tangential deviation):** $t_{B/A} = \\text{Area} \\times \\bar{x}_B$, where $\\bar{x}_B$ is measured from $B$.`);
-
-    steps.push(`#### Step 1: Segmentation of the beam stiffness`);
-    segments.forEach(seg => {
-      steps.push(`- **${seg.description}**: Area under $M/EI = ${seg.area.toFixed(5)}\\text{ rad}$, Centroid $\\bar{x} = ${seg.centroidX.toFixed(3)}\\text{ m}$.`);
-    });
-
-    steps.push(`#### Step 2: Establish the reference tangent`);
-    calculations.forEach(calc => steps.push(`- ${calc}`));
-
-    steps.push(`#### Step 3: Evaluate deflection at points`);
-    steps.push(`For any coordinate $x$, the deflection is calculated using:`);
-    steps.push(`$$v(x) = \\theta_A (x - x_A) + t_{x/A}$$`);
-    steps.push(`where $t_{x/A} = \\int_{x_A}^{x} \\frac{M(u)}{EI} (x - u) du$.`);
-
     return {
       success: true,
       points,
       criticalPoints,
-      steps,
       momentArea: {
         segments,
         referencePoint: xA,
-        calculations,
+        referencePointB: isCantilever ? undefined : xB,
+        tBA: t_BA,
+        thetaA,
+        isCantilever,
       },
     };
   }
 }
+

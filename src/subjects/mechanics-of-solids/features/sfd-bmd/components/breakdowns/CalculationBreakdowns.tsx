@@ -104,9 +104,9 @@ export const CalculationBreakdowns: React.FC = () => {
         )}
 
         {/* REACTIONS TAB */}
-        {currentTab === 'reactions' && isSolved && (
+        {currentTab === 'reactions' && isSolved && solverResult.reactionEquations && (
           <ReactionsPanel
-            reactionSteps={solverResult.reactionSteps}
+            reactionEquations={solverResult.reactionEquations}
             expandedDiagrams={expandedDiagrams}
             setExpandedDiagrams={setExpandedDiagrams}
           />
@@ -115,20 +115,21 @@ export const CalculationBreakdowns: React.FC = () => {
         {/* SECTION METHOD TAB */}
         {currentTab === 'section' && isSolved && (
           <SectionPanel
-            sectionSteps={solverResult.sectionSteps}
+            intervals={solverResult.intervals}
             expandedDiagrams={expandedDiagrams}
             setExpandedDiagrams={setExpandedDiagrams}
           />
         )}
 
         {/* GRAPHICAL METHOD TAB */}
-        {currentTab === 'graphical' && isSolved && (
+        {currentTab === 'graphical' && isSolved && solverResult.graphicalStepsData && (
           <GraphicalPanel
-            graphicalSteps={solverResult.graphicalSteps}
+            graphicalStepsData={solverResult.graphicalStepsData}
             expandedDiagrams={expandedDiagrams}
             setExpandedDiagrams={setExpandedDiagrams}
           />
         )}
+
 
         {(currentTab === 'double-integration' || currentTab === 'moment-area' || currentTab === 'conjugate-beam') && isSolved && (
           <DeflectionPanel

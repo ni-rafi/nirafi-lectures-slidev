@@ -10,80 +10,34 @@ import { ConjugateBeamStepVisual } from './diagrams/ConjugateBeamStepVisual';
 import { MicroStressWedge } from './diagrams/MicroStressWedge';
 import { MicroMohrRadiusTriangle } from './diagrams/MicroMohrRadiusTriangle';
 import { MicroPrincipalRotation } from './diagrams/MicroPrincipalRotation';
+import { ICalculationStep } from '../../types/stepTypes';
 
 interface StepDiagramRendererProps {
-  text: string;
+  step: ICalculationStep;
   tab: string;
-  stepIndex?: number;
-  allSteps?: string[];
 }
 
-export const hasDiagram = (text: string, tab: string): boolean => {
-  const trimmed = text.trim();
-  if (
-    (trimmed.startsWith('#') && !trimmed.toLowerCase().includes('interval')) ||
-    trimmed === '' ||
-    trimmed.toLowerCase().includes('calculation steps') ||
-    trimmed.toLowerCase().includes('calculation breakdown') ||
-    trimmed.toLowerCase().includes('transforms the real beam') ||
-    trimmed.toLowerCase().includes('equations are only solved')
-  ) {
-    return false;
-  }
-
-  // Only show diagram toggle if the step actually has a specific diagram to display
+export const hasDiagram = (step: ICalculationStep, tab: string): boolean => {
   switch (tab) {
     case 'doi':
-      return /^(support|internal)\s+(roller|hinge|fixed)/i.test(trimmed);
+      return step.type === 'doi-support-reaction' || step.type === 'doi-release-condition';
     case 'reactions':
-      return trimmed.startsWith('**Step') && !trimmed.toLowerCase().includes('solved support reactions');
-    case 'double-integration':
-      return (
-        trimmed.toLowerCase().includes('at support') ||
-        trimmed.toLowerCase().includes('fixed support')
-      );
-    case 'moment-area':
-      return (
-        trimmed.toLowerCase().includes('centroid') ||
-        trimmed.toLowerCase().includes('theorem ii') ||
-        trimmed.toLowerCase().includes('m/ei') ||
-        trimmed.toLowerCase().includes('deviation') ||
-        trimmed.toLowerCase().includes('t_{') ||
-        trimmed.toLowerCase().includes('t_') ||
-        trimmed.toLowerCase().includes('reference tangent') ||
-        trimmed.toLowerCase().includes('slope at') ||
-        trimmed.toLowerCase().includes('\\theta_')
-      );
-    case 'conjugate-beam':
-      return (
-        trimmed.toLowerCase().includes('becomes') ||
-        trimmed.toLowerCase().includes('remains') ||
-        (trimmed.toLowerCase().includes('conjugate') && (trimmed.toLowerCase().includes('support') || trimmed.toLowerCase().includes('free end'))) ||
-        trimmed.toLowerCase().includes('shear and moment') ||
-        trimmed.toLowerCase().includes('step 3')
-      );
+      return step.type === 'reaction-equation';
     case 'section':
-      return (
-        trimmed.toLowerCase().includes('interval') &&
-        /\[([\d.]+),\s*([\d.]+)\]/.test(trimmed)
-      );
+      return step.type === 'section-interval';
     case 'graphical':
-      return (
-        /\[([\d.]+),\s*([\d.]+)\]/.test(trimmed) ||
-        /at\s+\$x\s*=\s*[\d.]+/i.test(trimmed)
-      );
+      return step.type === 'graphical-sfd-step' || step.type === 'graphical-bmd-step';
+    case 'double-integration':
+      return step.type === 'di-boundary-condition' || step.type === 'di-segmentation';
+    case 'moment-area':
+      return step.type === 'ma-segment' || step.type === 'ma-reference-tangent';
+    case 'conjugate-beam':
+      return step.type === 'cb-transformation' || step.type === 'cb-reaction';
     case 'stress':
       return (
-        trimmed.includes('R = \\sqrt') ||
-        trimmed.includes('radius') ||
-        trimmed.includes("Mohr's Circle") ||
-        trimmed.includes('orientation') ||
-        trimmed.includes('principal plane') ||
-        trimmed.includes('rotation') ||
-        trimmed.includes('theta_p') ||
-        trimmed.includes('theta_s') ||
-        trimmed.includes('wedge') ||
-        trimmed.includes('inclined plane')
+        step.type === 'stress-wedge-graphic' ||
+        step.type === 'stress-circle-radius' ||
+        step.type === 'stress-principal-rotation'
       );
     default:
       return false;
@@ -92,9 +46,9 @@ export const hasDiagram = (text: string, tab: string): boolean => {
 
 const stepLogger = logger.child('StepDiagramRenderer');
 
-export const StepDiagramRenderer: React.FC<StepDiagramRendererProps> = ({ text, tab, stepIndex, allSteps }) => {
-  const hasDiag = hasDiagram(text, tab);
-  stepLogger.debug('StepDiagramRenderer evaluation', { text, tab, hasDiag });
+export const StepDiagramRenderer: React.FC<StepDiagramRendererProps> = ({ step, tab }) => {
+  const hasDiag = hasDiagram(step, tab);
+  stepLogger.debug('StepDiagramRenderer evaluation', { text: step.text, tab, hasDiag });
 
   if (!hasDiag) {
     return null;
@@ -102,31 +56,32 @@ export const StepDiagramRenderer: React.FC<StepDiagramRendererProps> = ({ text, 
 
   switch (tab) {
     case 'doi':
-      return <DoiStepVisual text={text} />;
+      return <DoiStepVisual step={step} />;
     case 'reactions':
-      return <ReactionsStepVisual text={text} />;
+      return <ReactionsStepVisual step={step} />;
     case 'section':
-      return <SectionStepVisual text={text} stepIndex={stepIndex} allSteps={allSteps} />;
+      return <SectionStepVisual step={step} />;
     case 'graphical':
-      return <GraphicalStepVisual text={text} />;
+      return <GraphicalStepVisual step={step} />;
     case 'double-integration':
-      return <DoubleIntegrationStepVisual text={text} />;
+      return <DoubleIntegrationStepVisual step={step} />;
     case 'moment-area':
-      return <MomentAreaStepVisual text={text} />;
+      return <MomentAreaStepVisual step={step} />;
     case 'conjugate-beam':
-      return <ConjugateBeamStepVisual text={text} />;
+      return <ConjugateBeamStepVisual step={step} />;
     case 'stress':
-      if (text.includes('R = \\sqrt') || text.includes('radius') || text.includes('radius $R$') || text.includes("Mohr's Circle")) {
-        return <MicroMohrRadiusTriangle text={text} />;
+      if (step.type === 'stress-circle-radius') {
+        return <MicroMohrRadiusTriangle step={step} />;
       }
-      if (text.includes('orientation') || text.includes('principal plane') || text.includes('rotation') || text.includes('theta_p') || text.includes('theta_s')) {
-        return <MicroPrincipalRotation text={text} />;
+      if (step.type === 'stress-principal-rotation') {
+        return <MicroPrincipalRotation step={step} />;
       }
-      if (text.includes('wedge') || text.includes('inclined plane')) {
-        return <MicroStressWedge text={text} />;
+      if (step.type === 'stress-wedge-graphic') {
+        return <MicroStressWedge step={step} />;
       }
       return null;
     default:
       return null;
   }
 };
+

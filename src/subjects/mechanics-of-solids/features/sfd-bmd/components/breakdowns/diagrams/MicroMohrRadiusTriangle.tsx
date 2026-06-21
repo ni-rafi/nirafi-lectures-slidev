@@ -1,7 +1,9 @@
 import React from 'react';
 
+import { ICalculationStep } from '../../../types/stepTypes';
+
 interface MicroMohrRadiusTriangleProps {
-  text: string;
+  step: ICalculationStep;
 }
 
 export const MicroMohrRadiusTriangle: React.FC<MicroMohrRadiusTriangleProps> = () => {

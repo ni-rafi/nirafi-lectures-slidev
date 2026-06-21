@@ -1,23 +1,16 @@
-import { IBeam, IReaction, IIntervalEquation } from './types';
+import { IBeam, IReaction, IIntervalEquation, IGraphicalStepData } from './types';
 
 export function calculateGraphicalMethod(
   beam: IBeam,
   reactions: IReaction[],
   intervals: IIntervalEquation[]
-): { steps: string[] } {
-  const steps: string[] = [];
-
-  steps.push(`### Graphical Method Calculation Steps`);
-  steps.push(`The Graphical Method utilizes the integral relationships between Load, Shear Force, and Bending Moment.`);
-  steps.push(`- **Shear Force:** $V(x_2) = V(x_1) - \\int_{x_1}^{x_2} w(x) \\, dx$ (Shear changes by the negative area of the load diagram).`);
-  steps.push(`- **Bending Moment:** $M(x_2) = M(x_1) + \\int_{x_1}^{x_2} V(x) \\, dx$ (Moment changes by the area under the Shear Force Diagram).`);
+): { graphicalSteps: IGraphicalStepData[] } {
+  const graphicalSteps: IGraphicalStepData[] = [];
 
   // Track values at boundaries
   let currentV = 0;
-  let currentM = 0;
 
-  steps.push(`\n#### 1. Shear Force Diagram (SFD) Steps`);
-  steps.push(`- **Start ($x = 0$):** $V(0^-) = 0$`);
+  graphicalSteps.push({ type: 'sfd-start', x: 0, v: 0 });
 
   // Find all critical points in order
   const points = new Set<number>();
@@ -65,11 +58,24 @@ export function calculateGraphicalMethod(
 
         if (loadArea !== 0) {
           const nextV = currentV - loadArea;
-          steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** UDL/UVL Load Area = $${loadArea.toFixed(2)}\\text{ kN}$.`);
-          steps.push(`  $$V(${x.toFixed(2)}^-) = V(${prevX.toFixed(2)}^+) - \\text{Load Area} = ${currentV.toFixed(2)} - ${loadArea.toFixed(2)} = ${nextV.toFixed(2)}\\text{ kN}$$`);
+          graphicalSteps.push({
+            type: 'sfd-segment',
+            startX: prevX,
+            endX: x,
+            loadArea,
+            vStart: currentV,
+            vEnd: nextV,
+          });
           currentV = nextV;
         } else {
-          steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** No distributed load. $V(${x.toFixed(2)}^-) = V(${prevX.toFixed(2)}^+) = ${currentV.toFixed(2)}\\text{ kN}$.`);
+          graphicalSteps.push({
+            type: 'sfd-segment',
+            startX: prevX,
+            endX: x,
+            loadArea: 0,
+            vStart: currentV,
+            vEnd: currentV,
+          });
         }
       }
     }
@@ -77,6 +83,7 @@ export function calculateGraphicalMethod(
     // 2. Point forces / reactions at current x
     let pointForce = 0;
     let desc = '';
+    let hasSupport = false;
 
     // Point loads
     beam.loads.forEach(load => {
@@ -93,24 +100,30 @@ export function calculateGraphicalMethod(
         if (support && Math.abs(support.position - x) < 1e-9) {
           pointForce += r.value;
           desc += `${desc ? ' + ' : ''}Reaction $R_{y}$ (+${r.value.toFixed(2)})`;
+          hasSupport = true;
         }
       }
     });
 
     if (pointForce !== 0) {
       const nextV = currentV + pointForce;
-      steps.push(`- **At $x = ${x.toFixed(2)}\\text{ m}$:** Concentrated force jump: ${desc}.`);
-      steps.push(`  $$V(${x.toFixed(2)}^+) = V(${x.toFixed(2)}^-) + \\Delta V = ${currentV.toFixed(2)} + (${pointForce.toFixed(2)}) = ${nextV.toFixed(2)}\\text{ kN}$$`);
+      graphicalSteps.push({
+        type: 'sfd-jump',
+        x,
+        jump: pointForce,
+        vStart: currentV,
+        vEnd: nextV,
+        description: desc,
+        source: hasSupport ? 'support' : 'point-load',
+      });
       currentV = nextV;
     }
   });
 
-  steps.push(`\n#### 2. Bending Moment Diagram (BMD) Steps`);
-  steps.push(`- **Start ($x = 0$):** $M(0^-) = 0$`);
+  graphicalSteps.push({ type: 'bmd-start', x: 0, m: 0 });
 
   // Reset variables for BMD
-  currentV = 0;
-  currentM = 0;
+  let currentM = 0;
 
   sortedPoints.forEach((x, idx) => {
     // 1. Calculate change in moment from previous point due to area of Shear Diagram
@@ -127,8 +140,14 @@ export function calculateGraphicalMethod(
           const shearArea = F(x) - F(prevX);
           const nextM = currentM + shearArea;
 
-          steps.push(`- **Segment $x \\in [${prevX.toFixed(2)}, ${x.toFixed(2)}]$:** Shear diagram area = $${shearArea.toFixed(2)}\\text{ kNm}$.`);
-          steps.push(`  $$M(${x.toFixed(2)}^-) = M(${prevX.toFixed(2)}^+) + \\text{Shear Area} = ${currentM.toFixed(2)} + (${shearArea.toFixed(2)}) = ${nextM.toFixed(2)}\\text{ kNm}$$`);
+          graphicalSteps.push({
+            type: 'bmd-segment',
+            startX: prevX,
+            endX: x,
+            shearArea,
+            mStart: currentM,
+            mEnd: nextM,
+          });
           currentM = nextM;
         }
       }
@@ -160,11 +179,19 @@ export function calculateGraphicalMethod(
 
     if (jumpMoment !== 0) {
       const nextM = currentM + jumpMoment;
-      steps.push(`- **At $x = ${x.toFixed(2)}\\text{ m}$:** Concentrated moment jump: ${desc}.`);
-      steps.push(`  $$M(${x.toFixed(2)}^+) = M(${x.toFixed(2)}^-) + \\Delta M = ${currentM.toFixed(2)} + (${jumpMoment.toFixed(2)}) = ${nextM.toFixed(2)}\\text{ kNm}$$`);
+      graphicalSteps.push({
+        type: 'bmd-jump',
+        x,
+        jump: jumpMoment,
+        mStart: currentM,
+        mEnd: nextM,
+        description: desc,
+        source: 'moment-load',
+      });
       currentM = nextM;
     }
   });
 
-  return { steps };
+  return { graphicalSteps };
 }
+

@@ -29,7 +29,7 @@ export class InfluenceLinesService implements IInfluenceLinesService {
                 success: false,
                 ildPoints: [],
                 kinematicPoints: [],
-                calculationSteps: doiResult.explanationSteps,
+                calculationSteps: doiResult.explanationSteps || [],
                 doiResult,
                 error: preCheck.error,
             };
@@ -56,7 +56,7 @@ export class InfluenceLinesService implements IInfluenceLinesService {
                 success: false,
                 ildPoints: [],
                 kinematicPoints: [],
-                calculationSteps: doiResult.explanationSteps,
+                calculationSteps: doiResult.explanationSteps || [],
                 doiResult,
                 error: preCheck.error,
             };
@@ -83,7 +83,7 @@ export class InfluenceLinesService implements IInfluenceLinesService {
                 success: false,
                 ildPoints: [],
                 kinematicPoints: [],
-                calculationSteps: doiResult.explanationSteps,
+                calculationSteps: doiResult.explanationSteps || [],
                 doiResult,
                 error: preCheck.error,
             };

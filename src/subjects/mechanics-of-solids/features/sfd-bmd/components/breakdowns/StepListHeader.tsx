@@ -1,10 +1,11 @@
 import React from 'react';
 import { hasDiagram } from './StepDiagramRenderer';
 import { Eye, EyeOff } from 'lucide-react';
+import { ICalculationStep } from '../../types/stepTypes';
 
 interface StepListHeaderProps {
   title: string;
-  steps: string[];
+  steps: (ICalculationStep | string)[];
   tab: string;
   expandedDiagrams: Record<string, boolean>;
   setExpandedDiagrams: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
@@ -19,7 +20,14 @@ export const StepListHeader: React.FC<StepListHeaderProps> = ({
   setExpandedDiagrams,
   rightElement,
 }) => {
-  const diagramStepsKeys = steps
+  const normalizedSteps = steps.map((s, idx) => {
+    if (typeof s === 'string') {
+      return { id: `${tab}-step-${idx}`, type: 'raw-step', text: s };
+    }
+    return s;
+  });
+
+  const diagramStepsKeys = normalizedSteps
     .map((step, idx) => ({ key: `${tab}-${idx}`, step }))
     .filter(({ step }) => hasDiagram(step, tab));
 
@@ -71,3 +79,4 @@ export const StepListHeader: React.FC<StepListHeaderProps> = ({
     </div>
   );
 };
+
