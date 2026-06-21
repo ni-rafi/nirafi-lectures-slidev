@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoulderSpec, DrainageSpec } from '../../types/roadSchema';
+import { ShoulderSpec, DrainageSpec } from '../../../types/roadSchema';
 
 interface RoadDrainageTrenchProps {
   carriagewayWidth: number;

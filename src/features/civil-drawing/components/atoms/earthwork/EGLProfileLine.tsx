@@ -1,5 +1,5 @@
 import React from 'react';
-import { Point2D } from '../../../building-drawing/types/geometry';
+import { Point2D } from '../../../../building-drawing/types/geometry';
 
 interface EGLProfileLineProps {
   eglPoints: Point2D[];

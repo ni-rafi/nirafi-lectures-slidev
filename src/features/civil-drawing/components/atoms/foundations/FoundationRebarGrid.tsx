@@ -1,7 +1,7 @@
 import React from 'react';
-import { CapRebarDetails } from '../../types/foundationSchema';
+import { CapRebarDetails } from '../../../types/foundationSchema';
 import { calculatePileMatrix } from '../../../engines/pileMatrixEngine';
-import { Point2D } from '../../../../features/building-drawing/types/geometry';
+import { Point2D } from '../../../../building-drawing/types/geometry';
 
 interface FoundationRebarGridProps {
   capWidth: number;

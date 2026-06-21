@@ -227,5 +227,6 @@ export interface SlideSchema {
     usnCode?: string;
     session?: string;
     topicNumber?: string;
+    lectureNumber?: string | number;
   };
 }

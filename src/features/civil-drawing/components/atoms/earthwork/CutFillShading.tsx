@@ -1,5 +1,5 @@
 import React from 'react';
-import { EarthworkRegion } from '../../engines/cutFillPolygonEngine';
+import { EarthworkRegion } from '../../../engines/cutFillPolygonEngine';
 
 interface CutFillShadingProps {
   regions: EarthworkRegion[];

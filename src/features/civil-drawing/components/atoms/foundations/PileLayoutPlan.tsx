@@ -1,6 +1,6 @@
 import React from 'react';
 import { calculatePileMatrix } from '../../../engines/pileMatrixEngine';
-import { Point2D } from '../../../../features/building-drawing/types/geometry';
+import { Point2D } from '../../../../building-drawing/types/geometry';
 
 interface PileLayoutPlanProps {
   pileCount: number;

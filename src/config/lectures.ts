@@ -88,6 +88,7 @@ Object.entries(subjectMetadataModules).forEach(([path, module]) => {
   const match = path.match(/\/subjects\/([^/]+)\/subjectMetadata\.ts$/);
   if (!match) return;
   const subjectId = match[1];
+  if (!subjectId) return;
   const metadata = module.subjectMetadata;
   const decorations = SUBJECT_DECORATIONS[subjectId] || {
     description: '',
