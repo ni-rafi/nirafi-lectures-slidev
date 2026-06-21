@@ -10,7 +10,9 @@ export type StepType =
   | 'MDM_CYCLE'
   | 'MDM_FINAL_MOMENTS'
   | 'SDM_EQUATIONS_SETUP'
-  | 'SDM_EQUILIBRIUM_SETUP';
+  | 'SDM_EQUILIBRIUM_SETUP'
+  | 'FORCE_PRIMARY_SETUP'
+  | 'FORCE_COMPATIBILITY_SETUP';
 
 export interface IFemPayload {
   memberId: string;
@@ -124,6 +126,25 @@ export type IMdmFinalMomentsStep = IAnalysisStep<'MDM_FINAL_MOMENTS', IMdmFinalM
 export type ISdmEquationsStep = IAnalysisStep<'SDM_EQUATIONS_SETUP', ISdmEquationsPayload>;
 export type ISdmEquilibriumStep = IAnalysisStep<'SDM_EQUILIBRIUM_SETUP', ISdmEquilibriumPayload>;
 
+export interface IForcePrimaryPayload {
+  dsi: number;
+  redundantReactions: {
+    nodeId: string;
+    reactionType: string;
+  }[];
+  primaryStructureDescription: string;
+}
+
+export interface IForceCompatibilityPayload {
+  flexibilityMatrix: number[][];
+  displacementVector0: number[];
+  settlementVector?: number[];
+  solvedRedundants: number[];
+}
+
+export type IForcePrimaryStep = IAnalysisStep<'FORCE_PRIMARY_SETUP', IForcePrimaryPayload>;
+export type IForceCompatibilityStep = IAnalysisStep<'FORCE_COMPATIBILITY_SETUP', IForceCompatibilityPayload>;
+
 export type IStructuralStep = 
   | ICalculateFemStep 
   | IMemberStiffnessStep
@@ -134,5 +155,7 @@ export type IStructuralStep =
   | IMdmCycleStep
   | IMdmFinalMomentsStep
   | ISdmEquationsStep
-  | ISdmEquilibriumStep;
+  | ISdmEquilibriumStep
+  | IForcePrimaryStep
+  | IForceCompatibilityStep;
 
