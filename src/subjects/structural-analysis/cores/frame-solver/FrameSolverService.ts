@@ -58,7 +58,6 @@ export class FrameSolverService {
     const memberLoads = loads.filter(l => l.attachedTo === 'member' && l.memberId === memberId);
 
     const virtualLoads: ILoad[] = [];
-    let netAxialFromDirectLoads = 0;
 
     // Direct loads on member
     memberLoads.forEach(load => {
@@ -73,18 +72,14 @@ export class FrameSolverService {
           magnitude: mag
         });
       } else if (load.type === 'point') {
-        let fAx = 0;
         let fTr = 0;
 
         if (load.direction === 'global-vertical') {
-          fAx = mag * sinTheta; // positive acts down
           fTr = mag * cosTheta;
         } else if (load.direction === 'global-horizontal') {
-          fAx = mag * cosTheta; // positive acts right
           fTr = -mag * sinTheta;
         } else {
           // local-transverse
-          fAx = 0;
           fTr = mag;
         }
 
@@ -95,20 +90,14 @@ export class FrameSolverService {
           position: pos * L,
           magnitude: fTr
         });
-
-        netAxialFromDirectLoads += fAx;
       } else if (load.type === 'udl') {
-        let wAx = 0;
         let wTr = 0;
 
         if (load.direction === 'global-vertical') {
-          wAx = mag * sinTheta;
           wTr = mag * cosTheta;
         } else if (load.direction === 'global-horizontal') {
-          wAx = mag * cosTheta;
           wTr = -mag * sinTheta;
         } else {
-          wAx = 0;
           wTr = mag;
         }
 
@@ -119,8 +108,6 @@ export class FrameSolverService {
           endPosition: L,
           magnitude: wTr
         });
-
-        netAxialFromDirectLoads += wAx * L;
       }
     });
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useFrameWorkspace } from '../context/FrameWorkspaceContext';
+import { INode } from '../types/frame';
 import {
   toMeterX,
   toMeterY,
@@ -10,8 +11,8 @@ import {
 
 interface UseFrameDraggingProps {
   svgRef: React.RefObject<SVGSVGElement | null>;
-  drawingStartNode: any;
-  setDrawingStartNode: (node: any) => void;
+  drawingStartNode: INode | null;
+  setDrawingStartNode: (node: INode | null) => void;
   draggedNodeId: string | null;
   setDraggedNodeId: (id: string | null) => void;
   setPreviewPosition: (pos: { x: number; y: number } | null) => void;

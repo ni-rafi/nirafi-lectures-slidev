@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Shovel, Move, HelpCircle, RefreshCw, Layers, Droplet, Box, Square } from 'lucide-react';
+import { HelpCircle, Layers, Box, Square } from 'lucide-react';
 import { InteractiveCard } from '@/features/presentation/components/elements/InteractiveCard';
 import { ParameterSlider } from '@/features/presentation/components/elements/ParameterSlider';
 import { CalculationOutput } from '@/features/presentation/components/elements/CalculationOutput';
-import { LatexFormula } from '@/features/presentation/components/elements/LatexFormula';
 
 /**
  * Slide 1: Substructure Layer Cross-Section Profile

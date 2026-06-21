@@ -27,17 +27,17 @@ export const DeflectionChart: React.FC<DeflectionChartProps> = ({
   solverResult: propsSolverResult,
   deflectionResult: propsDeflectionResult
 }) => {
-  let workspaceContext: any = null;
+  let workspaceContext: ReturnType<typeof useBeamWorkspace> | null = null;
   try {
     workspaceContext = useBeamWorkspace();
-  } catch (e) {
+  } catch {
     // context is not available when rendered inside Frame Solver
   }
 
-  let engineContext: any = null;
+  let engineContext: ReturnType<typeof useBeamEngine> | null = null;
   try {
     engineContext = useBeamEngine();
-  } catch (e) {
+  } catch {
     // context is not available when rendered inside Frame Solver
   }
 

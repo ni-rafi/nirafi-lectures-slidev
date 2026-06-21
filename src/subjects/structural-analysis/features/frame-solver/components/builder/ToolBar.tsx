@@ -99,7 +99,7 @@ export const ToolBar: React.FC = () => {
           <select
             value={selectedLoadType}
             onChange={(e) => {
-              setSelectedLoadType(e.target.value as any);
+              setSelectedLoadType(e.target.value as 'point' | 'moment' | 'udl');
               setActiveMode('add-load');
             }}
             onClick={(e) => e.stopPropagation()}

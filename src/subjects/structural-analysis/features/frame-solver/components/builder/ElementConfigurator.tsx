@@ -225,7 +225,7 @@ export const ElementConfigurator: React.FC = () => {
               <label className="text-[10px] font-bold text-muted-foreground uppercase">Load Type</label>
               <select
                 value={activeLoad.type}
-                onChange={(e) => updateLoad(activeLoad.id, { type: e.target.value as any })}
+                onChange={(e) => updateLoad(activeLoad.id, { type: e.target.value as 'point' | 'moment' | 'udl' })}
                 className="rounded border border-border bg-background px-2 py-1 text-xs text-foreground focus:outline-none"
               >
                 <option value="point">Point Force</option>
