@@ -10,10 +10,8 @@ export const steelLectureData: SlideSchema[] = [
     id: 1,
     section: 'Introduction',
     metadata: { title: 'Steel Cover', type: 'Cover Slide' },
-    layout: 'title',
-    props: {
-      footer: 'CE-QS Academic Department'
-    }
+    layout: 'title-v2',
+    props: {}
   },
   {
     id: 2,

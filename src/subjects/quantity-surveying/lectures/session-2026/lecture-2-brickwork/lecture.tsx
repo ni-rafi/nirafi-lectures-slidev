@@ -1,6 +1,6 @@
 import React from 'react';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
-import { TitleLayout } from '@/shared/layouts/TitleLayout';
+import { LectureCover } from '@/shared/layouts/LectureCover';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { ThankYouLayout } from '@/shared/layouts/ThankYouLayout';
@@ -10,13 +10,8 @@ import { QuizCardOrchestrator } from '@/features/quiz';
 import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 
 // Slide 1: Cover Slide
-const Slide1: React.FC<SlideProps> = ({ subject, lecture }) => (
-  <TitleLayout
-    title={lecture.title}
-    subtitle={`${subject.courseCode} Series • Session 2026-27`}
-    description={lecture.description}
-    footer="CE-QS Academic Department"
-  />
+const Slide1: React.FC<SlideProps> = (props) => (
+  <LectureCover {...props} />
 );
 
 // Slide 2: Theoretical Overview

@@ -8,4 +8,5 @@ export const metadata: Lecture = {
   durationMins: 45,
   locked: false,
   tags: ['introduction', 'pwd', 'measurement', 'quantity-surveying'],
+  lectureNumber: 1,
 };

@@ -15,6 +15,7 @@ interface SlideSchemaEngineProps {
   deck: SlideSchema[];
   subject?: unknown;
   lecture?: unknown;
+  session?: unknown;
 }
 
 export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
@@ -22,6 +23,7 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
   deck,
   subject,
   lecture,
+  session,
 }) => {
   const { subjectId, sessionId, lectureId } = useParams<{
     subjectId: string;
@@ -56,8 +58,9 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
     return <div className="p-6 text-red-500 font-bold">Slide configuration not found for index {slideNo}</div>;
   }
 
-  const typedSubject = subject as { courseCode?: string } | undefined;
-  const typedLecture = lecture as { title?: string; description?: string } | undefined;
+  const typedSubject = subject as { courseCode?: string; courseTitle?: string; yearSemester?: string; creditHours?: string } | undefined;
+  const typedLecture = lecture as { title?: string; description?: string; lectureNumber?: string | number } | undefined;
+  const typedSession = session as { usnCode?: string; session?: string } | undefined;
 
   // Layout wireframe wrapper mapping
   switch (config.layout) {
@@ -75,12 +78,13 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
       return (
         <TitleV2Layout
           courseCode={config.props.courseCode || typedSubject?.courseCode || ''}
-          courseTitle={config.props.courseTitle || config.props.title || typedLecture?.title || ''}
-          subtitle={config.props.subtitle}
-          yearSemester={config.props.yearSemester || ''}
-          creditHours={config.props.creditHours || ''}
-          usnCode={config.props.usnCode || ''}
-          session={config.props.session || ''}
+          courseTitle={config.props.courseTitle || typedSubject?.courseTitle || config.props.title || typedLecture?.title || ''}
+          subtitle={config.props.subtitle || typedLecture?.title}
+          yearSemester={config.props.yearSemester || typedSubject?.yearSemester || ''}
+          creditHours={config.props.creditHours || typedSubject?.creditHours || ''}
+          usnCode={config.props.usnCode || typedSession?.usnCode || ''}
+          session={config.props.session || typedSession?.session || ''}
+          lectureNumber={config.props.lectureNumber || typedLecture?.lectureNumber}
         />
       );
 

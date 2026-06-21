@@ -26,7 +26,7 @@ export const Slide3: React.FC = () => (
  * Slide 4: Centre Line Method & T-Junction Deductions
  */
 export const Slide4: React.FC = () => {
-  const [clickedJunction, setClickedJunction] = useUrlSyncedState<boolean>('junction_clicked', false);
+  const [clickedJunction, setClickedJunction] = useUrlSyncedState<boolean>('junction_clicked', true);
   const [currentClick] = useUrlSyncedState<number>('presentation_step', 0);
 
   return (
@@ -68,15 +68,6 @@ export const Slide4: React.FC = () => {
               ),
               revealAt: 0,
             },
-            {
-              type: 'paragraph',
-              text: (
-                <div className="mt-4 p-3 bg-muted/40 border border-border/40 rounded-lg text-[10px] text-muted-foreground">
-                  <span className="text-amber-500 font-bold block mb-1">Click the T-Junction in the SVG diagram:</span>
-                  It highlights the double-counted area where two centerlines cross.
-                </div>
-              ),
-            },
           ]}
         />
       }
@@ -84,7 +75,7 @@ export const Slide4: React.FC = () => {
         <div className="flex flex-col justify-between h-full bg-muted/20 p-4 border border-border/40 rounded-xl">
           <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">T-Junction Interactive Alignment</h3>
           <div className="relative h-56 bg-muted/40 rounded-lg border border-border/30 flex items-center justify-center p-4">
-            <svg width="220" height="180" viewBox="0 0 220 180" className="cursor-pointer select-none">
+            <svg width="220" height="200" viewBox="0 0 220 200" className="cursor-pointer select-none">
               {/* Horizontal Wall Outer Boundaries */}
               <rect x="20" y="40" width="180" height="40" className="fill-muted stroke-border/60" opacity="0.8" strokeWidth="1.5" />
               {/* Vertical Wall Outer Boundaries */}
@@ -110,7 +101,19 @@ export const Slide4: React.FC = () => {
               
               {/* Text labels */}
               <text x="50" y="30" className="fill-muted-foreground" fontSize="10" textAnchor="middle" fontWeight="bold">Horizontal Main Wall</text>
-              <text x="110" y="175" className="fill-muted-foreground" fontSize="10" textAnchor="middle" fontWeight="bold">Cross Wall</text>
+              <text x="110" y="125" className="fill-muted-foreground/60" fontSize="9" textAnchor="middle" fontWeight="bold">Cross Wall</text>
+              
+              {/* Outside dimension line for B (Width of vertical wall) */}
+              <line x1="90" y1="160" x2="90" y2="188" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2,2" opacity="0.3" />
+              <line x1="130" y1="160" x2="130" y2="188" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2,2" opacity="0.3" />
+              
+              {/* Dimension line line */}
+              <line x1="90" y1="180" x2="130" y2="180" stroke="var(--color-primary, #ef4444)" strokeWidth="1.2" />
+              {/* Architectural diagonal ticks */}
+              <line x1="87" y1="183" x2="93" y2="177" stroke="var(--color-primary, #ef4444)" strokeWidth="1.5" />
+              <line x1="127" y1="183" x2="133" y2="177" stroke="var(--color-primary, #ef4444)" strokeWidth="1.5" />
+              
+              <text x="110" y="174" className="fill-primary font-mono font-black text-xs" textAnchor="middle">B</text>
               
               {/* Interactive Highlight tag */}
               <g transform="translate(110, 60)" onClick={() => setClickedJunction(!clickedJunction)}>

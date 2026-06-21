@@ -12,12 +12,15 @@ export interface Lecture {
   locked: boolean;
   tags: string[];
   quizzes?: Record<string, 'stealth' | 'placeholder'>;
+  lectureNumber?: string | number;
 }
 
 export interface Session {
   id: string;
   label: string;        // e.g. "Session 2026–27"
   lectures: Lecture[];
+  usnCode?: string;
+  session?: string;
 }
 
 export interface Course {
@@ -28,9 +31,35 @@ export interface Course {
   iconEmoji: string;
   color: string;        // tailwind-compatible hex or gradient string
   sessions: Session[];
+  yearSemester?: string;
+  creditHours?: string;
 }
 
 export type Subject = Course;
+
+export interface SubjectMetadata {
+  courseCode: string;
+  courseTitle: string;
+  yearSemester: string;
+  creditHours: string;
+}
+
+export interface SessionMetadata {
+  usnCode: string;
+  session: string;
+}
+
+// Eagerly import all subject metadata
+const subjectMetadataModules = import.meta.glob<{ subjectMetadata: SubjectMetadata }>(
+  '/src/subjects/*/subjectMetadata.ts',
+  { eager: true }
+);
+
+// Eagerly import all session metadata
+const sessionMetadataModules = import.meta.glob<{ sessionMetadata: SessionMetadata }>(
+  '/src/subjects/*/lectures/*/sessionMetadata.ts',
+  { eager: true }
+);
 
 // Eagerly import all lecture metadata configs across the workspace
 const metadataModules = import.meta.glob<{ metadata: Lecture }>(
@@ -38,30 +67,55 @@ const metadataModules = import.meta.glob<{ metadata: Lecture }>(
   { eager: true }
 );
 
-// Course shells map. Each subject is defined by its course config shell.
-const COURSE_SHELLS: Record<string, Course> = {
+// Decorative details mapping for subject categories
+const SUBJECT_DECORATIONS: Record<string, { description: string; iconEmoji: string; color: string }> = {
   'quantity-surveying': {
-    id: 'quantity-surveying',
-    courseTitle: 'Quantity Surveying',
-    courseCode: 'CEE 0731 2224',
     description: 'Quantity take-off, Bill of Quantities (BoQ), material and resource scheduling, and budget management for civil engineering works.',
     iconEmoji: '🏗️',
     color: '#f59e0b',
-    sessions: [],
   },
-
   'engineering-mechanics': {
-    id: 'engineering-mechanics',
-    courseTitle: 'Engineering Mechanics II',
-    courseCode: 'CEE 0541 1233',
     description: 'Dynamics, relative motion, cables, friction analysis, impulses, and mechanical work systems.',
     iconEmoji: '⚙️',
     color: '#ea580c',
-    sessions: [],
   },
 };
 
-// Process modules to populate the COURSE_SHELLS
+const COURSE_SHELLS: Record<string, Course> = {};
+
+// 1. Populate COURSE_SHELLS using subjectMetadata.ts
+Object.entries(subjectMetadataModules).forEach(([path, module]) => {
+  const match = path.match(/\/subjects\/([^/]+)\/subjectMetadata\.ts$/);
+  if (!match) return;
+  const subjectId = match[1];
+  const metadata = module.subjectMetadata;
+  const decorations = SUBJECT_DECORATIONS[subjectId] || {
+    description: '',
+    iconEmoji: '📚',
+    color: '#6b7280',
+  };
+
+  COURSE_SHELLS[subjectId] = {
+    id: subjectId,
+    courseTitle: metadata.courseTitle,
+    courseCode: metadata.courseCode,
+    description: decorations.description,
+    iconEmoji: decorations.iconEmoji,
+    color: decorations.color,
+    yearSemester: metadata.yearSemester,
+    creditHours: metadata.creditHours,
+    sessions: [],
+  };
+});
+
+// Helper to find session metadata
+const findSessionMetadata = (subjectId: string, sessionId: string): SessionMetadata | null => {
+  const targetPath = `/src/subjects/${subjectId}/lectures/${sessionId}/sessionMetadata.ts`;
+  const module = sessionMetadataModules[targetPath];
+  return module ? module.sessionMetadata : null;
+};
+
+// 2. Process modules to populate the COURSE_SHELLS with sessions and lectures
 Object.entries(metadataModules).forEach(([path, module]) => {
   const match = path.match(/\/subjects\/([^/]+)\/lectures\/((?:session-)?\d{4}(?:-\d{2,4})?)\//);
   if (!match) return;
@@ -76,12 +130,16 @@ Object.entries(metadataModules).forEach(([path, module]) => {
   // Find or create session
   let session = course.sessions.find((s: Session) => s.id === sessionId);
   if (!session) {
+    const sessionMeta = findSessionMetadata(subjectId, sessionId);
     const yearMatch = sessionId.match(/\d{4}/);
     const year = yearMatch ? yearMatch[0] : '';
     const nextYearShort = year ? String(Number(year) - 2000 + 1) : '';
+    
     session = {
       id: sessionId,
-      label: `Session ${year}–${nextYearShort}`,
+      label: sessionMeta ? `Session ${sessionMeta.session}` : `Session ${year}–${nextYearShort}`,
+      usnCode: sessionMeta?.usnCode,
+      session: sessionMeta?.session,
       lectures: [],
     };
     course.sessions.push(session);

@@ -1,22 +1,14 @@
 import React from 'react';
-import { TitleV2Layout } from '@/shared/layouts/TitleV2Layout';
+import { LectureCover } from '@/shared/layouts/LectureCover';
+import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { SlideContent, ClickHighlight, InteractiveCard } from '@/features/presentation/components/elements';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
-import type { Subject, Lecture } from '@/config/lectures';
 
 // Slide 1: Cover Slide
-export const Slide1: React.FC<{ subject: Subject; lecture: Lecture }> = ({ subject, lecture }) => (
-  <TitleV2Layout
-    courseCode={subject.courseCode}
-    courseTitle={subject.courseTitle}
-    subtitle={lecture.title}
-    yearSemester="2nd Year / 2nd Semester"
-    creditHours="1.0 (Sessional)"
-    usnCode="2025-2"
-    session="2023-24"
-  />
+export const Slide1: React.FC<SlideProps> = (props) => (
+  <LectureCover {...props} />
 );
 
 // Slide 2: The Modern Quantity Surveyor

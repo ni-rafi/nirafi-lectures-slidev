@@ -19,7 +19,17 @@ interface TitleV2LayoutProps {
   usnCode: string;
   teacher?: PresenterInfo;
   session: string;
+  lectureNumber?: string | number;
 }
+
+const formatLectureNumber = (num?: string | number): string => {
+  if (num === undefined || num === null) return '';
+  const parsed = Number(num);
+  if (!isNaN(parsed) && Number.isInteger(parsed)) {
+    return `Lecture ${String(parsed).padStart(2, '0')}`;
+  }
+  return `Lecture ${num}`;
+};
 
 export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
   courseCode,
@@ -30,6 +40,7 @@ export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
   usnCode,
   teacher = presenter,
   session,
+  lectureNumber,
 }) => {
   const presentation = useContext(PresentationContext);
   const viewMode = presentation?.viewMode || 'present';
@@ -39,9 +50,16 @@ export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
   if (viewMode === 'blog') {
     return (
       <div className="flex flex-col gap-4 py-4 text-left border-b pb-6 border-border/40 w-full">
-        <span className="inline-flex w-fit items-center rounded-md px-2.5 py-1 text-xs font-extrabold font-mono tracking-wider border bg-primary/10 text-primary uppercase">
-          {courseCode}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex w-fit items-center rounded-md px-2.5 py-1 text-xs font-extrabold font-mono tracking-wider border bg-primary/10 text-primary uppercase">
+            {courseCode}
+          </span>
+          {lectureNumber && (
+            <span className="inline-flex w-fit items-center rounded-md px-2.5 py-1 text-xs font-bold font-mono tracking-wider border border-primary/20 bg-primary/5 text-primary uppercase">
+              {formatLectureNumber(lectureNumber)}
+            </span>
+          )}
+        </div>
         <h2 className="text-2xl font-black tracking-tight text-foreground">
           {courseTitle}
         </h2>
@@ -84,6 +102,11 @@ export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
           <h2 className={`text-xl font-bold tracking-tight text-primary leading-tight ${headerTitleClass}`}>
             {courseTitle}
           </h2>
+          {lectureNumber && (
+            <span className="inline-flex w-fit items-center rounded-full px-2.5 py-0.5 text-[9px] font-bold font-mono tracking-wider border border-primary/20 bg-primary/5 text-primary uppercase">
+              {formatLectureNumber(lectureNumber)}
+            </span>
+          )}
           <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest font-mono">
             {subtitle}
           </p>
@@ -135,6 +158,11 @@ export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
         <h1 className={`text-4xl font-extrabold tracking-tight text-primary leading-tight ${headerTitleClass}`}>
           {courseTitle}
         </h1>
+        {lectureNumber && (
+          <span className="inline-flex w-fit items-center rounded-full px-3 py-0.5 text-[10px] font-bold font-mono tracking-wider border border-primary/20 bg-primary/5 text-primary uppercase">
+            {formatLectureNumber(lectureNumber)}
+          </span>
+        )}
         <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest font-mono">
           {subtitle}
         </p>

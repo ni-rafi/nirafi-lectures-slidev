@@ -1,25 +1,17 @@
 import React from 'react';
-import { TitleV2Layout } from '@/shared/layouts/TitleV2Layout';
+import { LectureCover } from '@/shared/layouts/LectureCover';
+import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
-import { Box, Square, HelpCircle } from 'lucide-react';
+import { Box, Square } from 'lucide-react';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import { InteractiveCard, CalculationOutput, ParameterSlider, LatexFormula, ClickHighlight } from '@/features/presentation/components/elements';
-import type { Subject, Lecture } from '@/config/lectures';
 
 /**
  * Slide 1: Cover Slide
  */
-export const Slide1: React.FC<{ subject: Subject; lecture: Lecture }> = ({ subject, lecture }) => (
-  <TitleV2Layout
-    courseCode={subject.courseCode}
-    courseTitle={subject.courseTitle}
-    subtitle={lecture.title}
-    yearSemester="2nd Year / 2nd Semester"
-    creditHours="1.0 (Sessional)"
-    usnCode="2025-2"
-    session="2023-24"
-  />
+export const Slide1: React.FC<SlideProps> = (props) => (
+  <LectureCover {...props} />
 );
 
 const rulesData = [
@@ -57,7 +49,7 @@ const rulesData = [
  */
 export const Slide2: React.FC = () => {
   const { currentClick, setClick } = useClickStepsContext();
-  
+
   // Map steps: click 0 -> Rule 1; click 1 -> Rule 2; click 2 -> Rule 3
   const activeRule = Math.min(3, Math.max(1, currentClick + 1));
 
@@ -67,45 +59,35 @@ export const Slide2: React.FC = () => {
       bgVariant="default"
       leftWidth="50%"
       leftContent={
-        <div className="flex flex-col justify-between h-full space-y-4">
-          <div className="space-y-3">
-            {rulesData.map((rule, idx) => {
-              const isActive = activeRule === rule.id;
-              return (
-                <div
-                  key={rule.id}
-                  onClick={() => setClick(idx)}
-                  className={`p-3 rounded-xl border transition-all duration-350 cursor-pointer ${
-                    isActive 
-                      ? 'bg-muted/80 border-primary shadow-sm translate-x-1 text-foreground' 
-                      : 'bg-muted/30 border-border/40 opacity-60 hover:opacity-90 hover:bg-muted/50'
+        <div className="space-y-3">
+          {rulesData.map((rule, idx) => {
+            const isActive = activeRule === rule.id;
+            return (
+              <div
+                key={rule.id}
+                onClick={() => setClick(idx)}
+                className={`p-3 rounded-xl border transition-all duration-350 cursor-pointer ${isActive
+                    ? 'bg-muted/80 border-primary shadow-sm translate-x-1 text-foreground'
+                    : 'bg-muted/30 border-border/40 opacity-60 hover:opacity-90 hover:bg-muted/50'
                   }`}
-                >
-                  {/* Register clicks implicitly in the framework */}
-                  {idx > 0 && <ClickHighlight at={idx} className="hidden">{' '}</ClickHighlight>}
-                  
-                  <div className="flex justify-between items-center mb-1">
-                    <h3 className={`text-xs font-extrabold ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
-                      {rule.title}
-                    </h3>
-                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${rule.color}`}>
-                      {rule.badge}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed font-normal">
-                    {rule.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+              >
+                {/* Register clicks implicitly in the framework */}
+                {idx > 0 && <ClickHighlight at={idx} className="hidden">{' '}</ClickHighlight>}
 
-          <div className="p-3 bg-muted/20 rounded-lg border border-border/40 flex items-start gap-2">
-            <HelpCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-            <p className="text-[10px] text-muted-foreground font-normal">
-              Press <span className="font-bold text-foreground">Next/Prev</span> or click any rule card directly to review.
-            </p>
-          </div>
+                <div className="flex justify-between items-center mb-1">
+                  <h3 className={`text-xs font-extrabold ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
+                    {rule.title}
+                  </h3>
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${rule.color}`}>
+                    {rule.badge}
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-relaxed font-normal">
+                  {rule.desc}
+                </p>
+              </div>
+            );
+          })}
         </div>
       }
       rightContent={
@@ -117,7 +99,7 @@ export const Slide2: React.FC = () => {
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">
                   Formula Representation ({rule.badge})
                 </span>
-                
+
                 <div className="p-6 bg-background rounded-lg border border-border/30 flex items-center justify-center">
                   <div className="text-xl md:text-2xl font-black text-primary font-mono">
                     <LatexFormula math={rule.formula} />
@@ -191,11 +173,10 @@ export const Slide3: React.FC = () => {
                   <button
                     key={rule.id}
                     onClick={() => applyPreset(rule.id)}
-                    className={`w-full text-left p-3 rounded-xl border text-xs font-bold transition-all ${
-                      isActive
+                    className={`w-full text-left p-3 rounded-xl border text-xs font-bold transition-all ${isActive
                         ? 'bg-primary/10 border-primary text-primary shadow-xs'
                         : 'bg-muted/30 border-border/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                    }`}
+                      }`}
                   >
                     <div className="flex justify-between items-center">
                       <span>{rule.title.split(': ')[0] || rule.title}</span>

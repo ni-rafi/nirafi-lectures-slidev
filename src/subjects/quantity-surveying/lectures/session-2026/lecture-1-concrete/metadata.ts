@@ -11,4 +11,5 @@ export const metadata: Lecture = {
   quizzes: {
     'qs_2026_lec1_quiz1': 'stealth',
   },
+  lectureNumber: 1,
 };

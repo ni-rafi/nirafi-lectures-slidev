@@ -8,4 +8,5 @@ export const metadata: Lecture = {
   durationMins: 45,
   locked: false,
   tags: ['substructure', 'earthwork', 'concrete-footing', 'brick-soling', 'plinth-dpc'],
+  lectureNumber: 2,
 };
