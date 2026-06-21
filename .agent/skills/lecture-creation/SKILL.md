@@ -49,3 +49,15 @@ This skill guides creating a new lecture, writing its slide components, and addi
      ```bash
      npm run test
      ```
+
+5. **Visual Design & Reference Principles**:
+   - **Visual-First Layouts**: Minimize flat bullet points. Use interactive charts, visual SVGs, and stacked layouts.
+   - **Cross-Section & Elevation Displays**: When discussing elevations, cross-sections, or spatial bounds, render the structural shape (using SVG or shape utilities) and highlight individual components/dimensions progressively using step-by-step click animations (`ClickReveal`, `<ClickHighlight at={step}>`) instead of textual lists.
+   - **Eye-catching Elements**: Use bold/large numbers for outputs, paint-over annotations (`<ClickHighlight variant="paint">`), and transition-linked graphics.
+   - **Data Reference Standards**: Always prioritize official project documentation (e.g., PWD scheduling specifications). Supplement with cross-checked publications from reputable publishers only when directly relevant, providing precise citations in the presentation context.
+   - **Visual Implementation Blueprint**: Refer to the blueprint code at [substructure-slides-example.tsx](file:///d:/Websites/nirafi-workspace/.agent/skills/lecture-creation/examples/substructure-slides-example.tsx) to see how these points map:
+     * *Dynamic Shapes & Cross-Sections*: See `<SubstructureEstimationSlide>` rendering footing steps (375mm & 250mm brick steps, CC base, BFS bedding) layered using React states that highlight structural parts progressively.
+     * *Cubic vs Square Principles*: See `<SubstructurePrinciplesSlide>` showing three-dimensional bounding boxes vs two-dimensional flat surfaces depending on the active rule.
+     * *Bold Numbers & Paint Highlighting*: Check `<CalculationOutput>` and `<ClickHighlight variant="paint">` usages highlighting critical dimensions and final take-off values in bold monospaced fonts.
+     * *Interactive Parameter Adjustments*: Check how changing length/width sliders in the sandbox triggers real-time shape resizing and instant volume outputs.
+     * *Click Step Animations*: Check standard navigation button maps (`currentStep`, `activeRule`, `activeLayer`) executing transition animations step-by-step to explain sessional calculations.
