@@ -7,6 +7,8 @@ import { Slide7 as BfsBedding, Slide8 as LeanCc, Slide9 as RccFooting } from './
 import { Slide10 as SteppedMasonry, Slide11 as DpcDeduction, Slide12 as DpmSlab } from './slides/FoundationMasonrySlides';
 import { Slide13 as DimensionAnatomy, Slide14 as AddDeduct, Slide15 as ClassSummary } from './slides/StudioPracticeSlides';
 
+import { LectureThankYou } from '@/shared/layouts/LectureThankYou';
+
 export const slides: Record<number, React.ComponentType<SlideProps>> = {
   1: Slide1,
   2: Slide2,
@@ -24,6 +26,7 @@ export const slides: Record<number, React.ComponentType<SlideProps>> = {
   14: DimensionAnatomy,
   15: AddDeduct,
   16: ClassSummary,
+  17: (props) => <LectureThankYou {...props} />,
 };
 
 export const slideMetadata: Record<
@@ -45,5 +48,6 @@ export const slideMetadata: Record<
   13: { title: 'Damp-Proof Membrane (DPM)', type: 'Concept Details', section: 'Foundation Masonry' },
   14: { title: 'Dimension Paper Layout', type: 'Spreadsheet View', section: 'Studio Practice' },
   15: { title: 'Add & Deduct Notations', type: 'Concept Details', section: 'Studio Practice' },
-  16: { title: 'Class 2 Summary', type: 'Thank You Slide', section: 'Conclusion' },
+  16: { title: 'Class 2 Summary', type: 'Concept Details', section: 'Studio Practice' },
+  17: { title: 'Conclusion', type: 'Thank You Slide', section: 'Conclusion' },
 };

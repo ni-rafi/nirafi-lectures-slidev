@@ -4,11 +4,8 @@ A skill is a set of local instructions to follow that is stored in a `SKILL.md` 
 ### Available skills
 - math-engine: Guides extending the modular Quantity Surveying mathematical engine. (file: .agent/skills/math-engine/SKILL.md)
 - commit-message: Generates Conventional Commit messages following project rules. Use when creating git commits or preparing commit messages. (file: .agent/skills/commit-message/SKILL.md)
-- react-feature-standard: Standard structure and conventions for developing reusable React features and slide-deck lectures. (file: .agent/skills/react-feature-standard/SKILL.md)
-- slide-customization: Guides customizing and using interactive elements like paragraphs, bullets, equations, tables, and click highlights in slide decks. (file: .agent/skills/slide-customization/SKILL.md)
-- reusable-components: Guides creating and utilizing mode-aware reusable components for interactive slide controls, sliders, and outputs that adapt between Slide Mode and Blog Mode. (file: .agent/skills/reusable-components/SKILL.md)
+- lecture-development: Guides folder organization, slide deck creation/registration, layout selection, visual elements, highlighting, reusable components, and URL state synchronization. (file: .agent/skills/lecture-development/SKILL.md)
 - lecture-activation-security: Guides managing real-time lecture activations, custom claims, and cryptographic signatures. (file: .agent/skills/lecture-activation-security/SKILL.md)
-- lecture-creation: Guides creating and dynamically registering a new lecture slide deck with metadata. (file: .agent/skills/lecture-creation/SKILL.md)
 - testing: Guides implementing unit tests for core logics, slide registry schema validations, and fixing test regressions. (file: .agent/skills/testing/SKILL.md)
 - firebase-rules: Guides managing Firestore collection schemas, repository logic, database definitions, and local security rules. (file: .agent/skills/firebase-rules/SKILL.md)
 

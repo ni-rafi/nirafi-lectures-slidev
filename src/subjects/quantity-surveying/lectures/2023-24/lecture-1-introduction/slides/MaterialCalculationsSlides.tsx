@@ -4,7 +4,8 @@ import { useClickStepsContext } from '@/features/presentation/context/ClickSteps
 import { TopicDividerLayout } from '@/shared/layouts/TopicDividerLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
-import { ThankYouLayout } from '@/shared/layouts/ThankYouLayout';
+import { LectureThankYou } from '@/shared/layouts/LectureThankYou';
+import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 import {
   SlideContent,
   ClickHighlight,
@@ -618,9 +619,6 @@ export const Slide34: React.FC = () => (
 );
 
 // Slide 35: Conclusion
-export const Slide35: React.FC = () => (
-  <ThankYouLayout
-    title="Thank You"
-    subtitle="Questions on Intro to Estimating & PWD Framework?"
-  />
+export const Slide35: React.FC<SlideProps> = (props) => (
+  <LectureThankYou {...props} />
 );

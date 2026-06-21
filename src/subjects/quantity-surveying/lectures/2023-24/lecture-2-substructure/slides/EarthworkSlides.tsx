@@ -11,6 +11,10 @@ import {
 } from '@/features/presentation/components/elements';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { Droplet } from 'lucide-react';
+import { calculateBeamsGeometry } from '@/features/building-drawing/engines/planLayoutEngine';
+import { computeFractionalSegments } from '@/features/building-drawing/engines/fractionalSplitter';
+import { AnnotationOverlay } from '@/features/building-drawing/components/atoms/elements/AnnotationOverlay';
+import { PlanLayoutSchema } from '@/features/building-drawing/types/layoutSchema';
 
 /**
  * Slide 3: Topic Divider - Earthwork
@@ -28,6 +32,54 @@ export const Slide3: React.FC = () => (
 export const Slide4: React.FC = () => {
   const [clickedJunction, setClickedJunction] = useUrlSyncedState<boolean>('junction_clicked', true);
   const [currentClick] = useUrlSyncedState<number>('presentation_step', 0);
+
+  // Configuration for the T-junction drawing using the building drawing spec
+  const tJunctionSchema: PlanLayoutSchema = {
+    grid: {
+      xAxes: [
+        { id: 'Left', offset: 20, label: 'L' },
+        { id: 'A', offset: 110, label: 'A' },
+        { id: 'Right', offset: 200, label: 'R' },
+      ],
+      yAxes: [
+        { id: '1', offset: 60, label: '1' },
+        { id: 'Bottom', offset: 160, label: 'B' },
+      ],
+    },
+    columns: [],
+    beams: [
+      {
+        id: 'Horizontal-Wall',
+        startNodeId: 'Left-1',
+        endNodeId: 'Right-1',
+        thickness: 40,
+      },
+      {
+        id: 'Cross-Wall',
+        startNodeId: 'A-1',
+        endNodeId: 'A-Bottom',
+        thickness: 40,
+        highlights: [
+          {
+            startFraction: 0,
+            endFraction: 0.2, // 20 units overlap out of 100 units total span (20/100 = 0.2)
+            strokeClass: 'stroke-destructive/75',
+          },
+        ],
+      },
+    ],
+    slabs: [],
+  };
+
+  // Resolve geometries dynamically from layout engine
+  const beamsGeo = calculateBeamsGeometry(tJunctionSchema.beams, [], tJunctionSchema.grid);
+  const horizontalBeam = beamsGeo.find(b => b.id === 'Horizontal-Wall')!;
+  const crossBeam = beamsGeo.find(b => b.id === 'Cross-Wall')!;
+
+  const showHighlight = clickedJunction || currentClick >= 1;
+  const crossWallSpec = tJunctionSchema.beams.find(b => b.id === 'Cross-Wall');
+  const activeHighlights = (showHighlight && crossWallSpec) ? crossWallSpec.highlights || [] : [];
+  const crossWallSegments = computeFractionalSegments(crossBeam.start, crossBeam.end, activeHighlights);
 
   return (
     <TwoColumnLayout
@@ -75,54 +127,74 @@ export const Slide4: React.FC = () => {
         <div className="flex flex-col justify-between h-full bg-muted/20 p-4 border border-border/40 rounded-xl">
           <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">T-Junction Interactive Alignment</h3>
           <div className="relative h-56 bg-muted/40 rounded-lg border border-border/30 flex items-center justify-center p-4">
-            <svg width="220" height="200" viewBox="0 0 220 200" className="cursor-pointer select-none">
+            <svg width="220" height="200" viewBox="0 0 220 200" className="select-none">
               {/* Horizontal Wall Outer Boundaries */}
               <rect x="20" y="40" width="180" height="40" className="fill-muted stroke-border/60" opacity="0.8" strokeWidth="1.5" />
               {/* Vertical Wall Outer Boundaries */}
               <rect x="90" y="80" width="40" height="80" className="fill-muted stroke-border/60" opacity="0.8" strokeWidth="1.5" />
               
-              {/* Centerlines */}
-              <line x1="20" y1="60" x2="200" y2="60" stroke="var(--color-primary, #f59e0b)" strokeWidth="2" strokeDasharray="5,3" />
-              <line x1="110" y1="60" x2="110" y2="160" stroke="var(--color-primary, #f59e0b)" strokeWidth="2" strokeDasharray="5,3" />
-              
-              {/* Overlapping Junction Highlight Area */}
-              <rect 
-                x="90" 
-                y="40" 
-                width="40" 
-                height="40" 
-                fill={clickedJunction || currentClick >= 1 ? 'var(--color-primary, #ef4444)' : 'var(--color-muted, #3b82f6)'} 
-                fillOpacity="0.4"
-                stroke={clickedJunction || currentClick >= 1 ? 'var(--color-primary, #ef4444)' : 'var(--color-border, #60a5fa)'}
-                strokeWidth="1.5"
-                onClick={() => setClickedJunction(!clickedJunction)}
-                className="transition-colors duration-350"
+              {/* Centerlines (Dashed presentation centerlines driven by calculated geometry) */}
+              <line
+                x1={horizontalBeam.start.x}
+                y1={horizontalBeam.start.y}
+                x2={horizontalBeam.end.x}
+                y2={horizontalBeam.end.y}
+                stroke="var(--color-primary, #f59e0b)"
+                strokeWidth="2"
+                strokeDasharray="5,3"
               />
+              <line
+                x1={crossBeam.start.x}
+                y1={crossBeam.start.y}
+                x2={crossBeam.end.x}
+                y2={crossBeam.end.y}
+                stroke="var(--color-primary, #f59e0b)"
+                strokeWidth="2"
+                strokeDasharray="5,3"
+              />
+              
+              {/* Dynamic Overlap Highlight Area (Calculated dynamically via fractionalSplitter) */}
+              {crossWallSegments.map((seg, idx) => (
+                <rect
+                  key={idx}
+                  x={seg.p1.x - 20}
+                  y={seg.p1.y}
+                  width="40"
+                  height={Math.abs(seg.p2.y - seg.p1.y)}
+                  fill="var(--color-destructive, #ef4444)"
+                  fillOpacity="0.45"
+                  stroke="var(--color-destructive, #ef4444)"
+                  strokeWidth="1.5"
+                  onClick={() => setClickedJunction(!clickedJunction)}
+                  className="transition-colors duration-350 cursor-pointer"
+                />
+              ))}
               
               {/* Text labels */}
               <text x="50" y="30" className="fill-muted-foreground" fontSize="10" textAnchor="middle" fontWeight="bold">Horizontal Main Wall</text>
               <text x="110" y="125" className="fill-muted-foreground/60" fontSize="9" textAnchor="middle" fontWeight="bold">Cross Wall</text>
               
-              {/* Outside dimension line for B (Width of vertical wall) */}
-              <line x1="90" y1="160" x2="90" y2="188" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2,2" opacity="0.3" />
-              <line x1="130" y1="160" x2="130" y2="188" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2,2" opacity="0.3" />
-              
-              {/* Dimension line line */}
-              <line x1="90" y1="180" x2="130" y2="180" stroke="var(--color-primary, #ef4444)" strokeWidth="1.2" />
-              {/* Architectural diagonal ticks */}
-              <line x1="87" y1="183" x2="93" y2="177" stroke="var(--color-primary, #ef4444)" strokeWidth="1.5" />
-              <line x1="127" y1="183" x2="133" y2="177" stroke="var(--color-primary, #ef4444)" strokeWidth="1.5" />
-              
-              <text x="110" y="174" className="fill-primary font-mono font-black text-xs" textAnchor="middle">B</text>
+              {/* Reinforce Dimension Overlay (Calculated dynamically via AnnotationOverlay) */}
+              <AnnotationOverlay
+                p1={{ x: 90, y: 160 }}
+                p2={{ x: 130, y: 160 }}
+                offset={20}
+                text="B"
+                colorClass="stroke-destructive fill-destructive"
+              />
               
               {/* Interactive Highlight tag */}
-              <g transform="translate(110, 60)" onClick={() => setClickedJunction(!clickedJunction)}>
+              <g
+                transform="translate(110, 60)"
+                onClick={() => setClickedJunction(!clickedJunction)}
+                className="cursor-pointer"
+              >
                 <circle r="8" className="fill-primary animate-ping" opacity="0.4" />
                 <circle r="4" className="fill-primary" />
               </g>
             </svg>
             
-            {(clickedJunction || currentClick >= 1) && (
+            {showHighlight && (
               <div className="absolute top-2 right-2 bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] p-2 rounded-md font-mono animate-fadeIn">
                 <strong>Double-counted:</strong>
                 <br />

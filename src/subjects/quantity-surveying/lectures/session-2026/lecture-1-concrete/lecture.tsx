@@ -3,7 +3,7 @@ import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedSta
 import { LectureCover } from '@/shared/layouts/LectureCover';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
-import { ThankYouLayout } from '@/shared/layouts/ThankYouLayout';
+import { LectureThankYou } from '@/shared/layouts/LectureThankYou';
 import { calculateConcreteVolume } from '../calculations/concrete';
 import { SlideContent, SlideTable, ClickHighlight, LatexFormula, InteractiveCard, ParameterSlider, CalculationOutput } from '@/features/presentation/components/elements';
 import SlideBklitChart from '@/features/presentation/components/slides/SlideBklitChart';
@@ -200,11 +200,8 @@ const Slide6: React.FC = () => (
 );
 
 // Slide 7: Thank You Slide
-const Slide7: React.FC = () => (
-  <ThankYouLayout
-    title="Thank You"
-    subtitle="Do you have any question?"
-  />
+const Slide7: React.FC<SlideProps> = (props) => (
+  <LectureThankYou {...props} />
 );
 
 export const slides: Record<number, React.ComponentType<SlideProps>> = {

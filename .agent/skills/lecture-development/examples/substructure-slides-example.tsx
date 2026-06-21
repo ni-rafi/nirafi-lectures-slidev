@@ -560,3 +560,155 @@ export function SubstructureConcreteComputations() {
     </div>
   );
 }
+
+/**
+ * Slide 4: Centre Line Method & T-Junction Deductions
+ * Demonstrates: T-Junction double counting visual overlay and outside B dimension ticks
+ */
+export function SubstructureTJunctionDeduction() {
+  const [clickedJunction, setClickedJunction] = useState<boolean>(true);
+  const [totalLength, setTotalLength] = useState<number>(32.40);
+  const [wallBreadth, setWallBreadth] = useState<number>(0.30);
+  const [junctionsCount, setJunctionsCount] = useState<number>(2);
+
+  const netLength = (totalLength - 0.5 * wallBreadth * junctionsCount).toFixed(3);
+
+  return (
+    <div className="w-full max-w-6xl mx-auto p-6 bg-slate-950 text-slate-100 border border-slate-850 rounded-xl font-sans shadow-2xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-850 pb-4 mb-6 gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-extrabold tracking-widest uppercase px-2 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded">
+              CO2: Prepare BoQ
+            </span>
+            <span className="text-[10px] font-mono text-slate-500">
+              CEE 0732 2224 • Centerline Deductions
+            </span>
+          </div>
+          <h2 className="text-xl font-extrabold mt-1 text-white tracking-tight">
+            Centre Line Method: T-Junction Deductions
+          </h2>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <div className="lg:col-span-6 flex flex-col justify-between space-y-4">
+          <div className="space-y-4">
+            <p className="text-xs text-slate-400 leading-relaxed">
+              When tracing continuous centerlines, junction intersection zones are double-counted. For every T-junction, a correction factor is required.
+            </p>
+            <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl">
+              <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wider">The Centerline Deduction Rule</h4>
+              <p className="text-xs text-slate-300">
+                Deduct <span className="text-amber-400 font-bold">0.5 &times; Breadth (B)</span> from the total centerline length for each T-junction.
+              </p>
+              <div className="mt-3 font-mono text-xs text-slate-400">
+                Formula: Net L = Total L - (0.5 &times; B &times; N)
+              </div>
+            </div>
+            <div className="p-3 bg-slate-900/60 border border-slate-850 rounded-lg text-[11px] text-slate-400">
+              <strong>Note:</strong> L-corners do not require any deductions since the centerline path perfectly balances inner and outer area boundaries.
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <ParameterSlider
+              label="Total Centerline Length (L)"
+              min={10.0}
+              max={100.0}
+              step={0.5}
+              value={totalLength}
+              onChange={setTotalLength}
+              unit=" m"
+            />
+            <ParameterSlider
+              label="Wall Breadth (B)"
+              min={0.15}
+              max={1.0}
+              step={0.05}
+              value={wallBreadth}
+              onChange={setWallBreadth}
+              unit=" m"
+            />
+            <ParameterSlider
+              label="Number of T-Junctions (N)"
+              min={1}
+              max={10}
+              step={1}
+              value={junctionsCount}
+              onChange={setJunctionsCount}
+              unit=""
+            />
+          </div>
+        </div>
+
+        <div className="lg:col-span-6 flex flex-col justify-between bg-slate-900/60 rounded-xl border border-slate-850 p-4">
+          <div className="relative h-64 bg-slate-950 rounded-xl border border-slate-850 flex items-center justify-center p-4">
+            <svg width="220" height="200" viewBox="0 0 220 200" className="cursor-pointer select-none">
+              {/* Horizontal Wall Outer Boundaries */}
+              <rect x="20" y="40" width="180" height="40" className="fill-slate-800 stroke-slate-700" strokeWidth="1.5" />
+              {/* Vertical Wall Outer Boundaries */}
+              <rect x="90" y="80" width="40" height="80" className="fill-slate-800 stroke-slate-700" strokeWidth="1.5" />
+              
+              {/* Centerlines */}
+              <line x1="20" y1="60" x2="200" y2="60" stroke="#f59e0b" strokeWidth="2" strokeDasharray="5,3" />
+              <line x1="110" y1="60" x2="110" y2="160" stroke="#f59e0b" strokeWidth="2" strokeDasharray="5,3" />
+              
+              {/* Overlapping Junction Highlight Area (Inner Half: y=60 to y=80, height = 0.5 * B) */}
+              <rect 
+                x="90" 
+                y="60" 
+                width="40" 
+                height="20" 
+                fill={clickedJunction ? '#ef4444' : '#3b82f6'} 
+                fillOpacity="0.45"
+                stroke={clickedJunction ? '#ef4444' : '#60a5fa'}
+                strokeWidth="1.5"
+                onClick={() => setClickedJunction(!clickedJunction)}
+                className="transition-colors duration-350"
+              />
+              
+              {/* Text labels */}
+              <text x="50" y="30" className="fill-slate-400" fontSize="10" textAnchor="middle" fontWeight="bold">Horizontal Main Wall</text>
+              <text x="110" y="125" className="fill-slate-500" fontSize="9" textAnchor="middle" fontWeight="bold">Cross Wall</text>
+              
+              {/* Outside dimension line for B (Width of vertical wall) */}
+              <line x1="90" y1="160" x2="90" y2="188" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2,2" opacity="0.3" />
+              <line x1="130" y1="160" x2="130" y2="188" stroke="currentColor" strokeWidth="0.75" strokeDasharray="2,2" opacity="0.3" />
+              
+              {/* Dimension line line */}
+              <line x1="90" y1="180" x2="130" y2="180" stroke="#ef4444" strokeWidth="1.2" />
+              {/* Architectural diagonal ticks */}
+              <line x1="87" y1="183" x2="93" y2="177" stroke="#ef4444" strokeWidth="1.5" />
+              <line x1="127" y1="183" x2="133" y2="177" stroke="#ef4444" strokeWidth="1.5" />
+              
+              <text x="110" y="174" className="fill-amber-400 font-mono font-black text-xs" textAnchor="middle">B</text>
+              
+              {/* Interactive Highlight tag */}
+              <g transform="translate(110, 60)" onClick={() => setClickedJunction(!clickedJunction)}>
+                <circle r="8" className="fill-amber-400 animate-ping" opacity="0.4" />
+                <circle r="4" className="fill-amber-400" />
+              </g>
+            </svg>
+            
+            {clickedJunction && (
+              <div className="absolute top-2 right-2 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] p-2 rounded-md font-mono">
+                <strong>Double-counted:</strong>
+                <br />
+                Deduction = 0.5 &times; B
+              </div>
+            )}
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-slate-850">
+            <CalculationOutput 
+              label="Corrected Net Centerline Length" 
+              value={`${netLength} m`} 
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+

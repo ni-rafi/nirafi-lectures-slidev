@@ -3,7 +3,7 @@ import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedSta
 import { LectureCover } from '@/shared/layouts/LectureCover';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
-import { ThankYouLayout } from '@/shared/layouts/ThankYouLayout';
+import { LectureThankYou } from '@/shared/layouts/LectureThankYou';
 import { calculateBrickwork } from '../calculations/brickwork';
 import { SlideContent, SlideTable, ClickHighlight, LatexFormula, InteractiveCard, ParameterSlider, CalculationOutput } from '@/features/presentation/components/elements';
 import { QuizCardOrchestrator } from '@/features/quiz';
@@ -205,11 +205,8 @@ const Slide5: React.FC = () => (
 );
 
 // Slide 6: Thank You Slide
-const Slide6: React.FC = () => (
-  <ThankYouLayout
-    title="Thank You"
-    subtitle="Do you have any question?"
-  />
+const Slide6: React.FC<SlideProps> = (props) => (
+  <LectureThankYou {...props} />
 );
 
 export const slides: Record<number, React.ComponentType<SlideProps>> = {

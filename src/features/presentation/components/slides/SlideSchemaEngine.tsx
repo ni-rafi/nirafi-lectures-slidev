@@ -117,7 +117,7 @@ export const SlideSchemaEngine: React.FC<SlideSchemaEngineProps> = ({
       return (
         <ThankYouLayout
           title={config.props.title || 'Thank You'}
-          subtitle={config.props.subtitle || 'Do you have any question?'}
+          subtitle={config.props.subtitle || (typedLecture?.title ? `Questions on ${typedLecture.title}?` : 'Do you have any question?')}
         />
       );
 
