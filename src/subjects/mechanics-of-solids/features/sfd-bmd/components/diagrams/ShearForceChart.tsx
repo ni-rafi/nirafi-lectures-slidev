@@ -1,17 +1,52 @@
 import React, { useRef } from 'react';
 import { useBeamWorkspace } from '@/subjects/mechanics-of-solids/features/sfd-bmd/context/BeamWorkspaceContext';
 import { useBeamEngine } from '../../hooks/useBeamEngine';
-import { IIntervalEquation } from '@/subjects/mechanics-of-solids/cores/sfd-bmd/types';
+import { IIntervalEquation, ISolverOutput } from '@/subjects/mechanics-of-solids/cores/sfd-bmd/types';
 import { motion, AnimatePresence } from 'motion/react';
 import { splitIntoSignSegments, evalPoly } from '../../utils/chartUtils';
 
-export const ShearForceChart: React.FC = () => {
-  const { length, hoverX, setHoverX, supports, releases } = useBeamWorkspace();
-  const { solverResult } = useBeamEngine();
+interface ShearForceChartProps {
+  length?: number;
+  hoverX?: number | null;
+  setHoverX?: (x: number | null) => void;
+  supports?: { position: number }[];
+  releases?: { position: number }[];
+  solverResult?: ISolverOutput;
+}
+
+export const ShearForceChart: React.FC<ShearForceChartProps> = ({
+  length: propsLength,
+  hoverX: propsHoverX,
+  setHoverX: propsSetHoverX,
+  supports: propsSupports,
+  releases: propsReleases,
+  solverResult: propsSolverResult
+}) => {
+  let workspaceContext: any = null;
+  try {
+    workspaceContext = useBeamWorkspace();
+  } catch (e) {
+    // context is not available when rendered inside Frame Solver
+  }
+
+  let engineContext: any = null;
+  try {
+    engineContext = useBeamEngine();
+  } catch (e) {
+    // context is not available when rendered inside Frame Solver
+  }
+
+  const length = propsLength ?? workspaceContext?.length ?? 6;
+  const hoverX = propsHoverX !== undefined ? propsHoverX : (workspaceContext?.hoverX ?? null);
+  const setHoverX = propsSetHoverX ?? workspaceContext?.setHoverX ?? (() => {});
+  const supports: { position: number }[] = propsSupports ?? workspaceContext?.supports ?? [];
+  const releases: { position: number }[] = propsReleases ?? workspaceContext?.releases ?? [];
+  const solverResult: ISolverOutput | undefined = propsSolverResult ?? engineContext?.solverResult;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  if (!solverResult.success || solverResult.intervals.length === 0) return null;
+  if (!solverResult || !solverResult.success || !solverResult.intervals || solverResult.intervals.length === 0) return null;
 
   const sortedSupports = [...supports].sort((a, b) => a.position - b.position);
   const supportPosToLetter = new Map<number, string>();

@@ -1,17 +1,68 @@
 import React, { useRef } from 'react';
 import { useBeamWorkspace } from '@/subjects/mechanics-of-solids/features/sfd-bmd/context/BeamWorkspaceContext';
 import { useBeamEngine } from '../../hooks/useBeamEngine';
-import { IDeflectionPoint } from '@/subjects/mechanics-of-solids/cores/deflection/types';
+import { ISolverOutput } from '@/subjects/mechanics-of-solids/cores/sfd-bmd/types';
+import { IDeflectionPoint, IDeflectionResult } from '@/subjects/mechanics-of-solids/cores/deflection/types';
 import { motion, AnimatePresence } from 'motion/react';
 import { splitIntoSignSegments } from '../../utils/chartUtils';
 
-export const SlopeChart: React.FC = () => {
-  const { length, hoverX, setHoverX, supports, releases, eiSegments } = useBeamWorkspace();
-  const { solverResult, deflectionResult } = useBeamEngine();
+interface SlopeChartProps {
+  length?: number;
+  hoverX?: number | null;
+  setHoverX?: (x: number | null) => void;
+  supports?: { position: number }[];
+  releases?: { position: number }[];
+  eiSegments?: { startPosition: number; endPosition: number }[];
+  solverResult?: ISolverOutput;
+  deflectionResult?: IDeflectionResult;
+}
+
+export const SlopeChart: React.FC<SlopeChartProps> = ({
+  length: propsLength,
+  hoverX: propsHoverX,
+  setHoverX: propsSetHoverX,
+  supports: propsSupports,
+  releases: propsReleases,
+  eiSegments: propsEiSegments,
+  solverResult: propsSolverResult,
+  deflectionResult: propsDeflectionResult
+}) => {
+  let workspaceContext: any = null;
+  try {
+    workspaceContext = useBeamWorkspace();
+  } catch (e) {
+    // context is not available when rendered inside Frame Solver
+  }
+
+  let engineContext: any = null;
+  try {
+    engineContext = useBeamEngine();
+  } catch (e) {
+    // context is not available when rendered inside Frame Solver
+  }
+
+  const length = propsLength ?? workspaceContext?.length ?? 6;
+  const hoverX = propsHoverX !== undefined ? propsHoverX : (workspaceContext?.hoverX ?? null);
+  const setHoverX = propsSetHoverX ?? workspaceContext?.setHoverX ?? (() => {});
+  const supports: { position: number }[] = propsSupports ?? workspaceContext?.supports ?? [];
+  const releases: { position: number }[] = propsReleases ?? workspaceContext?.releases ?? [];
+  const eiSegments: { startPosition: number; endPosition: number }[] = propsEiSegments ?? workspaceContext?.eiSegments ?? [];
+  const solverResult: ISolverOutput | undefined = propsSolverResult ?? engineContext?.solverResult;
+  const deflectionResult: IDeflectionResult | undefined = propsDeflectionResult ?? engineContext?.deflectionResult;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
-  if (!deflectionResult.success || deflectionResult.points.length === 0 || !solverResult.success) return null;
+  if (
+    !solverResult ||
+    !solverResult.success ||
+    !deflectionResult ||
+    !deflectionResult.success ||
+    !deflectionResult.points ||
+    deflectionResult.points.length === 0
+  ) {
+    return null;
+  }
 
   const sortedSupports = [...supports].sort((a, b) => a.position - b.position);
   const supportPosToLetter = new Map<number, string>();
