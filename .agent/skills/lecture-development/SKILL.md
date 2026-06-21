@@ -68,184 +68,48 @@ To add a new lecture slide deck and compile it dynamically into the portal regis
    - Save files. Vite automatically compiles the new metadata into `SUBJECTS` at build time.
    - Run typecheck and schema tests:
      ```bash
-     npm run typecheck
-     npm run lint
-     npm run test
-     ```
+      npm run typecheck
+      npm run lint
+      npm run test
+      ```
 
 ---
 
-## 3. Slide Layouts & Presentational elements
+## 3. Slide Layout Selection & Configuration
 
-### 3.1 Layout Selection Standards
-To ensure a consistent look and smooth transitions, select the appropriate layout from `src/shared/layouts/`:
-* **Main Cover Slide (Slide 1)**: Use `<TitleV2Layout>` for the main cover page.
-* **Topic/Section Opener Divider Slides**: Use `<TopicDividerLayout>` (imported from `@/shared/layouts/TopicDividerLayout`) for slides introducing a new topic or section within the deck. Do not use `<TitleLayout>` or `<TitleV2Layout>` for internal topic dividers.
-* **Content Slides**: Use `<FullWidthLayout>` or `<TwoColumnLayout>` for regular content slides.
-* **Grid Layouts**: Use `<GridLayout>` for matrix structures like quiz galleries.
-
-> [!IMPORTANT]
-> **Header & Footer Delegation**: All layouts must delegate their headers and footers to the dedicated `<LayoutHeader>` and `<LayoutFooter>` components in `src/shared/layouts/components/` to guarantee smooth, synchronized transition animations (using `.slide-header-title` and `.slide-layout-footer`).
-
-### 3.2 Semantic Presentational Elements
-Standardize content representation. Do NOT use raw HTML tags (`<ul>`, `<li>`, `<p>`, `shadowed borders`) for presentation slides. Use semantic elements under `src/features/presentation/components/elements/`:
-* Use `<SlideBullet>` for lists and bullets.
-* Use `<SlideParagraph>` for slide paragraph styling.
-* Use `<SlideEquation>` or `<LatexFormula>` for mathematical equations, adhering to flat, unshadowed container styles.
-* Use `<SlideContent>` to automatically map a structured configuration array to paragraphs, lists, and equations.
+Slide layouts determine the structural containers and grid flow of each page. Always delegate headers and footers to keep animations consistent.
+* **layouts.md**: Refer to the detailed [Slide Layouts Reference Guide](file:///d:/Websites/nirafi-workspace/.agent/skills/lecture-development/references/layouts.md) for full configuration, props, and best practices.
+  * *Cover Slide*: `<TitleV2Layout>`
+  * *Section Divider*: `<TopicDividerLayout>`
+  * *General Content*: `<FullWidthLayout>` or `<TwoColumnLayout>`
+  * *Grids & Matrix*: `<GridLayout>`
 
 ---
 
-## 4. Declarative Schema-Driven Customization
+## 4. Presentational Content Elements
 
-For standard lecture slides, customize content using the declarative **Slide Schema** configuration pattern rather than raw JSX. The polymorphic `<SlideSchemaEngine>` parses structured configurations and inflates layout elements automatically.
-
-### 4.1 Schema Configurations
-* **`rich-paragraph`**: Renders `<SlideParagraph>` with highlights.
-  ```typescript
-  element: {
-    type: 'rich-paragraph',
-    data: {
-      fragments: [
-        'Estimating concrete requires ',
-        { highlight: 'isolating total volume', at: 1, variant: 'paint' },
-        ' to prevent shortages.'
-      ]
-    }
-  }
-  ```
-* **`list`**: Renders `<SlideList>` with stagger reveals.
-  ```typescript
-  element: {
-    type: 'list',
-    config: { revealMode: 'each-click' },
-    data: {
-      listTitle: 'Measurement Guidelines',
-      items: [
-        { title: 'Slab Thickness:', text: 'Maintain a 0.150m minimum bound.' },
-        { title: 'Calculation Precision:', text: 'Round outputs to 3 decimals.' }
-      ]
-    }
-  }
-  ```
-* **`table`**: Renders `<SlideTable>` with header reveals and cell-level highlights.
-  ```typescript
-  element: {
-    type: 'table',
-    config: { striped: true, bordered: true },
-    data: {
-      headers: [
-        { label: 'Code', align: 'left' },
-        { label: 'Qty', align: 'right' },
-        { label: 'Rate ($)', align: 'right', revealAt: 2 }
-      ],
-      rows: [
-        [ '1.1', <ClickHighlight at={1}>12.500</ClickHighlight>, <ClickReveal at={3}>120.00</ClickReveal> ]
-      ]
-    }
-  }
-  ```
-* **`latex`**: Renders `<LatexFormula>` formula parts.
-  ```typescript
-  element: {
-    type: 'latex',
-    config: { title: 'Standard Formula' },
-    data: {
-      formulaParts: [
-        'W = ',
-        { highlight: '\\\\frac{d^2}{162} \\\\times L', at: 2, variant: 'text' }
-      ]
-    }
-  }
-  ```
-* **`quiz`**: Renders classroom interactive assessments synced with Firebase.
-  ```typescript
-  element: {
-    type: 'quiz',
-    config: { quizId: 'brick_lec2_q1', quizType: 'numeric-input' },
-    data: { question: 'What is the volume of a standard brick?', correctAnswer: '1900000' }
-  }
-  ```
-
-> [!TIP]
-> **Single Source of Truth**: Refer to the actual code definitions, schema examples, and copy-pasteable configurations directly in the Developer Guide source files under [src/features/docs/dev-guide/](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/):
-> * Paragraphs: [ParagraphsSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/ParagraphsSection.tsx)
-> * Lists: [ListsSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/ListsSection.tsx)
-> * Tables: [TablesSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/TablesSection.tsx)
-> * Formulas: [FormulasSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/FormulasSection.tsx)
-> * Quizzes: [QuizzesSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/QuizzesSection.tsx)
-> * Inputs: [InputsSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/InputsSection.tsx)
-> * Schema Engine: [SchemaEngineSection.tsx](file:///d:/Websites/nirafi-lectures-slidev/src/features/docs/dev-guide/SchemaEngineSection.tsx)
+Avoid raw HTML layout structures. Presentational elements support slide scaling, standard margins, and native highlighting.
+* **presentational-elements.md**: Refer to the [Slide Presentational Elements Reference Guide](file:///d:/Websites/nirafi-workspace/.agent/skills/lecture-development/references/presentational-elements.md) for component options, Zod configurations, and layout margins.
+  * *Text Blocks*: `<SlideParagraph>`
+  * *List Items*: `<SlideBullet>` / `<SlideList>`
+  * *Math & Equations*: `<SlideEquation>` / `<LatexFormula>`
+  * *Tabular Data*: `<SlideTable>`
+  * *Declarative Schemas*: `<SlideSchemaEngine>` parsing JSON config shapes.
 
 ---
 
-## 5. Interactive Customization & Highlighting
+## 5. Interactive Panels & State Synchronization
 
-### 5.1 Highlight Variants
-Use `<ClickHighlight>` with the `variant` prop to customize interactive text highlighting:
-* **`text`** (Default): Transitions the text color to primary (accent hue) and increases font weight to bold. This is strictly `inline` (not block or inline-block) to guarantee it flows naturally with normal paragraph text without collapsing whitespace.
-* **`paint`**: An animated highlighter pen drawing effect. Draws a soft color background (e.g., yellow/amber) from left to right.
-* **`rect`**: A soft, rounded rectangular border and background (like a subtle badge) wrapped around the target word or phrase.
-* **`bold`**: Transitions font-weight to bold/emphasis.
-* **`strike`**: Draws a line-through strikeout on activation. Used for comparing obsolete values or showing correction steps.
-
-### 5.2 Layout & Inline Flow Rules
-To prevent words from sticking together:
-* **Always use `inline` display** for inline text highlights (`text`, `paint`, `strike`). Avoid `inline-block` or `transform: scale()` on running inline text since it alters baseline alignment and collapses adjacent space nodes.
-* Add space characters directly inside or outside the component tags, ensuring standard JSX spacing:
-  ```tsx
-  <span>
-    Estimating concrete requires{' '}
-    <ClickHighlight at={1} variant="paint">isolating volumetric cubic meters</ClickHighlight>{' '}
-    from internal constants.
-  </span>
-  ```
-
-### 5.3 Click-Reveal Behaviors
-* **Default Visibility (`revealMode: 'none'`)**: By default, paragraph blocks render statically immediately on slide load (at step 0). Use this for section headers, column headings, and descriptive text block introductions.
-* **Inline Highlight Sequence**: If a paragraph contains `<ClickHighlight>` elements (e.g. at step 1, 2, etc.), leave the paragraph's `revealMode` at its default (`'none'`) so that the paragraph text is visible on load, and subsequent clicks only trigger the highlights in sequence.
-* **Explicit Click Reveals**: If you explicitly want a paragraph to hide initially and reveal on click, specify a `revealAt` property (e.g. `revealAt={1}` or `revealAt="+1"`) or set `revealMode: 'all-click'`.
-
-### 5.4 Separation of Drawings and SVGs
-To maintain clean slide definitions and support reusability:
-* **Separation of Concerns**: Drawings such as SVGs must be separated from slides. Do not couple raw SVG code inside the slide files.
-* **Reusable Components**: Place drawings in reusable component locations (subject-specific drawings in `src/subjects/{subjectName}/features/components/` and global drawings in `src/shared/components/` or `src/features/presentation/components/elements/`).
-* **Parameterization**: Pass dynamic properties (like dimensions or state) as JSON parameters/props to the drawing component rather than hardcoding values inside the drawing itself.
+Classroom slides must adapt to Blog/mobile viewports and synchronize parameters in real-time across devices.
+* **interactive-controls.md**: Refer to the [Interactive Controls & State Sync Reference Guide](file:///d:/Websites/nirafi-workspace/.agent/skills/lecture-development/references/interactive-controls.md) for slider controls, synced hooks, and viewport checklists.
+  * *Animations & Reveals*: `<ClickHighlight>` (text, paint, strike variants) and `<ClickReveal>`
+  * *Parameter Sandbox*: `<InteractiveCard>`, `<ParameterSlider>`, and `<CalculationOutput>`
+  * *Real-Time Sync*: `useUrlSyncedState` hook for cross-window presenter-follower state sync
+  * *Separation of Drawings/SVGs*: Keeping SVG markup outside slide files and parameterizing drawings.
 
 ---
 
-## 6. Reusable Parameter Panels & State Sync
-
-### 6.1 Strict Reusability Rule
-Handcoding custom CSS, double card frames, or tailwind layouts (like `bg-card`, `bg-muted/60`, or absolute decorative hooks) directly inside slide files is strictly prohibited. To support Blog Mode natively, all parameter panel containers, inputs, and outputs must be rendered using unified reusable components:
-* Use `<InteractiveCard>` for wrapping parameter adjustment inputs.
-* Use `<ParameterSlider>` for slider controls and values formatting.
-* Use `<CalculationOutput>` for rendering the calculation results.
-
-### 6.2 Mode Adaptation (Slide Mode vs. Blog Mode)
-* **Background Elimination in Blog Mode**: When `viewMode === 'blog'`, all background colors (`bg-card`, `bg-muted`), drop-shadows, and powerpoint-style absolute hooks must be stripped (`bg-transparent`).
-* **Context Awareness**: Components must consume `PresentationContext` to detect `viewMode === 'blog'`.
-* **No Hardcoded card classes in Lectures**: Slide decks under `src/lectures/` must never write hardcoded presentation containers like `bg-card`, `bg-muted/60`, `shadow-sm`, or absolute corner hooks. They must delegate layout and backgrounds to reusable element components.
-
-### 6.3 Responsiveness & Stacking Rules
-To guarantee visual excellence on mobile viewports and tablets in Blog Mode:
-1. **Vertical Stacking**: Multi-column layouts must stack vertically on mobile screens using responsive classes (`flex flex-col md:flex-row` or `grid grid-cols-1 md:grid-cols-2`). Never force side-by-side grids on screen widths `< 768px` in Blog Mode.
-2. **Padding Scaling**: Presentation slide margins (e.g., `p-6` or `p-8`) must contract to standard mobile article paddings (`p-3 md:p-5`) to avoid text clipping and save vertical space.
-3. **Text Autoscaling**: Outputs (like `<CalculationOutput>`) must use fluid size steps (`text-2xl md:text-3xl`) to remain clean on compact phone layouts.
-4. **Input Accessibility**: Slider tracks must stretch to full width (`w-full`) with large touch targets, while labels stay wrapped (`flex-col sm:flex-row sm:justify-between`) to ensure readability on smaller screens.
-
-### 6.4 Cross-Window State Synchronization (`useUrlSyncedState`)
-To sync interactive parameters, physics values, and widget states across presenter and follower screens:
-1. **Hook Invocation**: Use `useUrlSyncedState<T>(key, defaultValue)` instead of React's standard `useState`.
-2. **Object and Array Synchronization**:
-   - The storage system natively supports JSON serialization for complex values like options, presets, configurations, and structures.
-   - **Crucial Rule for Objects/Arrays**: If passing an object literal or array literal as the `defaultValue` parameter, the hook automatically wraps it in a ref internally to prevent infinite re-render loops. However, it is a best practice to keep default parameters static or memoized.
-3. **State Updaters**: The synced setter function supports both raw value inputs and functional updaters (`setState(prev => ({ ...prev, [key]: val }))`).
-4. **Stable syncKey for Draggables**: Always provide a stable, unique `syncKey` string to draggable components (`<Draggable>` or `<DraggableArrow>`) to distinguish their positions inside the scoped slide space.
-
----
-
-## 7. Chart Components (Bklit UI)
+## 6. Chart Components (Bklit UI)
 
 To incorporate high-fidelity, animated charts from the Bklit UI library without editing the copied source files under `src/features/presentation/components/elements/bklit/`:
 * **Aspect Ratio & Height Bounds**: Wrap the chart (e.g. `<CurvedLineChart>`) in a width-constrained container (e.g. `<div className="w-full max-w-[700px] mx-auto">`). Because the chart enforces a `2:1` aspect ratio internally, limiting its parent width automatically limits its height (e.g., to `350px`), preventing bottom viewport overflow on standard 16:9 screens.
