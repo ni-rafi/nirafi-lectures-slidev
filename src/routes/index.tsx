@@ -11,6 +11,7 @@ import SlideCustomizationDocs from '@/features/docs/SlideCustomizationDocs';
 import ShapeBuilderPlayground from '@/features/presentation/components/tools/playground/ShapeBuilderPlayground';
 import { SFDBMDSolverPage } from './mechanics-of-solids/SFDBMDSolverPage';
 import { InfluenceLinesPage } from './structural-analysis/InfluenceLinesPage';
+import { FrameSolverPage } from './structural-analysis/FrameSolverPage';
 
 /**
  * Handles legacy Slidev flat slide number requests (e.g. /5) by
@@ -125,6 +126,7 @@ export const AppRoutes: React.FC = () => {
         <Route path={ROUTE_PATHS.DOCS} element={<SlideCustomizationDocs />} />
         <Route path={ROUTE_PATHS.SOLVER_SFD_BMD} element={<SFDBMDSolverPage />} />
         <Route path={ROUTE_PATHS.SOLVER_INFLUENCE_LINES} element={<InfluenceLinesPage />} />
+        <Route path={ROUTE_PATHS.SOLVER_FRAME} element={<FrameSolverPage />} />
 
         {/* Global Fallback Redirect to Dashboard */}
         <Route path="*" element={<Navigate to={ROUTE_PATHS.PORTAL} replace />} />
