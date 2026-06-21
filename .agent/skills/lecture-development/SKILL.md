@@ -12,6 +12,10 @@ This skill guides creating a new sessional lecture slide deck, structuring UI fe
 ## 0. Core Presentation Design & Modularity Principles
 
 To maintain clean slide definitions and support multi-mode publishing (Slide, Scroll, and Blog Modes):
+* **Visual-First Layouts**: Prefer visual representations (interactive charts, flowcharts, diagrams, and shapes) over heavy textual descriptions or flat bullet lists. Keep text minimal and use graphics to show rather than tell.
+* **Progressive Highlights**: When explaining physical structures, cross-sections, elevations, or dimensional bounds, render the shape dynamically (using canvas or SVGs) and highlight components step-by-step using click reveals/highlights instead of static text tables or bullet lists.
+* **Eye-catching Elements**: Use bold/large numbers for calculation outputs, paint-over highlighter animations (`<ClickHighlight variant="paint">`), and transition-linked graphics.
+* **Data Reference Standards**: Always prioritize official project documentation (e.g., PWD scheduling specifications). Supplement with cross-checked publications from reputable publishers only when directly relevant, providing precise citations in the presentation context.
 * **No Hardcoding on Slides**: Do not hardcode presentational layouts, large SVGs, or custom visual content directly inside individual slide components.
 * **Modularity & Reusability**: Deconstruct complex slide visuals into isolated, reusable components with a granular file structure. Design every widget so it can be re-imported and reused across different lectures or outlines.
 * **Single Responsibility Principle (SRP)**: Keep each element component small and focused on a single logical duty or drawing.
@@ -130,6 +134,15 @@ To incorporate high-fidelity, animated charts from the Bklit UI library without 
 
 ---
 
+## 7. Parameterized Structural Drawings
+
+For plan-view grid alignments, foundation pile layouts, road pavement cross-sections, and cut/fill topography profiles:
+* **drawings.md**: Refer to the [Interactive Drawing Canvases Reference Guide](file:///d:/Websites/nirafi-workspace/.agent/skills/lecture-development/references/drawings.md) for full coordinate mapping engines, canvas configurations, and props schemas.
+  * *Building Drawings*: `<PlanDrawingCanvas>`, `<SectionDrawingCanvas>`
+  * *Civil Drawings*: `<FoundationDrawingCanvas>`, `<RoadSectionCanvas>`, `<EarthworkProfileCanvas>`
+
+---
+
 ## 8. Visual Implementation Reference Blueprint
 
 Refer to the blueprint code at [substructure-slides-example.tsx](file:///.agent/skills/lecture-development/examples/substructure-slides-example.tsx) to see how these elements, layout rules, state sync patterns, and dynamic shapes map to a live classroom calculator.
@@ -149,6 +162,10 @@ When adding a new reusable layout, presentational element, or interactive contro
 
 ### B. Slide Creation Checklist
 When authoring or modifying slides:
+- [ ] **Visual-First Layouts**: Minimal text is used; layouts prefer visual graphics, dynamic flowcharts, or diagrams over flat bullet lists.
+- [ ] **Progressive Highlights**: Physical structures, cross-sections, elevations, or dimensional bounds are rendered dynamically and highlighted step-by-step using click reveals/highlights instead of static text blocks.
+- [ ] **Eye-catching Elements**: Use bold/large numbers for calculation outputs, paint-over highlighter animations (`<ClickHighlight variant="paint">`), and transition-linked graphics.
+- [ ] **Data Reference Standards**: Official project documentation (e.g., PWD specifications) is prioritized, with precise sessional citations provided for estimation constants.
 - [ ] **Modularity & Reusability**: Slide elements are deconstructed into reusable components rather than hardcoding layouts, SVGs, or custom content directly inside individual slide files.
 - [ ] **Layout Delegation**: Headers/footers delegated to `<LayoutHeader>` and `<LayoutFooter>` to guarantee transitions.
 - [ ] **Semantic Presentational Elements**: No raw HTML `<p>`, `<ul>`, `<li>`, or `<table>` tags are used; use `<SlideParagraph>`, `<SlideBullet>`, `<SlideTable>`, etc.
