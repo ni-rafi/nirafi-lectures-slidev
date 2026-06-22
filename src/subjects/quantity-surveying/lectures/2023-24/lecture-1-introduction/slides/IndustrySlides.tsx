@@ -3,160 +3,130 @@ import { LectureCover } from '@/shared/layouts/LectureCover';
 import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
-import { SlideContent, ClickHighlight, InteractiveCard, MeasurementTimelineCanvas } from '@/features/presentation/components/elements';
-import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
+import { ClickHighlight, InteractiveCard, SlideGrid, SlideBullet, ClickReveal } from '@/features/presentation/components/elements';
 
 // Slide 1: Cover Slide
 export const Slide1: React.FC<SlideProps> = (props) => (
   <LectureCover {...props} />
 );
 
-// Slide 2: The Modern Quantity Surveyor
+// Slide 2: 1.1 Definition and Scope of Quantity Surveying (QS)
 export const Slide2: React.FC = () => (
-  <FullWidthLayout title="The Modern Quantity Surveyor" bgVariant="default">
-    <SlideContent
-      blocks={[
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Evolution of the Profession:</strong> The profession's roots trace back to the Napoleonic Wars, replacing separate trade contracts with{' '}
-              <ClickHighlight at={1} variant="paint">"contracting in gross"</ClickHighlight>, and was formally born after a schism with architects (RIBA) in 1834.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Core Attributes:</strong> A modern surveyor requires a comprehensive understanding of raw building materials, construction methods, and local trade customs, combined with{' '}
-              <ClickHighlight at={2} variant="paint">strict mathematical accountability</ClickHighlight>.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Architectural Translation:</strong> A fundamental necessity is the ability to clearly describe the architect's requirements in proper,{' '}
-              <ClickHighlight at={3} variant="paint">unambiguous technical language</ClickHighlight> to ensure the builder's estimator can quickly and accurately arrive at the estimated cost.
-            </span>
-          ),
-        },
-      ]}
-    />
+  <FullWidthLayout title="1.1 Definition and Scope of Quantity Surveying (QS)" bgVariant="default">
+    <div className="flex flex-col gap-4 select-text">
+      <div className="p-4 rounded-xl border border-border/50 bg-muted/20">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full inline-block mb-2 select-none">
+          Core Definition
+        </span>
+        <p className="text-xs md:text-sm text-foreground leading-relaxed">
+          Quantity Surveying is the rigorous cost assessment of construction projects based on local market rates for materials and labor.
+        </p>
+      </div>
+
+      <SlideGrid cols={2} gap="md">
+        <ClickReveal at={1}>
+          <InteractiveCard title="The Evolution (Historical Scope)" variant="default">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Roots trace back to the Napoleonic Wars, shifting the industry from separate trades toward <ClickHighlight at={1} variant="paint">"contracting in gross"</ClickHighlight>, and formally establishing an independent field in 1834 after splitting from RIBA.
+            </p>
+          </InteractiveCard>
+        </ClickReveal>
+        <ClickReveal at={2}>
+          <InteractiveCard title="Operational Scope" variant="default">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Serves as the vital professional bridge translating an architect's <ClickHighlight at={2} variant="paint">spatial design concepts</ClickHighlight> directly into a builder's <ClickHighlight at={3} variant="paint">physical construction execution</ClickHighlight>.
+            </p>
+          </InteractiveCard>
+        </ClickReveal>
+      </SlideGrid>
+    </div>
   </FullWidthLayout>
 );
 
-// Slide 3: Roles within the Industry
+// Slide 3: 1.2 Rationale & Importance in Project Management
 export const Slide3: React.FC = () => (
-  <TwoColumnLayout
-    title="Roles within the Industry"
-    bgVariant="default"
-    leftWidth="50%"
-    leftContent={
-      <SlideContent
-        blocks={[
-          {
-            type: 'paragraph',
-            text: <strong>Private Practice (Consulting)</strong>,
-            revealMode: 'none',
-          },
-          {
-            type: 'bullet',
-            text: 'Often structured as partnerships or Limited Liability Partnerships (LLPs) to protect members.',
-          },
-          {
-            type: 'bullet',
-            text: (
-              <span>
-                Focuses on representing the client's interests, offering{' '}
-                <ClickHighlight at={1} variant="paint">independent cost advice</ClickHighlight>, and providing overarching Project Management services from inception to commissioning.
-              </span>
-            ),
-          },
-        ]}
-      />
-    }
-    rightContent={
-      <SlideContent
-        blocks={[
-          {
-            type: 'paragraph',
-            text: <strong>Commercial Management (Contracting)</strong>,
-            revealMode: 'none',
-          },
-          {
-            type: 'bullet',
-            text: 'Involves working directly for contracting organizations on the supply side of the industry.',
-          },
-          {
-            type: 'bullet',
-            text: (
-              <span>
-                Focuses heavily on managing the{' '}
-                <ClickHighlight at={2} variant="paint">contractual and commercial aspects</ClickHighlight> of projects, ensuring profitability, and controlling site supply chains.
-              </span>
-            ),
-          },
-        ]}
-      />
-    }
-  />
+  <FullWidthLayout title="1.2 Rationale &amp; Importance in Project Management" bgVariant="default">
+    <div className="flex flex-col gap-3 select-text">
+      <p className="text-xs text-muted-foreground mb-1 leading-normal select-none">
+        Quantitative controls serve as the baseline financial and logistical blueprint throughout a project's lifecycle.
+      </p>
+      <SlideGrid cols={2} gap="md">
+        <InteractiveCard title="Baseline Financial Blueprint" variant="default">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Establishes a realistic, mathematically sound prediction of total project expenditure at every stage of infrastructure development.
+          </p>
+        </InteractiveCard>
+        <ClickReveal at={1}>
+          <InteractiveCard title="Role in Project Budgeting" variant="default">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Prevents cost overruns, anchors pre-tender estimates, and manages critical feasibility boundaries before committing capital.
+            </p>
+          </InteractiveCard>
+        </ClickReveal>
+        <ClickReveal at={2}>
+          <InteractiveCard title="Material &amp; Resource Scheduling" variant="default">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Translates 2D blueprints into exact logistical bills of materials (cement, sand, bricks) to optimize site inventory and minimize waste.
+            </p>
+          </InteractiveCard>
+        </ClickReveal>
+        <ClickReveal at={3}>
+          <InteractiveCard title="Time &amp; Cost Control" variant="default">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Manages field variations, acts as a legal rate baseline for disputes, and structures monthly interim contractor progress billings.
+            </p>
+          </InteractiveCard>
+        </ClickReveal>
+      </SlideGrid>
+    </div>
+  </FullWidthLayout>
 );
 
-// Slide 4: The Need for Measurement and Rules
+// Slide 4: 1.3 Competencies & Core Responsibilities of a QS
 export const Slide4: React.FC = () => {
-  const { currentClick } = useClickStepsContext();
   return (
     <TwoColumnLayout
-      title="The Need for Measurement and Rules"
+      title="1.3 Competencies &amp; Core Responsibilities of a QS"
       bgVariant="default"
-      leftWidth="52%"
+      leftWidth="50%"
       leftContent={
-        <SlideContent
-          blocks={[
-            {
-              type: 'paragraph',
-              text: <strong>Why We Measure</strong>,
-            },
-            {
-              type: 'bullet',
-              text: (
+        <div className="flex flex-col gap-3">
+          <InteractiveCard title="Core Professional Competencies" variant="default" className="w-full">
+            <ul className="flex flex-col gap-2.5">
+              <SlideBullet title="Technical Translation:">
                 <span>
-                  <strong>Lifecycle Coverage:</strong> Measurement is required at every stage of a project—from establishing feasibility and budget pricing, to pre-tender estimates, contract sums, and{' '}
-                  <ClickHighlight at={1} variant="paint">final account evaluations</ClickHighlight>.
+                  Describing complex architectural requirements in flawless, completely unambiguous technical language so builders can price accurately.
                 </span>
-              ),
-              revealAt: 0,
-            },
-            {
-              type: 'bullet',
-              text: (
+              </SlideBullet>
+              <SlideBullet title="Market Grounding:">
                 <span>
-                  <strong>Consistency for Databases:</strong> Historically, inconsistent measurement (measuring walls gross vs. net) created unreliable databases. Strict rules, like the{' '}
-                  <ClickHighlight at={3} variant="paint">RICS New Rules of Measurement (NRM)</ClickHighlight>, ensure elemental costs are consistent for future cost planning.
+                  Possessing an absolute command of raw construction materials, modern site methods, and local trade customs.
                 </span>
-              ),
-              revealAt: 2,
-            },
-            {
-              type: 'bullet',
-              text: (
+              </SlideBullet>
+              <SlideBullet title="Accountability:">
                 <span>
-                  <strong>Fair Competitive Tendering:</strong> Following standard methods ensures all contractors interpret and price the work based on the{' '}
-                  <ClickHighlight at={5} variant="paint">exact same information</ClickHighlight>, creating a fair, transparent baseline for competition.
+                  Demands strict personal discipline, organized spatial take-off habits, and absolute arithmetical accuracy.
                 </span>
-              ),
-              revealAt: 4,
-            },
-          ]}
-        />
+              </SlideBullet>
+            </ul>
+          </InteractiveCard>
+        </div>
       }
       rightContent={
-        <div className="flex flex-col gap-4 h-full justify-center">
-          <InteractiveCard title="Measurement Lifecycle Timeline">
-            <MeasurementTimelineCanvas currentClick={currentClick} />
+        <div className="flex flex-col gap-3">
+          <InteractiveCard title="The Sector Split (Responsibilities)" variant="default" className="w-full">
+            <ul className="flex flex-col gap-3">
+              <SlideBullet revealAt={1} title="Private Practice (Client-Side):">
+                <span>
+                  Protecting the owner's investment, providing independent cost advice, and managing lifecycle budgets from inception to handover.
+                </span>
+              </SlideBullet>
+              <SlideBullet revealAt={2} title="Commercial Management (Contracting):">
+                <span>
+                  Working for the contractor to manage site supply chains, monitor cash flow, and secure project profitability.
+                </span>
+              </SlideBullet>
+            </ul>
           </InteractiveCard>
         </div>
       }
