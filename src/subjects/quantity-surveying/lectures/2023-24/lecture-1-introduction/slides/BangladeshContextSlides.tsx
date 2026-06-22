@@ -2,7 +2,8 @@ import React from 'react';
 import { TopicDividerLayout } from '@/shared/layouts/TopicDividerLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
-import { SlideContent, SlideTable, ClickHighlight, LatexFormula, ClickReveal } from '@/features/presentation/components/elements';
+import { SlideContent, SlideTable, ClickHighlight, ClickReveal } from '@/features/presentation/components/elements';
+import { UnitConversionInfographic } from '@/subjects/quantity-surveying/features';
 
 // Slide 5: Title Slide for Local Applications
 export const Slide5: React.FC = () => (
@@ -82,46 +83,7 @@ export const Slide6: React.FC = () => (
 // Slide 7: Standard Units & Conversion Drill
 export const Slide7: React.FC = () => (
   <FullWidthLayout title="Standard Units & Conversion Drill" bgVariant="default">
-    <SlideContent
-      blocks={[
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>The System Hybrid:</strong> While modern PWD schedules utilize the Metric/SI system, traditional field practices in Bangladesh frequently mix FPS systems.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Critical Volume Conversion:</strong> Field civil engineers must master the standard conversion rule:{' '}
-              <ClickHighlight at={1} variant="paint"><LatexFormula math="1 \text{ m}^3 = 35.315 \text{ cft}" /></ClickHighlight>.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Volumetric and Mass Units:</strong> Earthwork and structural concrete are billed in{' '}
-              <LatexFormula math="\text{m}^3" /> or <LatexFormula math="\text{cft}" />, while reinforcement steel is taken in{' '}
-              <LatexFormula math="\text{kg}" /> or Quintal/Tonne.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Areal Units & Local Real Estate Rules:</strong> Plastering, painting, and thin brick configurations ($5''$ partition walls) are strictly measured by surface area in{' '}
-              <ClickHighlight at={2} variant="paint"><LatexFormula math="\text{m}^2 \text{ or } \text{sft}" /></ClickHighlight>.
-            </span>
-          ),
-        },
-      ]}
-    />
+    <UnitConversionInfographic />
   </FullWidthLayout>
 );
 

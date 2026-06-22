@@ -8,6 +8,7 @@ export { SlideGrid, type SlideGridCols } from './SlideGrid';
 export { SlideQuote } from './SlideQuote';
 export { SlideImage } from './SlideImage';
 export { SlideTimeline, type SlideTimelineRevealMode } from './SlideTimeline';
+export { MeasurementTimelineCanvas } from './MeasurementTimelineCanvas';
 export { SlideStepProgress, type SlideStepProgressVariant } from './SlideStepProgress';
 export { SlideCompare, type SlideCompareHighlight } from './SlideCompare';
 export { SlideBadge, type SlideBadgeVariant } from './SlideBadge';

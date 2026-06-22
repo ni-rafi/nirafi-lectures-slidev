@@ -11,13 +11,13 @@ export const Slide26: React.FC = () => {
       desc: 'Allows the surveyor to multiply repeating items. "Timesing" multiplies items (e.g., 2/), while "Dotting on" adds extra items to a multiplier (e.g., a dot adds 1).',
       sample: (
         <div className="flex flex-col gap-2 w-full text-center">
-          <div className="border border-primary/20 rounded bg-[#FAF9F6] p-2 font-mono text-xs">
-            <div className="text-primary/70 border-b border-border pb-1 font-bold">LEDGER VIEW</div>
+          <div className="border border-border/40 rounded bg-muted/10 dark:bg-muted/5 p-2 font-mono text-xs">
+            <div className="text-primary/70 border-b border-border/40 pb-1 font-bold">LEDGER VIEW</div>
             <div className="py-2 flex justify-center items-center gap-4">
               <span className="text-base font-extrabold text-primary">2 /</span>
               <span className="text-muted-foreground text-[11px]">(Timesing: 2 times the dimensions)</span>
             </div>
-            <div className="py-2 border-t border-dashed border-border/80 flex justify-center items-center gap-4">
+            <div className="py-2 border-t border-dashed border-border/40 flex justify-center items-center gap-4">
               <span className="text-base font-extrabold text-primary">2. /</span>
               <span className="text-muted-foreground text-[11px]">(Dotting On: 2 + 1 = 3 times)</span>
             </div>
@@ -31,10 +31,10 @@ export const Slide26: React.FC = () => {
       desc: 'Used when multiple distinct items share the same dimensions. Descriptions are linked with an ampersand (&) to avoid entering numbers multiple times.',
       sample: (
         <div className="flex flex-col gap-2 w-full text-center">
-          <div className="border border-primary/20 rounded bg-[#FAF9F6] p-2 font-mono text-xs text-left">
-            <div className="text-primary/70 border-b border-border pb-1 font-bold text-center">LEDGER VIEW</div>
+          <div className="border border-border/40 rounded bg-muted/10 dark:bg-muted/5 p-2 font-mono text-xs text-left">
+            <div className="text-primary/70 border-b border-border/40 pb-1 font-bold text-center">LEDGER VIEW</div>
             <div className="p-2 flex gap-4">
-              <div className="flex flex-col items-center justify-center font-bold text-foreground border-r border-border/50 pr-4">
+              <div className="flex flex-col items-center justify-center font-bold text-foreground border-r border-border/40 pr-4">
                 <span>5.00</span>
                 <span>3.00</span>
                 <span className="border-b border-foreground w-6 text-center">0.15</span>
@@ -55,10 +55,10 @@ export const Slide26: React.FC = () => {
       desc: 'Surveyors measure overall areas first. Voids like doors and windows are strictly omitted later using the "Deduct" or "Ddt" notation to prevent fragmented calculations.',
       sample: (
         <div className="flex flex-col gap-2 w-full text-center">
-          <div className="border border-primary/20 rounded bg-[#FAF9F6] p-2 font-mono text-xs text-left">
-            <div className="text-primary/70 border-b border-border pb-1 font-bold text-center">LEDGER VIEW</div>
+          <div className="border border-border/40 rounded bg-muted/10 dark:bg-muted/5 p-2 font-mono text-xs text-left">
+            <div className="text-primary/70 border-b border-border/40 pb-1 font-bold text-center">LEDGER VIEW</div>
             <div className="p-2 flex gap-4">
-              <div className="flex flex-col items-center justify-center font-bold text-foreground border-r border-border/50 pr-4">
+              <div className="flex flex-col items-center justify-center font-bold text-foreground border-r border-border/40 pr-4">
                 <span>1.20</span>
                 <span className="border-b border-foreground w-6 text-center">1.50</span>
               </div>
@@ -77,7 +77,7 @@ export const Slide26: React.FC = () => {
       desc: 'All work must be measured "net" as fixed in position. Estimators do not add allowances for waste or shrinkage inside the dimension entries; these are handled in rates.',
       sample: (
         <div className="flex flex-col gap-2 w-full text-center">
-          <div className="border border-primary/20 rounded bg-[#FAF9F6] p-3 text-left">
+          <div className="border border-border/40 rounded bg-muted/10 dark:bg-muted/5 p-3 text-left">
             <div className="text-primary/70 border-b border-border pb-1 font-bold text-center font-mono text-xs mb-2">SCHEMATIC MEASUREMENT</div>
             <div className="flex flex-col gap-2 text-xs leading-normal">
               <div className="flex items-center gap-2">

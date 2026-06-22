@@ -1,7 +1,7 @@
 import React from 'react';
 import { TopicDividerLayout } from '@/shared/layouts/TopicDividerLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
-import { ClickReveal } from '@/features/presentation/components/elements';
+import { ClickReveal, SlideBullet } from '@/features/presentation/components/elements';
 
 // Slide 23: Title Page
 export const Slide23: React.FC = () => (
@@ -76,7 +76,7 @@ export const Slide24: React.FC = () => {
 
   return (
     <FullWidthLayout title="Core Principles of Units of Measurement" bgVariant="default">
-      <div className="grid grid-cols-2 gap-4 select-text">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 select-text">
         {cards.map((card, idx) => (
           <ClickReveal key={idx} at={idx + 1} className="h-full">
             <div
@@ -96,11 +96,13 @@ export const Slide24: React.FC = () => {
               </p>
               <div className="flex flex-col gap-1 border-t border-border/40 pt-2">
                 <span className="text-[9px] uppercase font-bold text-muted-foreground/80 tracking-wider">Examples:</span>
-                <ul className="list-disc list-inside text-[11px] text-foreground/80 space-y-0.5 pl-1 leading-tight">
+                <div className="flex flex-col gap-1.5 pl-1 leading-tight mt-1">
                   {card.examples.map((ex, exIdx) => (
-                    <li key={exIdx}>{ex}</li>
+                    <SlideBullet key={exIdx}>
+                      {ex}
+                    </SlideBullet>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
           </ClickReveal>
@@ -187,7 +189,7 @@ export const Slide25: React.FC = () => {
     <FullWidthLayout title="Anatomy of the Dimension Paper" bgVariant="default">
       <div className="flex flex-col gap-4 select-text">
         {/* Explanations Grid */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {explanations.map((item) => {
             const isActive = activeCol === item.colNum;
             return (
@@ -219,7 +221,7 @@ export const Slide25: React.FC = () => {
           <span className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-widest text-center block">
             Dimension Paper Example Ledger Row
           </span>
-          <div className="grid grid-cols-4 border border-border/80 rounded-xl overflow-hidden bg-[#FAF9F6] shadow-sm select-none">
+          <div className="grid grid-cols-2 md:grid-cols-4 border border-border/80 rounded-xl overflow-hidden bg-muted/10 dark:bg-muted/5 shadow-sm select-none">
             {tableData.map((col) => {
               const isActive = activeCol === col.colNum;
               return (
