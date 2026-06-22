@@ -1,23 +1,22 @@
 import type { UserPayload } from './IFirebaseService';
+import { GUEST_UID } from './IFirebaseService';
 import { UsersRepository } from './repositories/users/UsersRepository';
 
 export class FirebaseUserService {
   private repository: UsersRepository | null = null;
 
-  constructor(private authService: { isOfflineMode: boolean }) {}
+  constructor() {}
 
   public initialize(): void {
-    if (!this.authService.isOfflineMode) {
-      try {
-        this.repository = new UsersRepository();
-      } catch (e) {
-        console.warn('[FirebaseUserService] Failed to initialize repository:', e);
-      }
+    try {
+      this.repository = new UsersRepository();
+    } catch (e) {
+      console.warn('[FirebaseUserService] Failed to initialize repository:', e);
     }
   }
 
   public async getUserProfile(uid: string): Promise<UserPayload | null> {
-    if (this.authService.isOfflineMode || !this.repository || uid === 'offline_mock_uid') {
+    if (uid === GUEST_UID || !this.repository) {
       const cached = localStorage.getItem('offline_student_profile');
       return cached ? JSON.parse(cached) : null;
     }
@@ -31,7 +30,7 @@ export class FirebaseUserService {
   }
 
   public async setUserProfile(uid: string, profile: Omit<UserPayload, 'id'>): Promise<UserPayload> {
-    if (this.authService.isOfflineMode || !this.repository || uid === 'offline_mock_uid') {
+    if (uid === GUEST_UID || !this.repository) {
       const userProfile = { id: uid, ...profile };
       localStorage.setItem('offline_student_profile', JSON.stringify(userProfile));
       return userProfile;

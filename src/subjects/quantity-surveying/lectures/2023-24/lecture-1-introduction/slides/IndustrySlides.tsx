@@ -10,9 +10,9 @@ export const Slide1: React.FC<SlideProps> = (props) => (
   <LectureCover {...props} />
 );
 
-// Slide 2: 1.1 Definition and Scope of Quantity Surveying (QS)
+// Slide 2: Definition and Scope of Quantity Surveying (QS)
 export const Slide2: React.FC = () => (
-  <FullWidthLayout title="1.1 Definition and Scope of Quantity Surveying (QS)" bgVariant="default">
+  <FullWidthLayout title="Definition and Scope of Quantity Surveying (QS)" bgVariant="default">
     <div className="flex flex-col gap-4 select-text">
       <div className="p-4 rounded-xl border border-border/50 bg-muted/20">
         <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full inline-block mb-2 select-none">
@@ -43,9 +43,9 @@ export const Slide2: React.FC = () => (
   </FullWidthLayout>
 );
 
-// Slide 3: 1.2 Rationale & Importance in Project Management
+// Slide 3: Rationale & Importance in Project Management
 export const Slide3: React.FC = () => (
-  <FullWidthLayout title="1.2 Rationale &amp; Importance in Project Management" bgVariant="default">
+  <FullWidthLayout title="Rationale &amp; Importance in Project Management" bgVariant="default">
     <div className="flex flex-col gap-3 select-text">
       <p className="text-xs text-muted-foreground mb-1 leading-normal select-none">
         Quantitative controls serve as the baseline financial and logistical blueprint throughout a project's lifecycle.
@@ -82,11 +82,11 @@ export const Slide3: React.FC = () => (
   </FullWidthLayout>
 );
 
-// Slide 4: 1.3 Competencies & Core Responsibilities of a QS
+// Slide 4: Competencies & Core Responsibilities of a QS
 export const Slide4: React.FC = () => {
   return (
     <TwoColumnLayout
-      title="1.3 Competencies &amp; Core Responsibilities of a QS"
+      title="Competencies &amp; Core Responsibilities of a QS"
       bgVariant="default"
       leftWidth="50%"
       leftContent={

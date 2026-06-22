@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Lock, Unlock, RotateCcw, Save, Sliders, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSlideTheme, ThemeValues } from '../../context/SlideThemeContext';
-import { useUserContext } from '@/context/UserContext';
+import { useUserContext } from '@/context';
 
 // Import granular sub-components
 import PlaygroundBackgroundSelector from './playground/PlaygroundBackgroundSelector';

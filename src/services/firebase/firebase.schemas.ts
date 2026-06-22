@@ -143,5 +143,10 @@ export const PlaygroundCanvasPayloadSchema = z.object({
 
 export type PlaygroundCanvasPayload = z.infer<typeof PlaygroundCanvasPayloadSchema>;
 
+export const FirebaseClaimsSchema = z.object({
+  is_admin: z.boolean().optional(),
+  isAdmin: z.boolean().optional(),
+  role: z.enum(['admin', 'student']).optional(),
+});
 
-
+export type FirebaseClaims = z.infer<typeof FirebaseClaimsSchema>;

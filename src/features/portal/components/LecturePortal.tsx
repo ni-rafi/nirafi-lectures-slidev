@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useUserContext } from '@/context/UserContext';
+import { useUserContext } from '@/context';
 import { Sparkles, LayoutDashboard, Calculator } from 'lucide-react';
 import { SUBJECTS } from '@/config/lectures';
 import {

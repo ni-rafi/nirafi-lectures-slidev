@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { useFirebase } from '@/context/FirebaseContext';
-import { useUserContext } from '@/context/UserContext';
+import { useUserContext } from '@/context';
 import type { ThemeConfigPayload, ThemePreferences } from '@/services/firebase/IFirebaseService';
 import useGoogleFontLoader from '../hooks/useGoogleFontLoader';
 

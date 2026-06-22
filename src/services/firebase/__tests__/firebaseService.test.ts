@@ -2,19 +2,42 @@ import { vi, describe, test, expect, beforeEach } from 'vitest';
 import { FirebaseService } from '../firebaseService';
 import { FirebaseAuthService } from '../firebaseAuthService';
 import { FirebaseSubmissionsService } from '../firebaseSubmissionsService';
-import { signInAnonymously } from 'firebase/auth';
 
 // Mock Firebase Auth
-vi.mock('firebase/auth', () => ({
-  getAuth: vi.fn(() => ({
-    currentUser: {
-      uid: 'student_123'
-    }
-  })),
-  signInAnonymously: vi.fn().mockResolvedValue({
-    user: { uid: 'mock_anonymous_uid' }
-  })
-}));
+vi.mock('firebase/auth', () => {
+  class MockGoogleAuthProvider {
+    setCustomParameters = vi.fn();
+  }
+
+  return {
+    getAuth: vi.fn(() => ({
+      currentUser: {
+        uid: 'student_123',
+        displayName: 'Test User',
+        email: 'test@gmail.com',
+        getIdTokenResult: vi.fn().mockResolvedValue({
+          claims: { role: 'student' }
+        })
+      }
+    })),
+    GoogleAuthProvider: MockGoogleAuthProvider,
+    signInWithPopup: vi.fn().mockResolvedValue({
+      user: {
+        uid: 'mock_google_uid',
+        email: 'test@gmail.com',
+        displayName: 'Test User'
+      }
+    }),
+    signOut: vi.fn().mockResolvedValue(undefined),
+    onAuthStateChanged: vi.fn((_, callback) => {
+      callback({
+        uid: 'student_123',
+        email: 'test@gmail.com'
+      });
+      return () => {};
+    })
+  };
+});
 
 vi.mock('firebase/app', () => ({
   initializeApp: vi.fn(() => ({}))
@@ -48,41 +71,27 @@ describe('FirebaseAuthService', () => {
     vi.clearAllMocks();
   });
 
-  test('should initialize and authenticate user anonymously', async () => {
-    import.meta.env['VITE_FIREBASE_API_KEY'] = 'test-api-key';
+  test('should initialize and authenticate user with Google', async () => {
     const authService = new FirebaseAuthService();
     authService.initialize();
     
-    // We should not be in offline mode if apiKey is present and initialize succeeds
-    expect(authService.isOfflineMode).toBe(false);
-
-    const uid = await authService.anonymousSignIn();
-    expect(uid).toBe('mock_anonymous_uid');
-    expect(signInAnonymously).toHaveBeenCalled();
-    import.meta.env['VITE_FIREBASE_API_KEY'] = 'MOCK_API_KEY';
+    const result = await authService.signInWithGoogle();
+    expect(result.uid).toBe('mock_google_uid');
+    expect(result.email).toBe('test@gmail.com');
   });
 
-  test('should fallback to offline mode if apiKey is mock key', async () => {
-    import.meta.env['VITE_FIREBASE_API_KEY'] = 'MOCK_API_KEY';
+  test('should handle initializeGoogleOneTap when GIS script is not loaded', () => {
     const authService = new FirebaseAuthService();
-    authService.initialize();
-    
-    expect(authService.isOfflineMode).toBe(true);
-
-    const uid = await authService.anonymousSignIn();
-    expect(uid).toBe('offline_mock_uid');
+    expect(() => authService.initializeGoogleOneTap('mock-client-id')).not.toThrow();
   });
 });
 
-describe('FirebaseSubmissionsService (Offline Mode)', () => {
-  let authService: FirebaseAuthService;
+describe('FirebaseSubmissionsService (Offline Fallback)', () => {
   let submissionsService: FirebaseSubmissionsService;
 
   beforeEach(() => {
     localStorage.clear();
-    authService = new FirebaseAuthService();
-    authService.setOfflineMode(true); // force offline mode
-    submissionsService = new FirebaseSubmissionsService(authService);
+    submissionsService = new FirebaseSubmissionsService();
     submissionsService.initialize();
   });
 
@@ -149,5 +158,6 @@ describe('FirebaseService Facade Delegation', () => {
   test('should delegate initialization and calls to sub-services', async () => {
     const service = new FirebaseService();
     expect(() => service.initializeFirebase()).not.toThrow();
+    expect(() => service.initializeGoogleOneTap('mock-client-id')).not.toThrow();
   });
 });

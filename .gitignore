@@ -5,3 +5,7 @@ stats.html
 *.log
 .slidev/
 docs-slidev/
+.env.production
+.env.development
+scripts/nirafi-workspace-dev.json
+scripts/nirafi-workspace.json

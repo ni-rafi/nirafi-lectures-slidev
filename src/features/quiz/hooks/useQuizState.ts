@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFirebase } from '@/context/FirebaseContext';
-import { useUserContext } from '@/context/UserContext';
+import { useUserContext } from '@/context';
 import type { QuizState } from '@/services/firebase/IFirebaseService';
 
 interface QuizSubmission {
@@ -38,10 +38,11 @@ export const useQuizState = (
 
   // 1. Subscribe to active Quiz State
   useEffect(() => {
+    if (!userProfile || userProfile.isGuest) return;
     return firebaseService.subscribeQuizState(quizId, (state) => {
       setQuizStateState(state);
     });
-  }, [quizId, firebaseService]);
+  }, [quizId, firebaseService, userProfile]);
 
   // 2. Fetch student's existing answer if any
   useEffect(() => {

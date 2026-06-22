@@ -8,21 +8,19 @@ export class FirebaseSessionService {
   private sessionStatusRepo: SessionStatusRepository | null = null;
   private quizStatesRepo: QuizStatesRepository | null = null;
 
-  constructor(private authService: { isOfflineMode: boolean }) {}
+  constructor() {}
 
   public initialize(): void {
-    if (!this.authService.isOfflineMode) {
-      try {
-        this.sessionStatusRepo = new SessionStatusRepository();
-        this.quizStatesRepo = new QuizStatesRepository();
-      } catch (e) {
-        console.warn('[FirebaseSessionService] Failed to initialize repositories:', e);
-      }
+    try {
+      this.sessionStatusRepo = new SessionStatusRepository();
+      this.quizStatesRepo = new QuizStatesRepository();
+    } catch (e) {
+      console.warn('[FirebaseSessionService] Failed to initialize repositories:', e);
     }
   }
 
   public async getSessionStatus(id: string): Promise<SessionStatusPayload | null> {
-    if (this.authService.isOfflineMode || !this.sessionStatusRepo) {
+    if (!this.sessionStatusRepo) {
       const saved = localStorage.getItem(`offline_status_${id}`);
       return saved ? { id, ...JSON.parse(saved) } : null;
     }
@@ -36,7 +34,7 @@ export class FirebaseSessionService {
   }
 
   public async setSessionStatus(id: string, payload: Omit<SessionStatusPayload, 'id'>): Promise<SessionStatusPayload> {
-    if (this.authService.isOfflineMode || !this.sessionStatusRepo) {
+    if (!this.sessionStatusRepo) {
       localStorage.setItem(`offline_status_${id}`, JSON.stringify(payload));
       return { id, ...payload };
     }
@@ -50,7 +48,7 @@ export class FirebaseSessionService {
   }
 
   public subscribeSessionStatuses(callback: (statuses: SessionStatusPayload[]) => void): () => void {
-    if (this.authService.isOfflineMode) {
+    if (!this.sessionStatusRepo) {
       const getOfflineStatuses = (): SessionStatusPayload[] => {
         const results: SessionStatusPayload[] = [];
         for (let i = 0; i < localStorage.length; i++) {
@@ -75,7 +73,7 @@ export class FirebaseSessionService {
   }
 
   public async getQuizState(quizId: string): Promise<QuizState | null> {
-    if (this.authService.isOfflineMode || !this.quizStatesRepo) {
+    if (!this.quizStatesRepo) {
       const saved = localStorage.getItem(`offline_quiz_state_${quizId}`);
       return saved ? { id: quizId, ...JSON.parse(saved) } : null;
     }
@@ -89,7 +87,7 @@ export class FirebaseSessionService {
   }
 
   public async setQuizState(quizId: string, state: Omit<QuizState, 'id'>): Promise<QuizState> {
-    if (this.authService.isOfflineMode || !this.quizStatesRepo) {
+    if (!this.quizStatesRepo) {
       localStorage.setItem(`offline_quiz_state_${quizId}`, JSON.stringify(state));
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new StorageEvent('storage', { key: `offline_quiz_state_${quizId}`, newValue: JSON.stringify(state) }));
@@ -106,7 +104,7 @@ export class FirebaseSessionService {
   }
 
   public subscribeQuizState(quizId: string, callback: (state: QuizState | null) => void): () => void {
-    if (this.authService.isOfflineMode) {
+    if (!this.quizStatesRepo) {
       const getOfflineState = (): QuizState | null => {
         const saved = localStorage.getItem(`offline_quiz_state_${quizId}`);
         return saved ? { id: quizId, ...JSON.parse(saved) } : null;

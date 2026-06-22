@@ -21,7 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useUserContext } from '@/context/UserContext';
+import { useUserContext } from '@/context';
 import { SUBJECTS } from '@/config/lectures';
 
 /**
@@ -36,7 +36,7 @@ export const AppSidebar: React.FC = () => {
   }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { rollNumber, session, logout, userProfile } = useUserContext();
+  const { rollNumber, session, logout, userProfile, isAdmin } = useUserContext();
   const { setOpenMobile } = useSidebar();
 
   const isSlideMode = !!(subjectId && sessionId && lectureId);
@@ -180,7 +180,7 @@ export const AppSidebar: React.FC = () => {
 
       {/* Footer - Student details and log out */}
       <SidebarFooter className="p-2 border-t bg-card transition-all duration-200">
-        {rollNumber ? (
+        {userProfile ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
@@ -212,14 +212,18 @@ export const AppSidebar: React.FC = () => {
                   {userProfile?.name || 'User'}
                 </span>
                 <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider mt-0.5">
-                  {userProfile?.role === 'admin' ? 'Logged Admin' : 'Logged Student'}
+                  {isAdmin ? 'Logged Admin' : 'Logged Student'}
                 </span>
-                <span className="text-[10px] text-muted-foreground mt-1">
-                  Reg: {rollNumber}
-                </span>
-                <span className="text-[10px] text-muted-foreground">
-                  Session: {session}
-                </span>
+                {!isAdmin && (
+                  <>
+                    <span className="text-[10px] text-muted-foreground mt-1">
+                      Reg: {rollNumber}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      Session: {session}
+                    </span>
+                  </>
+                )}
                 {userProfile?.email && (
                   <span className="text-[10px] text-muted-foreground font-mono mt-1 break-all select-all">
                     {userProfile.email}

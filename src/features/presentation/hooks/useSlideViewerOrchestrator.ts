@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, NavigateOptions, useLocation } from 'react-router-dom';
 import { SUBJECTS } from '@/config/lectures';
-import { useUserContext } from '@/context/UserContext';
+import { useUserContext } from '@/context';
 import { getSlideMetadata, getLectureSlideCount, getLectureDeck, loadLectureDeck } from '../components/slides/SlideRenderer';
 import { useSlideViewerState } from './useSlideViewerState';
 import { usePresenterFeatures } from './usePresenterFeatures';

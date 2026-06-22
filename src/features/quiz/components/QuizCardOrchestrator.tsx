@@ -4,6 +4,7 @@ import { useQuizState } from '../hooks/useQuizState';
 import { getQuizVisibilityMode } from '@/features/presentation/components/slides/SlideRenderer';
 import { StudentQuizView } from './StudentQuizView';
 import { AdminQuizView } from './AdminQuizView';
+import { useUserContext } from '@/context';
 
 export type QuizType = 'numeric-input' | 'multiple-choice';
 
@@ -22,6 +23,7 @@ export const QuizCardOrchestrator: React.FC<QuizCardOrchestratorProps> = ({
 }) => {
   const presentation = useContext(PresentationContext);
   const viewMode = presentation?.viewMode || 'present';
+  const { userProfile } = useUserContext();
 
   const {
     isAdmin,
@@ -55,6 +57,39 @@ export const QuizCardOrchestrator: React.FC<QuizCardOrchestratorProps> = ({
     const s = seconds % 60;
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
+
+  if (userProfile?.isGuest) {
+    if (viewMode === 'blog') {
+      return (
+        <div className="w-full border p-4 rounded-xl bg-transparent text-left">
+          <h4 className="font-extrabold text-sm text-primary mb-2">QUIZ: {questionText}</h4>
+          <p className="text-xs text-muted-foreground">This is an interactive classroom assessment. Please visit the live session slides to participate.</p>
+        </div>
+      );
+    }
+    const status = quizState?.status || 'hidden';
+    const visibilityMode = getQuizVisibilityMode(quizId);
+    
+    if (status === 'hidden' && visibilityMode === 'stealth') {
+      return null;
+    }
+
+    return (
+      <div className="w-full max-w-2xl mx-auto bg-card border border-border/80 rounded-2xl p-5 md:p-6 shadow-sm flex flex-col gap-4 text-center select-none">
+        <div className="flex justify-center mb-2">
+          <span className="text-[10px] font-bold text-primary tracking-widest uppercase bg-primary/10 px-3 py-1 rounded-full">
+            Classroom Quiz
+          </span>
+        </div>
+        <div className="py-6 px-4 flex flex-col items-center gap-3">
+          <h3 className="text-base font-bold text-foreground">Interactive Quiz</h3>
+          <p className="text-xs text-muted-foreground max-w-xs">
+            Interactive Quiz: Only available to signed-in students. Sign in with Google to participate.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (viewMode === 'blog') {
     return (

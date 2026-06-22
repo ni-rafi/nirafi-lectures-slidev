@@ -1,10 +1,15 @@
-import type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload, QuizState, SubjectSubmissions, PlaygroundCanvasPayload } from './firebase.schemas';
+import type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload, QuizState, SubjectSubmissions, PlaygroundCanvasPayload, FirebaseClaims } from './firebase.schemas';
 
-export type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload, QuizState, SubjectSubmissions, PlaygroundCanvasPayload };
+export type { QuizResponsePayload, FeedbackPayload, UserPayload, ThemeConfigPayload, ThemePreferences, SessionStatusPayload, QuizState, SubjectSubmissions, PlaygroundCanvasPayload, FirebaseClaims };
+
+export const GUEST_UID = 'guest_uid';
 
 export interface IFirebaseService {
   initializeFirebase(): void;
-  anonymousSignIn(): Promise<string>;
+  signInWithGoogle(): Promise<{ uid: string; email: string | null; name: string | null }>;
+  signOut(): Promise<void>;
+  onAuthStateChanged(callback: (user: { uid: string; email: string | null } | null) => void): () => void;
+  initializeGoogleOneTap(clientId: string): void;
   submitQuizResponse(payload: QuizResponsePayload): Promise<void>;
   submitFeedback(payload: FeedbackPayload): Promise<void>;
   getUserProfile(uid: string): Promise<UserPayload | null>;

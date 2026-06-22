@@ -4,20 +4,18 @@ import { ThemesRepository } from './repositories/themes/ThemesRepository';
 export class FirebaseThemeService {
   private repository: ThemesRepository | null = null;
 
-  constructor(private authService: { isOfflineMode: boolean }) {}
+  constructor() {}
 
   public initialize(): void {
-    if (!this.authService.isOfflineMode) {
-      try {
-        this.repository = new ThemesRepository();
-      } catch (e) {
-        console.warn('[FirebaseThemeService] Failed to initialize repository:', e);
-      }
+    try {
+      this.repository = new ThemesRepository();
+    } catch (e) {
+      console.warn('[FirebaseThemeService] Failed to initialize repository:', e);
     }
   }
 
   public async getThemeConfig(id: string): Promise<ThemeConfigPayload | null> {
-    if (this.authService.isOfflineMode || !this.repository) {
+    if (!this.repository) {
       const saved = localStorage.getItem(`offline_theme_${id}`);
       return saved ? JSON.parse(saved) : null;
     }
@@ -32,7 +30,7 @@ export class FirebaseThemeService {
 
   public async setThemeConfig(id: string, config: Omit<ThemeConfigPayload, 'id'>): Promise<ThemeConfigPayload> {
     const payload = { id, ...config };
-    if (this.authService.isOfflineMode || !this.repository) {
+    if (!this.repository) {
       localStorage.setItem(`offline_theme_${id}`, JSON.stringify(payload));
       return payload;
     }
@@ -46,7 +44,7 @@ export class FirebaseThemeService {
   }
 
   public async deleteThemeConfig(id: string): Promise<void> {
-    if (this.authService.isOfflineMode || !this.repository) {
+    if (!this.repository) {
       localStorage.removeItem(`offline_theme_${id}`);
       return;
     }

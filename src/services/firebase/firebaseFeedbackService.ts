@@ -1,23 +1,22 @@
 import type { FeedbackPayload } from './IFirebaseService';
+import { GUEST_UID } from './IFirebaseService';
 import { FeedbackRepository } from './repositories/feedback/FeedbackRepository';
 
 export class FirebaseFeedbackService {
   private repository: FeedbackRepository | null = null;
 
-  constructor(private authService: { isOfflineMode: boolean }) {}
+  constructor() {}
 
   public initialize(): void {
-    if (!this.authService.isOfflineMode) {
-      try {
-        this.repository = new FeedbackRepository();
-      } catch (e) {
-        console.warn('[FirebaseFeedbackService] Failed to initialize repository:', e);
-      }
+    try {
+      this.repository = new FeedbackRepository();
+    } catch (e) {
+      console.warn('[FirebaseFeedbackService] Failed to initialize repository:', e);
     }
   }
 
   public async submitFeedback(payload: FeedbackPayload): Promise<void> {
-    if (this.authService.isOfflineMode || !this.repository) {
+    if (payload.studentUid === GUEST_UID || !this.repository) {
       const feedback = JSON.parse(localStorage.getItem('offline_feedback') || '[]');
       feedback.push(payload);
       localStorage.setItem('offline_feedback', JSON.stringify(feedback));

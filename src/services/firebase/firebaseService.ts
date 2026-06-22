@@ -9,12 +9,12 @@ import { FirebasePlaygroundService } from './firebasePlaygroundService';
 
 export class FirebaseService implements IFirebaseService {
   private authService = new FirebaseAuthService();
-  private userService = new FirebaseUserService(this.authService);
-  private feedbackService = new FirebaseFeedbackService(this.authService);
-  private themeService = new FirebaseThemeService(this.authService);
-  private sessionService = new FirebaseSessionService(this.authService);
-  private submissionsService = new FirebaseSubmissionsService(this.authService);
-  private playgroundService = new FirebasePlaygroundService(this.authService);
+  private userService = new FirebaseUserService();
+  private feedbackService = new FirebaseFeedbackService();
+  private themeService = new FirebaseThemeService();
+  private sessionService = new FirebaseSessionService();
+  private submissionsService = new FirebaseSubmissionsService();
+  private playgroundService = new FirebasePlaygroundService();
 
   public initializeFirebase(): void {
     this.authService.initialize();
@@ -26,8 +26,20 @@ export class FirebaseService implements IFirebaseService {
     this.playgroundService.initialize();
   }
 
-  public anonymousSignIn(): Promise<string> {
-    return this.authService.anonymousSignIn();
+  public signInWithGoogle(): Promise<{ uid: string; email: string | null; name: string | null }> {
+    return this.authService.signInWithGoogle();
+  }
+
+  public signOut(): Promise<void> {
+    return this.authService.signOut();
+  }
+
+  public onAuthStateChanged(callback: (user: { uid: string; email: string | null } | null) => void): () => void {
+    return this.authService.onAuthStateChanged(callback);
+  }
+
+  public initializeGoogleOneTap(clientId: string): void {
+    this.authService.initializeGoogleOneTap(clientId);
   }
 
   public submitQuizResponse(payload: QuizResponsePayload): Promise<void> {

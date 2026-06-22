@@ -1,4 +1,5 @@
 import type { QuizResponsePayload, SubjectSubmissions } from './IFirebaseService';
+import { GUEST_UID } from './IFirebaseService';
 import { SubmissionsRepository } from './repositories/submissions/SubmissionsRepository';
 import { SubjectSubmissionsRepository } from './repositories/submissions/SubjectSubmissionsRepository';
 
@@ -6,21 +7,23 @@ export class FirebaseSubmissionsService {
   private submissionsRepo: SubmissionsRepository | null = null;
   private subjectSubmissionsRepo: SubjectSubmissionsRepository | null = null;
 
-  constructor(private authService: { isOfflineMode: boolean }) {}
+  constructor() {}
 
   public initialize(): void {
-    if (!this.authService.isOfflineMode) {
-      try {
-        this.submissionsRepo = new SubmissionsRepository();
-        this.subjectSubmissionsRepo = new SubjectSubmissionsRepository();
-      } catch (e) {
-        console.warn('[FirebaseSubmissionsService] Failed to initialize repositories:', e);
-      }
+    try {
+      this.submissionsRepo = new SubmissionsRepository();
+      this.subjectSubmissionsRepo = new SubjectSubmissionsRepository();
+    } catch (e) {
+      console.warn('[FirebaseSubmissionsService] Failed to initialize repositories:', e);
     }
   }
 
   public async submitQuizResponse(payload: QuizResponsePayload): Promise<void> {
-    if (this.authService.isOfflineMode || !this.submissionsRepo) {
+    if (payload.studentUid === GUEST_UID) {
+      console.warn('[FirebaseSubmissionsService] Guest users are not allowed to submit quiz responses.');
+      return;
+    }
+    if (!this.submissionsRepo) {
       const submissions = JSON.parse(localStorage.getItem('offline_submissions') || '[]');
       submissions.push(payload);
       localStorage.setItem('offline_submissions', JSON.stringify(submissions));
@@ -41,7 +44,7 @@ export class FirebaseSubmissionsService {
     sessionId: string,
     studentUid: string
   ): Promise<SubjectSubmissions | null> {
-    if (this.authService.isOfflineMode || !this.subjectSubmissionsRepo) {
+    if (studentUid === GUEST_UID || !this.subjectSubmissionsRepo) {
       const saved = localStorage.getItem(`offline_submissions_${subjectId}_${sessionId}_${studentUid}`);
       return saved ? JSON.parse(saved) : null;
     }
@@ -63,6 +66,11 @@ export class FirebaseSubmissionsService {
     answer: string,
     isCorrect: boolean
   ): Promise<void> {
+    if (studentUid === GUEST_UID) {
+      console.warn('[FirebaseSubmissionsService] Guest users are not allowed to submit quiz answers.');
+      return;
+    }
+
     let submission = await this.getSubjectSubmissions(subjectId, sessionId, studentUid);
     if (!submission) {
       submission = {
@@ -78,7 +86,7 @@ export class FirebaseSubmissionsService {
       submittedAt: Date.now(),
     };
 
-    if (this.authService.isOfflineMode || !this.subjectSubmissionsRepo) {
+    if (!this.subjectSubmissionsRepo) {
       localStorage.setItem(`offline_submissions_${subjectId}_${sessionId}_${studentUid}`, JSON.stringify(submission));
       return;
     }
@@ -115,7 +123,7 @@ export class FirebaseSubmissionsService {
       submittedAt: submission.answers[quizId]?.submittedAt || Date.now(),
     };
 
-    if (this.authService.isOfflineMode || !this.subjectSubmissionsRepo) {
+    if (studentUid === GUEST_UID || !this.subjectSubmissionsRepo) {
       localStorage.setItem(`offline_submissions_${subjectId}_${sessionId}_${studentUid}`, JSON.stringify(submission));
       if (typeof window !== 'undefined') {
         window.dispatchEvent(
@@ -135,12 +143,21 @@ export class FirebaseSubmissionsService {
         answers: submission.answers,
       });
     } catch (error) {
-      console.warn('[FirebaseSubmissionsService] Failed to save override:', error);
+      console.warn('[FirebaseSubmissionsService] Failed to save override, saving locally:', error);
+      localStorage.setItem(`offline_submissions_${subjectId}_${sessionId}_${studentUid}`, JSON.stringify(submission));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new StorageEvent('storage', {
+            key: `offline_submissions_${subjectId}_${sessionId}_${studentUid}`,
+            newValue: JSON.stringify(submission),
+          })
+        );
+      }
     }
   }
 
   public async getAllSubmissions(subjectId: string, sessionId: string): Promise<SubjectSubmissions[]> {
-    if (this.authService.isOfflineMode || !this.subjectSubmissionsRepo) {
+    if (!this.subjectSubmissionsRepo) {
       return this.getOfflineSubmissions(subjectId, sessionId);
     }
     try {
@@ -170,7 +187,7 @@ export class FirebaseSubmissionsService {
     sessionId: string,
     callback: (submissions: SubjectSubmissions[]) => void
   ): () => void {
-    if (this.authService.isOfflineMode || !this.subjectSubmissionsRepo) {
+    if (!this.subjectSubmissionsRepo) {
       const getOffline = () => callback(this.getOfflineSubmissions(subjectId, sessionId));
       getOffline();
       const interval = setInterval(getOffline, 4000);
