@@ -11,7 +11,7 @@ import {
   ClickHighlight,
   LatexFormula,
   InteractiveCard,
-  ParameterSlider,
+  ParameterInputCard,
   ClickReveal
 } from '@/features/presentation/components/elements';
 import { QuizCardOrchestrator } from '@/features/quiz';
@@ -37,13 +37,13 @@ const ConcreteMixInfographic: React.FC<{
         <span>{label} Mix Ratio</span>
         <span className="font-mono text-primary">{cement} : {sand} : {stone}</span>
       </div>
-      
+
       <div className="h-14 w-full relative">
-        <BarChart 
-          data={data} 
-          xDataKey="name" 
-          orientation="horizontal" 
-          stacked 
+        <BarChart
+          data={data}
+          xDataKey="name"
+          orientation="horizontal"
+          stacked
           aspectRatio="5 / 1"
           margin={{ top: 2, right: 2, bottom: 2, left: 2 }}
         >
@@ -498,34 +498,33 @@ export const Slide32: React.FC = () => {
       leftWidth="48%"
       leftContent={
         <div className="flex flex-col gap-4">
-          <InteractiveCard title="Design Parameters (cft)">
-            <ParameterSlider
-              label="Wet Volume:"
-              value={wetVolume}
-              unit="cft"
-              min={10}
-              max={200}
-              step={5}
-              onChange={setWetVolume}
-            />
-            <ParameterSlider
-              label="Sand Proportion:"
-              value={sandPart}
-              unit="part"
-              min={1}
-              max={4}
-              step={0.5}
-              onChange={setSandPart}
-            />
-            <ParameterSlider
-              label="Aggregate Proportion:"
-              value={stonePart}
-              unit="parts"
-              min={2}
-              max={8}
-              step={0.5}
-              onChange={setStonePart}
-            />
+          <InteractiveCard title="Design Parameters">
+            <div className="grid grid-cols-3 gap-3">
+              <ParameterInputCard
+                label="Wet Volume"
+                value={wetVolume}
+                unit="cft"
+                min={0.1}
+                variant="square"
+                onChange={setWetVolume}
+              />
+              <ParameterInputCard
+                label="Sand Prop."
+                value={sandPart}
+                unit="part"
+                min={0.1}
+                variant="square"
+                onChange={setSandPart}
+              />
+              <ParameterInputCard
+                label="Agg. Prop."
+                value={stonePart}
+                unit="parts"
+                min={0.1}
+                variant="square"
+                onChange={setStonePart}
+              />
+            </div>
           </InteractiveCard>
         </div>
       }

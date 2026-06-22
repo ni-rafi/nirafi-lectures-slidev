@@ -4,8 +4,14 @@ import { SlideProps } from '@/features/presentation/components/slides/SlideRende
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { Box, Square } from 'lucide-react';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
-import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
-import { InteractiveCard, CalculationOutput, ParameterSlider, LatexFormula, ClickHighlight } from '@/features/presentation/components/elements';
+import {
+  InteractiveCard,
+  CalculationOutput,
+  ParameterSlider,
+  LatexFormula,
+  ClickSyncedTabs,
+  type ClickSyncedTabItem
+} from '@/features/presentation/components/elements';
 
 /**
  * Slide 1: Cover Slide
@@ -48,72 +54,37 @@ const rulesData = [
  * Slide 2: Principles of Measurement for Substructure Works (Static - Click to transition)
  */
 export const Slide2: React.FC = () => {
-  const { currentClick, setClick } = useClickStepsContext();
+  const conventions: ClickSyncedTabItem[] = rulesData.map((rule) => ({
+    title: rule.title,
+    description: rule.desc,
+    badge: rule.badge,
+    badgeColor: rule.color,
+    rightContent: (
+      <div className="w-full bg-muted/20 p-6 rounded-xl border border-border/40 space-y-4 animate-fadeIn">
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">
+          Formula Representation ({rule.badge})
+        </span>
 
-  // Map steps: click 0 -> Rule 1; click 1 -> Rule 2; click 2 -> Rule 3
-  const activeRule = Math.min(3, Math.max(1, currentClick + 1));
+        <div className="p-6 bg-background rounded-lg border border-border/30 flex items-center justify-center">
+          <div className="text-xl md:text-2xl font-black text-primary font-mono">
+            <LatexFormula math={rule.formula} />
+          </div>
+        </div>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {rule.formulaDesc}
+        </p>
+      </div>
+    )
+  }));
 
   return (
-    <TwoColumnLayout
+    <ClickSyncedTabs
       title="Principles of Measurement"
-      bgVariant="default"
+      leftTitle="Measurement Rules"
+      rightTitle="Formula Detail"
+      items={conventions}
       leftWidth="50%"
-      leftContent={
-        <div className="space-y-3">
-          {rulesData.map((rule, idx) => {
-            const isActive = activeRule === rule.id;
-            return (
-              <div
-                key={rule.id}
-                onClick={() => setClick(idx)}
-                className={`p-3 rounded-xl border transition-all duration-350 cursor-pointer ${isActive
-                    ? 'bg-muted/80 border-primary shadow-sm translate-x-1 text-foreground'
-                    : 'bg-muted/30 border-border/40 opacity-60 hover:opacity-90 hover:bg-muted/50'
-                  }`}
-              >
-                {/* Register clicks implicitly in the framework */}
-                {idx > 0 && <ClickHighlight at={idx} className="hidden">{' '}</ClickHighlight>}
-
-                <div className="flex justify-between items-center mb-1">
-                  <h3 className={`text-xs font-extrabold ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
-                    {rule.title}
-                  </h3>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${rule.color}`}>
-                    {rule.badge}
-                  </span>
-                </div>
-                <p className="text-[11px] text-muted-foreground leading-relaxed font-normal">
-                  {rule.desc}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      }
-      rightContent={
-        <div className="flex flex-col justify-center h-full space-y-4">
-          {rulesData.map((rule) => {
-            if (rule.id !== activeRule) return null;
-            return (
-              <div key={rule.id} className="bg-muted/20 p-6 rounded-xl border border-border/40 space-y-4 animate-fadeIn">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">
-                  Formula Representation ({rule.badge})
-                </span>
-
-                <div className="p-6 bg-background rounded-lg border border-border/30 flex items-center justify-center">
-                  <div className="text-xl md:text-2xl font-black text-primary font-mono">
-                    <LatexFormula math={rule.formula} />
-                  </div>
-                </div>
-
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {rule.formulaDesc}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      }
     />
   );
 };
@@ -174,8 +145,8 @@ export const Slide3: React.FC = () => {
                     key={rule.id}
                     onClick={() => applyPreset(rule.id)}
                     className={`w-full text-left p-3 rounded-xl border text-xs font-bold transition-all ${isActive
-                        ? 'bg-primary/10 border-primary text-primary shadow-xs'
-                        : 'bg-muted/30 border-border/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      ? 'bg-primary/10 border-primary text-primary shadow-xs'
+                      : 'bg-muted/30 border-border/40 text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                       }`}
                   >
                     <div className="flex justify-between items-center">

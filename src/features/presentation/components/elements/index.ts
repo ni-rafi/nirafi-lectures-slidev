@@ -22,6 +22,7 @@ export { ClickReveal, type SlideRevealPreset } from './ClickReveal';
 export { ClickRevealGroup } from './ClickRevealGroup';
 export { ClickHighlight, type HighlightVariant } from './ClickHighlight';
 export { HoverTooltip } from './HoverTooltip';
+export { ClickSyncedTabs, type ClickSyncedTabItem } from './ClickSyncedTabs';
 
 // Code & formula elements
 export { CodeBlock } from './CodeBlock';
@@ -34,6 +35,7 @@ export { FormulaBreakdown, type FormulaStep } from './FormulaBreakdown';
 // Interactive calculation elements
 export { InteractiveCard } from './InteractiveCard';
 export { ParameterSlider } from './ParameterSlider';
+export { ParameterInputCard } from './ParameterInputCard';
 export { CalculationOutput } from './CalculationOutput';
 
 // Visual & shape elements

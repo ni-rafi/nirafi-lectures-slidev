@@ -2,7 +2,7 @@ import React from 'react';
 import { TopicDividerLayout } from '@/shared/layouts/TopicDividerLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
-import { SlideContent, ClickHighlight, SlideTable } from '@/features/presentation/components/elements';
+import { ClickHighlight, SlideTable, SlideGrid, InteractiveCard, SlideBullet, ClickReveal } from '@/features/presentation/components/elements';
 
 // Slide 19: Title Page
 export const Slide19: React.FC = () => (
@@ -12,65 +12,83 @@ export const Slide19: React.FC = () => (
 // Slide 20: Origin and Purpose of the BoQ
 export const Slide20: React.FC = () => (
   <FullWidthLayout title="Origin and Purpose of the BoQ" bgVariant="default">
-    <SlideContent
-      blocks={[
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Quantifying the Concept:</strong> Just as a cabinet maker needs exact sizes, materials, and finishes to price a table, a building owner must have detailed quantities before placing an order.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>The Origin:</strong> Historically, competing builders each measured quantities individually, but to save overhead, they eventually hired a{' '}
-              <ClickHighlight at={1} variant="paint">single surveyor to prepare one unified document</ClickHighlight> for all tenderers.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Standardized Ledger:</strong> It provides a unified, standardized pricing ledger of materials, labor, and equipment based on a{' '}
-              <ClickHighlight at={2} variant="paint">standard method of measurement</ClickHighlight>.
-            </span>
-          ),
-        },
-      ]}
-    />
+    <div className="flex flex-col gap-2">
+      <p className="text-xs md:text-sm text-muted-foreground select-none">
+        The Bill of Quantities (BoQ) translates physical designs into standard, priceable ledger items.
+      </p>
+      <SlideGrid cols={3} gap="md">
+        <InteractiveCard title="1. Quantifying the Concept">
+          <p className="text-xs text-muted-foreground leading-relaxed select-text">
+            Just as a cabinet maker needs exact sizes, materials, and finishes to price a table, a building owner must have detailed quantities before placing a construction order.
+          </p>
+        </InteractiveCard>
+        <InteractiveCard title="2. Historical Origin">
+          <p className="text-xs text-muted-foreground leading-relaxed select-text">
+            Historically, competing builders each measured quantities individually. To save overhead, they eventually hired a <ClickHighlight at={1} variant="paint">single surveyor to prepare one unified document</ClickHighlight> for all tenderers.
+          </p>
+        </InteractiveCard>
+        <InteractiveCard title="3. Standardized Ledger">
+          <p className="text-xs text-muted-foreground leading-relaxed select-text">
+            It provides a unified, standardized pricing ledger of materials, labor, and equipment based on a <ClickHighlight at={2} variant="paint">standard method of measurement</ClickHighlight>, reducing disputes.
+          </p>
+        </InteractiveCard>
+      </SlideGrid>
+    </div>
   </FullWidthLayout>
 );
 
 // Slide 21: Anatomy & Criteria of a BoQ
 export const Slide21: React.FC = () => (
   <TwoColumnLayout
-    title="Anatomy & Criteria of a BoQ"
+    title="Anatomy &amp; Criteria of a BoQ"
     bgVariant="default"
     leftWidth="50%"
     leftContent={
-      <SlideContent
-        blocks={[
-          { type: 'paragraph', text: <strong>Standard BoQ Columns</strong> },
-          { type: 'bullet', text: <span><strong>Item Code / Sl No.:</strong> Hierarchical numbering system.</span> },
-          { type: 'bullet', text: <span><strong>Description of Work:</strong> Clear, non-ambiguous description of materials, specifications, and workmanship.</span> },
-          { type: 'bullet', text: <span><strong>Quantity &amp; Unit:</strong> Evaluated structural value and standardized metrics (e.g., <strong>m³</strong>, <strong>m²</strong>, <strong>kg</strong>, <strong>Nos</strong>).</span> },
-          { type: 'bullet', text: <span><strong>Rate &amp; Total Amount:</strong> Financial units multiplied out for final pricing.</span> }
-        ]}
-      />
+      <InteractiveCard title="Standard BoQ Columns" variant="default" className="w-full">
+        <ul className="flex flex-col gap-3">
+          <SlideBullet revealAt={1} icon={<span className="font-extrabold text-primary">1</span>}>
+            <span>
+              <strong>Item Code / Sl No.:</strong> <ClickHighlight at={1} variant="paint">Hierarchical numbering system</ClickHighlight> (e.g., 1.01) to catalog work sections.
+            </span>
+          </SlideBullet>
+          <SlideBullet revealAt={2} icon={<span className="font-extrabold text-primary">2</span>}>
+            <span>
+              <strong>Description of Work:</strong> Clear, <ClickHighlight at={2} variant="paint">non-ambiguous description</ClickHighlight> of materials, specifications, and workmanship.
+            </span>
+          </SlideBullet>
+          <SlideBullet revealAt={3} icon={<span className="font-extrabold text-primary">3</span>}>
+            <span>
+              <strong>Quantity &amp; Unit:</strong> <ClickHighlight at={3} variant="paint">Standardized spatial and structural metrics</ClickHighlight> (e.g., <strong>m³</strong>, <strong>m²</strong>, <strong>kg</strong>, <strong>Nos</strong>).
+            </span>
+          </SlideBullet>
+          <SlideBullet revealAt={4} icon={<span className="font-extrabold text-primary">4</span>}>
+            <span>
+              <strong>Rate &amp; Total Amount:</strong> Financial <ClickHighlight at={4} variant="paint">BDT unit rates multiplied out</ClickHighlight> for total contract pricing.
+            </span>
+          </SlideBullet>
+        </ul>
+      </InteractiveCard>
     }
     rightContent={
-      <SlideContent
-        blocks={[
-          { type: 'paragraph', text: <strong>Criteria for Professional Production</strong> },
-          { type: 'bullet', text: <span><strong>Construction Literacy:</strong> Accurate drawing interpretation is impossible without an absolute command of building construction sequences.</span> },
-          { type: 'bullet', text: <span><strong>Execution Discipline:</strong> Strict accuracy, clean sorting, and formatting neatness are required during spatial dimension entry.</span> },
-          { type: 'bullet', text: <span><strong>Concise Summaries:</strong> Mastery of writing highly concise, technical language that <ClickHighlight at={1} variant="paint">translates 2D blueprint lines into words</ClickHighlight>.</span> }
-        ]}
-      />
+      <InteractiveCard title="Criteria for Professional Production" variant="default" className="w-full">
+        <ul className="flex flex-col gap-3.5">
+          <SlideBullet revealAt={5} title="Construction Literacy:">
+            <span>
+              Accurate drawing interpretation is impossible without an <ClickHighlight at={5} variant="paint">absolute command of construction sequences</ClickHighlight>.
+            </span>
+          </SlideBullet>
+          <SlideBullet revealAt={6} title="Execution Discipline:">
+            <span>
+              <ClickHighlight at={6} variant="paint">Strict accuracy, clean sorting</ClickHighlight>, and formatting neatness are required during spatial dimension entry.
+            </span>
+          </SlideBullet>
+          <SlideBullet revealAt={7} title="Concise Summaries:">
+            <span>
+              Mastery of writing highly concise, technical language that <ClickHighlight at={7} variant="paint">translates 2D blueprint lines into words</ClickHighlight>.
+            </span>
+          </SlideBullet>
+        </ul>
+      </InteractiveCard>
     }
   />
 );
@@ -164,36 +182,48 @@ export const Slide22: React.FC = () => (
 // Slide 23: Strategic Advantages of the BoQ
 export const Slide23: React.FC = () => (
   <FullWidthLayout title="Strategic Advantages of the BoQ" bgVariant="default">
-    <SlideContent
-      blocks={[
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Competitive Tendering Baseline:</strong> Establishes a transparent, common baseline for competitive tendering, ensuring fair market rates and that all contractors bid on the{' '}
-              <ClickHighlight at={1} variant="paint">exact same information</ClickHighlight>.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Change Management:</strong> Acts as the official legal basis of rates for measured work, which is utilized to value{' '}
-              <ClickHighlight at={2} variant="paint">post-contract field variations</ClickHighlight> and finalize accounts.
-            </span>
-          ),
-        },
-        {
-          type: 'bullet',
-          text: (
-            <span>
-              <strong>Cash Flow Control:</strong> Serves as the primary operational document for compiling contractor progress billing and executing{' '}
-              <ClickHighlight at={3} variant="paint">monthly interim payments</ClickHighlight>.
-            </span>
-          ),
-        },
-      ]}
-    />
+    <div className="flex flex-col gap-3 w-full">
+      <p className="text-xs md:text-sm text-muted-foreground select-none mb-2">
+        A professional Bill of Quantities serves critical financial, legal, and operational functions across the lifecycle of a construction project.
+      </p>
+
+      <SlideGrid cols={3} gap="md">
+        <ClickReveal at={1}>
+          <InteractiveCard title="1. Pre-Contract Tendering" variant="default" className="h-full">
+            <div className="flex flex-col gap-2">
+              <h4 className="text-xs font-bold text-foreground">Competitive Baseline</h4>
+              <p className="text-[11px] text-muted-foreground leading-relaxed select-text">
+                Establishes a transparent, common baseline for competitive bidding, ensuring fair market rates and that all contractors bid on the{' '}
+                <ClickHighlight at={2} variant="paint">exact same information</ClickHighlight>.
+              </p>
+            </div>
+          </InteractiveCard>
+        </ClickReveal>
+
+        <ClickReveal at={3}>
+          <InteractiveCard title="2. Post-Contract Construction" variant="default" className="h-full">
+            <div className="flex flex-col gap-2">
+              <h4 className="text-xs font-bold text-foreground">Change Management</h4>
+              <p className="text-[11px] text-muted-foreground leading-relaxed select-text">
+                Acts as the official legal basis of rates for measured work, which is utilized to value{' '}
+                <ClickHighlight at={4} variant="paint">post-contract field variations</ClickHighlight> and finalize accounts.
+              </p>
+            </div>
+          </InteractiveCard>
+        </ClickReveal>
+
+        <ClickReveal at={5}>
+          <InteractiveCard title="3. Financial Control" variant="default" className="h-full">
+            <div className="flex flex-col gap-2">
+              <h4 className="text-xs font-bold text-foreground">Cash Flow Auditing</h4>
+              <p className="text-[11px] text-muted-foreground leading-relaxed select-text">
+                Serves as the primary operational document for compiling contractor progress billing and executing{' '}
+                <ClickHighlight at={6} variant="paint">monthly interim payments</ClickHighlight>.
+              </p>
+            </div>
+          </InteractiveCard>
+        </ClickReveal>
+      </SlideGrid>
+    </div>
   </FullWidthLayout>
 );
