@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSearchParams } from 'react-router-dom';
 import PageMetadata from './PageMetadata';
 import TwoWayGridOrchestrator from './TwoWayGridOrchestrator';
 import BlogOrchestrator from './BlogOrchestrator';
@@ -15,6 +16,23 @@ export const ScrollModeView: React.FC<ScrollModeViewProps> = ({ orchestrator }) 
   const [isThemePlaygroundOpen, setIsThemePlaygroundOpen] = React.useState(false);
   const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
   const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
+  const [searchParams] = useSearchParams();
+
+  React.useEffect(() => {
+    const slideParam = searchParams.get('slide');
+    if (slideParam) {
+      const slideNum = parseInt(slideParam, 10);
+      if (!isNaN(slideNum)) {
+        const timer = setTimeout(() => {
+          const el = document.getElementById(`slide-card-${slideNum}`);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 150);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [searchParams]);
 
   const {
     activeSub,

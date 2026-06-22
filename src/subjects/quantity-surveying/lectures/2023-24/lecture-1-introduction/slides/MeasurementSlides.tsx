@@ -1,7 +1,7 @@
 import React from 'react';
 import { TopicDividerLayout } from '@/shared/layouts/TopicDividerLayout';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
-import { ClickReveal, SlideBullet, ClickSyncedTabs, type ClickSyncedTabItem, SlideGrid, InteractiveCard, SlideParagraph } from '@/features/presentation/components/elements';
+import { ClickReveal, SlideBullet, ClickSyncedTabs, type ClickSyncedTabItem, SlideGrid, InteractiveCard, SlideParagraph, DimensionPaperGrid } from '@/features/presentation/components/elements';
 import { Box, Square, Ruler, Hash } from 'lucide-react';
 
 // Slide 23: Title Page
@@ -98,12 +98,12 @@ export const Slide24: React.FC = () => {
 export const Slide25: React.FC = () => {
   const tableData = [
     {
-      colNum: 1,
+      colNum: 1 as const,
       name: 'Timesing',
       value: <span className="font-mono text-sm font-extrabold text-center text-primary/80">2 /</span>
     },
     {
-      colNum: 2,
+      colNum: 2 as const,
       name: 'Dimension',
       value: (
         <div className="flex flex-col items-center font-mono text-xs leading-none py-0.5">
@@ -114,12 +114,12 @@ export const Slide25: React.FC = () => {
       )
     },
     {
-      colNum: 3,
+      colNum: 3 as const,
       name: 'Squaring',
       value: <span className="font-mono text-xs font-bold text-foreground/70">4.050</span>
     },
     {
-      colNum: 4,
+      colNum: 4 as const,
       name: 'Description & Waste',
       value: (
         <div className="text-left text-[11px] leading-tight">
@@ -132,38 +132,24 @@ export const Slide25: React.FC = () => {
     }
   ];
 
-  const renderLedger = (activeColNum: number) => (
-    <div className="flex flex-col gap-3 w-full">
-      <span className="text-[10px] uppercase font-bold text-muted-foreground/85 tracking-widest text-center block">
-        Dimension Paper Ledger Preview
-      </span>
-      <div className="grid grid-cols-4 border border-border/60 rounded-xl overflow-hidden bg-background shadow-xs select-none w-full">
-        {tableData.map((col) => {
-          const isActive = activeColNum === col.colNum;
-          return (
-            <div
-              key={col.colNum}
-              className={`flex flex-col border-r border-border/40 last:border-r-0 transition-all duration-350 ${
-                isActive ? 'bg-primary/10' : 'opacity-65'
-              }`}
-            >
-              <div className={`p-2 text-center text-[9px] font-extrabold uppercase border-b border-border/40 ${
-                isActive ? 'text-primary bg-primary/5' : 'text-muted-foreground bg-muted/20'
-              }`}>
-                {col.name}
-              </div>
-              <div className="flex-1 flex items-center justify-center min-h-[85px] p-3 text-foreground/80">
-                {col.value}
-              </div>
-            </div>
-          );
-        })}
+  const renderLedger = (activeColNum: number) => {
+    const columns = tableData.map((col) => ({
+      ...col,
+      isActive: activeColNum === col.colNum,
+    }));
+
+    return (
+      <div className="flex flex-col gap-3 w-full">
+        <span className="text-[10px] uppercase font-bold text-muted-foreground/85 tracking-widest text-center block">
+          Dimension Paper Ledger Preview
+        </span>
+        <DimensionPaperGrid columns={columns} />
+        <SlideParagraph variant="plain" className="text-[10px] text-muted-foreground italic text-center font-mono select-none">
+          Ledger columns highlight to show data mapping.
+        </SlideParagraph>
       </div>
-      <SlideParagraph variant="plain" className="text-[10px] text-muted-foreground italic text-center font-mono select-none">
-        Ledger columns highlight to show data mapping.
-      </SlideParagraph>
-    </div>
-  );
+    );
+  };
 
   const explanations: ClickSyncedTabItem[] = [
     {

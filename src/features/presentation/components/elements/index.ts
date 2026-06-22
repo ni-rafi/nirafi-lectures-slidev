@@ -23,6 +23,8 @@ export { ClickRevealGroup } from './ClickRevealGroup';
 export { ClickHighlight, type HighlightVariant } from './ClickHighlight';
 export { HoverTooltip } from './HoverTooltip';
 export { ClickSyncedTabs, type ClickSyncedTabItem } from './ClickSyncedTabs';
+export { DimensionPaperGrid, type DimensionPaperColumn } from './DimensionPaperGrid';
+
 
 // Code & formula elements
 export { CodeBlock } from './CodeBlock';

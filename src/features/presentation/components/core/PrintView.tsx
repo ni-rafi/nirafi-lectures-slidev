@@ -119,6 +119,10 @@ export const PrintView: React.FC<PrintViewProps> = ({
   const slideNumbers = Array.from({ length: totalSlides }, (_, i) => i + 1);
 
   useEffect(() => {
+    const originalTitle = document.title;
+    const cleanSession = session?.label || session?.id || 'Session';
+    document.title = `${subject.courseCode} - ${cleanSession} - ${lecture.title}`;
+
     const timer = setTimeout(() => {
       window.print();
     }, 1500);
@@ -131,8 +135,9 @@ export const PrintView: React.FC<PrintViewProps> = ({
     return () => {
       clearTimeout(timer);
       window.removeEventListener('afterprint', handleAfterPrint);
+      document.title = originalTitle;
     };
-  }, []);
+  }, [subject.courseCode, session, lecture.title]);
 
   return (
     <div className="print-layout w-full min-h-screen bg-white text-black">

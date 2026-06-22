@@ -1,7 +1,10 @@
 import React from 'react';
+import { ChevronDown } from 'lucide-react';
 import { useClickStepsContext } from '../../context/ClickStepsContext';
 import { ClickHighlight } from './ClickHighlight';
 import { TwoColumnLayout } from '../../../../shared/layouts/TwoColumnLayout';
+import { PresentationContext } from '../../context/PresentationContext';
+import LayoutHeader from '../../../../shared/layouts/components/LayoutHeader';
 
 export interface ClickSyncedTabItem {
   title: string;
@@ -29,9 +32,81 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
   bgVariant = 'default',
 }) => {
   const { currentClick, setClick } = useClickStepsContext();
+  const presentation = React.useContext(PresentationContext);
+  const viewMode = presentation?.viewMode || 'present';
 
-  // Active item index is based on currentClick, clamped to the number of items
-  const activeIndex = Math.min(items.length - 1, Math.max(0, currentClick));
+  const [localActiveIndex, setLocalActiveIndex] = React.useState<number | null>(0);
+
+  const isScrollOrBlog = viewMode === 'scroll' || viewMode === 'blog';
+
+  // Active item index: driven by local state in scroll/blog modes, and by context in presentation mode
+  const activeIndex = isScrollOrBlog
+    ? (localActiveIndex !== null ? Math.min(items.length - 1, Math.max(0, localActiveIndex)) : null)
+    : Math.min(items.length - 1, Math.max(0, currentClick));
+
+  const handleItemClick = (idx: number) => {
+    if (isScrollOrBlog) {
+      setLocalActiveIndex((prev) => (prev === idx ? null : idx));
+    } else {
+      setClick(idx);
+    }
+  };
+
+  if (isScrollOrBlog) {
+    return (
+      <div className="w-full flex flex-col gap-4 text-left select-text">
+        <LayoutHeader title={title} />
+        {leftTitle && (
+          <span className="text-[10px] uppercase font-bold text-muted-foreground/80 tracking-widest block mb-1">
+            {leftTitle}
+          </span>
+        )}
+        <div className="flex flex-col gap-3">
+          {items.map((item, idx) => {
+            const isExpanded = activeIndex === idx;
+            return (
+              <div
+                key={idx}
+                onClick={() => handleItemClick(idx)}
+                className={`p-3.5 rounded-xl border transition-all duration-350 cursor-pointer ${
+                  isExpanded
+                    ? 'bg-primary/5 border-primary shadow-xs'
+                    : 'bg-card border-border/60 hover:bg-muted/10 opacity-70 hover:opacity-95'
+                }`}
+              >
+                {/* Register click highlights implicitly in the presentation click-steps */}
+                {idx > 0 && <ClickHighlight at={idx} className="hidden">{' '}</ClickHighlight>}
+
+                <div className="flex justify-between items-center mb-1">
+                  <h4 className={`text-xs font-bold ${isExpanded ? 'text-primary' : 'text-foreground'}`}>
+                    {item.title}
+                  </h4>
+                  <div className="flex items-center gap-2">
+                    {item.badge && (
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${item.badgeColor || 'border-border/60 text-muted-foreground bg-muted/30'}`}>
+                        {item.badge}
+                      </span>
+                    )}
+                    <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 ${isExpanded ? 'rotate-180 text-primary' : ''}`} />
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground leading-normal">
+                  {item.description}
+                </p>
+                {isExpanded && item.rightContent && (
+                  <div className="mt-3 border border-border/60 rounded-xl p-4 bg-muted/20 flex items-center justify-center min-h-[160px] animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="w-full flex justify-center">
+                      {item.rightContent}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <TwoColumnLayout
@@ -51,7 +126,7 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
               return (
                 <div
                   key={idx}
-                  onClick={() => setClick(idx)}
+                  onClick={() => handleItemClick(idx)}
                   className={`p-2.5 rounded-xl border transition-all duration-350 cursor-pointer ${
                     isActive
                       ? 'bg-primary/5 border-primary shadow-sm translate-x-1'
@@ -88,7 +163,7 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
             </span>
           )}
           <div className="flex-1 flex items-center justify-center border border-border/60 rounded-xl p-4 bg-muted/20 min-h-[220px]">
-            {items[activeIndex]?.rightContent || null}
+            {items[activeIndex ?? 0]?.rightContent || null}
           </div>
         </div>
       }

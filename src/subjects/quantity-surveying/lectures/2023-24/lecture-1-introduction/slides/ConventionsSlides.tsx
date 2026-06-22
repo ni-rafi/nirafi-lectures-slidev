@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClickSyncedTabs, type ClickSyncedTabItem } from '@/features/presentation/components/elements';
+import { ClickSyncedTabs, type ClickSyncedTabItem, DimensionPaperGrid } from '@/features/presentation/components/elements';
 
 // Slide 26: Measurement Conventions & Techniques
 export const Slide26: React.FC = () => {
@@ -11,18 +11,28 @@ export const Slide26: React.FC = () => {
       badgeColor: 'border-primary/30 text-primary bg-primary/5',
       rightContent: (
         <div className="flex flex-col gap-2 w-full text-center">
-          <div className="border border-border/40 rounded bg-muted/10 dark:bg-muted/5 p-2 font-mono text-xs">
-            <div className="text-primary/70 border-b border-border/40 pb-1 font-bold">LEDGER VIEW</div>
-            <div className="py-2 flex justify-center items-center gap-4">
-              <span className="text-base font-extrabold text-primary">2 /</span>
-              <span className="text-muted-foreground text-[11px]">(Timesing: 2 times the dimensions)</span>
-            </div>
-            <div className="py-2 border-t border-dashed border-border/40 flex justify-center items-center gap-4">
-              <span className="text-base font-extrabold text-primary">2. /</span>
-              <span className="text-muted-foreground text-[11px]">(Dotting On: 2 + 1 = 3 times)</span>
-            </div>
-          </div>
-          <span className="text-[10px] text-muted-foreground">Saves rewriting repetitive measurements.</span>
+          <DimensionPaperGrid
+            columns={[
+              {
+                colNum: 1,
+                name: 'Timesing',
+                isActive: true,
+                value: (
+                  <div className="flex flex-col gap-2 font-mono text-xs w-full">
+                    <div className="flex items-center justify-center gap-4 py-1">
+                      <span className="text-base font-extrabold text-primary">2 /</span>
+                      <span className="text-muted-foreground text-[10px]">(Timesing: 2 times)</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-4 py-1 border-t border-dashed border-border/40">
+                      <span className="text-base font-extrabold text-primary">2. /</span>
+                      <span className="text-muted-foreground text-[10px]">(Dotting On: 2 + 1 = 3 times)</span>
+                    </div>
+                  </div>
+                )
+              }
+            ]}
+          />
+          <span className="text-[10px] text-muted-foreground mt-1">Saves rewriting repetitive measurements.</span>
         </div>
       )
     },
@@ -33,22 +43,35 @@ export const Slide26: React.FC = () => {
       badgeColor: 'border-emerald-500/30 text-emerald-500 bg-emerald-500/5',
       rightContent: (
         <div className="flex flex-col gap-2 w-full text-center">
-          <div className="border border-border/40 rounded bg-muted/10 dark:bg-muted/5 p-2 font-mono text-xs text-left">
-            <div className="text-primary/70 border-b border-border/40 pb-1 font-bold text-center">LEDGER VIEW</div>
-            <div className="p-2 flex gap-4">
-              <div className="flex flex-col items-center justify-center font-bold text-foreground border-r border-border/40 pr-4">
-                <span>5.00</span>
-                <span>3.00</span>
-                <span className="border-b border-foreground w-6 text-center">0.15</span>
-              </div>
-              <div className="text-[11px] leading-normal flex-1">
-                <div className="font-bold text-primary">Excavation in trench</div>
-                <div className="text-muted-foreground mt-1">&amp;</div>
-                <div className="font-bold text-primary mt-1">Disposal of excavated soil</div>
-              </div>
-            </div>
-          </div>
-          <span className="text-[10px] text-muted-foreground">Applies same cubic volume to both work items.</span>
+          <DimensionPaperGrid
+            columns={[
+              {
+                colNum: 2,
+                name: 'Dimension',
+                isActive: true,
+                value: (
+                  <div className="flex flex-col items-center font-mono text-xs leading-none py-0.5">
+                    <span>5.00</span>
+                    <span>3.00</span>
+                    <span className="border-b border-foreground/60 pb-0.5 w-6 text-center">0.15</span>
+                  </div>
+                )
+              },
+              {
+                colNum: 4,
+                name: 'Description & Waste',
+                isActive: true,
+                value: (
+                  <div className="text-left text-[11px] leading-tight w-full">
+                    <div className="font-bold text-primary">Excavation in trench</div>
+                    <div className="text-muted-foreground/80 font-bold my-1 text-center font-mono">&amp;</div>
+                    <div className="font-bold text-primary mt-1">Disposal of excavated soil</div>
+                  </div>
+                )
+              }
+            ]}
+          />
+          <span className="text-[10px] text-muted-foreground mt-1">Applies same cubic volume to both work items.</span>
         </div>
       )
     },
@@ -59,20 +82,33 @@ export const Slide26: React.FC = () => {
       badgeColor: 'border-red-500/30 text-red-500 bg-red-500/5',
       rightContent: (
         <div className="flex flex-col gap-2 w-full text-center">
-          <div className="border border-border/40 rounded bg-muted/10 dark:bg-muted/5 p-2 font-mono text-xs text-left">
-            <div className="text-primary/70 border-b border-border/40 pb-1 font-bold text-center">LEDGER VIEW</div>
-            <div className="p-2 flex gap-4">
-              <div className="flex flex-col items-center justify-center font-bold text-foreground border-r border-border/40 pr-4">
-                <span>1.20</span>
-                <span className="border-b border-foreground w-6 text-center">1.50</span>
-              </div>
-              <div className="text-[11px] leading-normal flex-1">
-                <div className="font-bold text-red-500 uppercase tracking-wider">Ddt brickwork</div>
-                <div className="text-muted-foreground text-[10px] mt-0.5">for window opening</div>
-              </div>
-            </div>
-          </div>
-          <span className="text-[10px] text-muted-foreground">Maintains clean measuring history from solid structures.</span>
+          <DimensionPaperGrid
+            columns={[
+              {
+                colNum: 2,
+                name: 'Dimension',
+                isActive: true,
+                value: (
+                  <div className="flex flex-col items-center font-mono text-xs leading-none py-0.5">
+                    <span>1.20</span>
+                    <span className="border-b border-foreground/60 pb-0.5 w-6 text-center">1.50</span>
+                  </div>
+                )
+              },
+              {
+                colNum: 4,
+                name: 'Description & Waste',
+                isActive: true,
+                value: (
+                  <div className="text-left text-[11px] leading-tight w-full">
+                    <div className="font-bold text-red-500 uppercase tracking-wider">Ddt brickwork</div>
+                    <div className="text-muted-foreground text-[10px] mt-0.5">for window opening</div>
+                  </div>
+                )
+              }
+            ]}
+          />
+          <span className="text-[10px] text-muted-foreground mt-1">Maintains clean measuring history from solid structures.</span>
         </div>
       )
     },

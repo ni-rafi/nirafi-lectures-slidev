@@ -207,7 +207,7 @@ const PresentationModeContent: React.FC<PresentationModeContentProps> = ({
             if (lectureId) {
               clearLectureStorage(lectureId);
             }
-            navigateWithTransition(`/${activeSub.id}/${activeSession?.id}/${activeLec.id}`);
+            navigateWithTransition(`/${activeSub.id}/${activeSession?.id}/${activeLec.id}?slide=${activeSlide}`);
           }}
           isThemePlaygroundOpen={isThemePlaygroundOpen}
           onToggleThemePlayground={() => setIsThemePlaygroundOpen(!isThemePlaygroundOpen)}
