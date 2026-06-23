@@ -9,6 +9,7 @@ import GlobalTop from '../layers/GlobalTop';
 import SlideRenderer, { getSlideMetadata, getBgVariant, getLectureDeck, getLectureSlideCount } from '../slides/SlideRenderer';
 import { SvgElementsRenderer } from '../layers/SvgElementsRenderer';
 import GlobalBottom from '../layers/GlobalBottom';
+import { QRCodeSVG } from '@/shared/components/QRCodeSVG';
 
 import { useQuizSubscriptions } from '../../hooks/useQuizSubscriptions';
 
@@ -64,6 +65,10 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
     isThumbnail: false,
   }), [presentation, slideNo, clickStep]);
 
+  const lectureUrl = useMemo(() => {
+    return `${window.location.origin}/${subject.id}/${session?.id || '2023-24'}/${lecture.id}`;
+  }, [subject.id, session?.id, lecture.id]);
+
   return (
     <div className="print-slide-page">
       <PresentationContext.Provider value={cardContextValue}>
@@ -80,6 +85,22 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
           <div className="flex-1 flex flex-col justify-center items-center px-4 pt-[20px] pb-[35px] text-center select-text relative z-10">
             <SlideRenderer slideNo={slideNo} subject={subject} lecture={lecture} session={session} />
           </div>
+
+          {slideNo === 1 && (
+            <div 
+              className="absolute bottom-6 right-8 z-30 flex items-center gap-3 p-2 rounded-xl border border-border/40 shadow-sm text-left select-text bg-white"
+              style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.1)', color: '#111827' }}
+            >
+              <QRCodeSVG value={lectureUrl} size={64} className="rounded-lg overflow-hidden border border-border/30" />
+              <div className="flex flex-col text-[10px] max-w-[160px] leading-tight">
+                <span className="font-bold text-muted-foreground uppercase tracking-widest text-[8px] mb-0.5" style={{ color: '#6b7280' }}>Online Lecture</span>
+                <a href={lectureUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all font-mono font-semibold" style={{ color: 'var(--primary)' }}>
+                  {lectureUrl.replace(/^https?:\/\//, '')}
+                </a>
+                <span className="text-[8px] text-muted-foreground/80 mt-1" style={{ color: '#9ca3af' }}>Scan QR or Click link to join</span>
+              </div>
+            </div>
+          )}
 
           {includeAnnotations && annotations.length > 0 && (
             <svg

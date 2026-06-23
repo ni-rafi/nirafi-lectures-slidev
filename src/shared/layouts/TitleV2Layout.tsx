@@ -171,10 +171,14 @@ export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
       {/* Spacing to keep the grid below the title but not all the way at the bottom */}
       <div className="h-10" />
 
-      <div className="grid grid-cols-3 gap-4 border-t border-b border-border/40 py-6 my-2 text-center select-text">
+      <div className="grid grid-cols-4 gap-4 border-t border-b border-border/40 py-6 my-2 text-center select-text">
         <div className="flex flex-col gap-0.5">
           <span className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">Year / Semester</span>
           <span className="text-sm font-bold text-foreground">{yearSemester}</span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">Academic Session</span>
+          <span className="text-sm font-bold text-foreground">{session}</span>
         </div>
         <div className="flex flex-col gap-0.5">
           <span className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest">Credit Hours</span>
@@ -201,12 +205,6 @@ export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
           <span className="text-[9px] text-muted-foreground/80 font-medium leading-none mt-0.5">
             {teacher.institution}
           </span>
-        </div>
-        <div className="flex flex-col sm:text-right">
-          <span className="text-[10px] font-bold text-muted-foreground/80 uppercase tracking-widest font-mono leading-none mb-1">
-            Academic Session
-          </span>
-          <span className="text-md font-bold text-muted-foreground">{session}</span>
         </div>
       </div>
     </div>
