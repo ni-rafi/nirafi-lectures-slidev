@@ -105,8 +105,8 @@ export const MultipleChoiceQuizAdmin: React.FC<MultipleChoiceQuizAdminProps> = (
   const total = submissions.length;
 
   if (activeView === 'chart') {
-    // 1. If not revealed, show response count screen when under 10
-    if (!isRevealed && total < 10) {
+    // 1. If not revealed, always show response count screen
+    if (!isRevealed) {
       return (
         <div className="flex flex-col items-center justify-center p-8 border border-border/40 rounded-xl bg-muted/10 gap-3 text-center min-h-[180px]">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest select-none">Collecting Responses</span>
@@ -174,7 +174,7 @@ export const MultipleChoiceQuizAdmin: React.FC<MultipleChoiceQuizAdminProps> = (
             <tr key={i} className="border-b border-border/20 last:border-0 hover:bg-muted/10">
               <td className="p-2 font-mono">{sub.studentRegistration}</td>
               <td className="p-2 truncate max-w-[120px]">{sub.studentName}</td>
-              <td className="p-2 text-right font-bold font-mono">{sub.answer}</td>
+              <td className="p-2 text-right font-bold font-mono">{isRevealed ? sub.answer : '✓ Submitted'}</td>
               {isRevealed && (
                 <td className="p-2 text-center">
                   <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${

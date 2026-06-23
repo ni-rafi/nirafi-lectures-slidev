@@ -1,5 +1,4 @@
 import React from 'react';
-import { BarChart } from 'lucide-react';
 import { AnimatedCount } from '../AnimatedCount';
 
 export interface NumericQuizStudentProps {
@@ -73,60 +72,17 @@ export const NumericQuizAdmin: React.FC<NumericQuizAdminProps> = ({
   const percent = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
   if (activeView === 'chart') {
-    // 1. If not revealed, show count or distribution
+    // 1. If not revealed, always show response count screen
     if (!isRevealed) {
-      if (totalCount < 10) {
-        return (
-          <div className="flex flex-col items-center justify-center p-8 border border-border/40 rounded-xl bg-muted/10 gap-3 text-center min-h-[180px]">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest select-none">Collecting Responses</span>
-            <div className="text-5xl font-extrabold text-primary select-none my-2">
-              <AnimatedCount value={totalCount} />
-            </div>
-            <p className="text-xs text-muted-foreground select-none">
-              Responses received in this live session.
-            </p>
-          </div>
-        );
-      }
-
-      // Group unique answers and count frequencies
-      const frequency: Record<string, number> = {};
-      submissions.forEach((sub) => {
-        const ans = sub.answer.trim();
-        if (ans) {
-          frequency[ans] = (frequency[ans] || 0) + 1;
-        }
-      });
-      const sortedFreqs = Object.entries(frequency)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5); // Take top 5 unique values
-
       return (
-        <div className="flex flex-col gap-3 w-full p-4 border border-border/40 rounded-xl bg-muted/10 text-xs">
-          <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1 select-none">
-            <BarChart className="h-3.5 w-3.5" />
-            Top Answers Distribution
+        <div className="flex flex-col items-center justify-center p-8 border border-border/40 rounded-xl bg-muted/10 gap-3 text-center min-h-[180px]">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest select-none">Collecting Responses</span>
+          <div className="text-5xl font-extrabold text-primary select-none my-2">
+            <AnimatedCount value={totalCount} />
           </div>
-          {sortedFreqs.map(([ansValue, count], idx) => {
-            const barPercent = totalCount > 0 ? Math.round((count / totalCount) * 100) : 0;
-            return (
-              <div key={idx} className="flex flex-col gap-1 w-full text-left">
-                <div className="flex justify-between items-center text-[10px] font-semibold text-muted-foreground">
-                  <span className="font-mono">Answer "{ansValue}"</span>
-                  <span>{count} submissions ({barPercent}%)</span>
-                </div>
-                <div className="w-full h-3 rounded-full bg-muted overflow-hidden relative border border-border/30">
-                  <div
-                    style={{ width: `${barPercent}%` }}
-                    className="h-full bg-primary transition-all duration-500"
-                  />
-                </div>
-              </div>
-            );
-          })}
-          <div className="text-[10px] text-muted-foreground text-center mt-2 border-t pt-2 border-border/20 select-none">
-            Total Submissions: <span className="font-bold text-foreground">{totalCount}</span>
-          </div>
+          <p className="text-xs text-muted-foreground select-none">
+            Responses received in this live session.
+          </p>
         </div>
       );
     }
@@ -164,7 +120,7 @@ export const NumericQuizAdmin: React.FC<NumericQuizAdminProps> = ({
             <tr key={i} className="border-b border-border/20 last:border-0 hover:bg-muted/10">
               <td className="p-2 font-mono">{sub.studentRegistration}</td>
               <td className="p-2 truncate max-w-[120px]">{sub.studentName}</td>
-              <td className="p-2 text-right font-semibold font-mono">{sub.answer}</td>
+              <td className="p-2 text-right font-semibold font-mono">{isRevealed ? sub.answer : '✓ Submitted'}</td>
               {isRevealed && (
                 <td className="p-2 text-center">
                   <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${

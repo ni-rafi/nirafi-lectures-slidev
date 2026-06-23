@@ -223,7 +223,7 @@ export const AdminQuizView: React.FC<AdminQuizViewProps> = ({
                     )}
                     {status === 'closed' && (
                       <>
-                        {!isRevealed && (
+                        {!isRevealed && allSubmissions.length >= 1 && (
                           <button
                             onClick={handleAdminReveal}
                             className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer"
