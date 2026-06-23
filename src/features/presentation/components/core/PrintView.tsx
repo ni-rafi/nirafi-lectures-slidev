@@ -74,33 +74,17 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
       <PresentationContext.Provider value={cardContextValue}>
         <SlideContainer scaleMode="1:1" isThumbnail={true}>
           <MorphingBackground variant={bgVariant} />
-          
+
           <GlobalTop
             subjectName={subject.courseTitle}
             subjectCode={subject.courseCode}
             lectureTitle={lecture.title}
             hide={isCoverPage}
           />
-          
+
           <div className="flex-1 flex flex-col justify-center items-center px-4 pt-[20px] pb-[35px] text-center select-text relative z-10">
             <SlideRenderer slideNo={slideNo} subject={subject} lecture={lecture} session={session} />
           </div>
-
-          {slideNo === 1 && (
-            <div 
-              className="absolute bottom-6 right-8 z-30 flex items-center gap-3 p-2 rounded-xl border border-border/40 shadow-sm text-left select-text bg-white"
-              style={{ background: '#ffffff', border: '1px solid rgba(0, 0, 0, 0.1)', color: '#111827' }}
-            >
-              <QRCodeSVG value={lectureUrl} size={64} className="rounded-lg overflow-hidden border border-border/30" />
-              <div className="flex flex-col text-[10px] max-w-[160px] leading-tight">
-                <span className="font-bold text-muted-foreground uppercase tracking-widest text-[8px] mb-0.5" style={{ color: '#6b7280' }}>Online Lecture</span>
-                <a href={lectureUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all font-mono font-semibold" style={{ color: 'var(--primary)' }}>
-                  {lectureUrl.replace(/^https?:\/\//, '')}
-                </a>
-                <span className="text-[8px] text-muted-foreground/80 mt-1" style={{ color: '#9ca3af' }}>Scan QR or Click link to join</span>
-              </div>
-            </div>
-          )}
 
           {includeAnnotations && annotations.length > 0 && (
             <svg
@@ -121,18 +105,50 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
                 currentElement={null}
                 activeTool="select"
                 selectedId={null}
-                onElementDown={() => {}}
+                onElementDown={() => { }}
               />
             </svg>
           )}
-          
-          <GlobalBottom 
-            current={subPageLabel ? `${currentNumber}-${subPageLabel}` : currentNumber} 
-            total={totalSlidesCount} 
-            hide={isCoverPage} 
+
+          <GlobalBottom
+            current={subPageLabel ? `${currentNumber}-${subPageLabel}` : currentNumber}
+            total={totalSlidesCount}
+            hide={isCoverPage}
           />
         </SlideContainer>
       </PresentationContext.Provider>
+
+      {/* QR code overlay — outside SlideContainer to avoid overflow:hidden clipping */}
+      {slideNo === 1 && (
+        <div
+          className="print-qr-overlay"
+          style={{
+            position: 'absolute',
+            bottom: '24px',
+            right: '32px',
+            zIndex: 50,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '8px 10px 8px 8px',
+            borderRadius: '12px',
+            backgroundColor: '#ffffff',
+            border: '1px solid rgba(0, 0, 0, 0.15)',
+            color: '#111827',
+            WebkitPrintColorAdjust: 'exact',
+            printColorAdjust: 'exact',
+          } as React.CSSProperties}
+        >
+          <QRCodeSVG value={lectureUrl} size={64} fgColor="#111827" bgColor="#ffffff" />
+          <div style={{ display: 'flex', flexDirection: 'column', fontSize: '10px', maxWidth: '160px', lineHeight: '1.3' }}>
+            <span style={{ fontWeight: 700, color: '#6b7280', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>Online Lecture</span>
+            <a href={lectureUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#4f46e5', fontFamily: 'monospace', fontWeight: 600, wordBreak: 'break-all', textDecoration: 'none' }}>
+              {lectureUrl.replace(/^https?:\/\//, '')}
+            </a>
+            <span style={{ fontSize: '8px', color: '#9ca3af', marginTop: '4px' }}>Scan QR or click to join</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -163,7 +179,7 @@ export const PrintView: React.FC<PrintViewProps> = ({
   session,
   includeAnnotations,
 }) => {
-  const quizStates = useQuizSubscriptions(subject, lecture, false);
+  const { quizStates, ready: quizReady } = useQuizSubscriptions(subject, lecture, false);
 
   const totalSlides = getLectureSlideCount(lecture.id);
 
@@ -205,7 +221,7 @@ export const PrintView: React.FC<PrintViewProps> = ({
 
     for (const slideNo of filteredSlideNumbers) {
       const data = detectedData[slideNo];
-      
+
       if (data && data.isTabbed && data.totalClicks > 0) {
         // Tabbed slides: split into separate pages per step
         const stepsCount = data.totalClicks + 1;
@@ -233,9 +249,15 @@ export const PrintView: React.FC<PrintViewProps> = ({
     const cleanSession = session?.label || session?.id || 'Session';
     document.title = `${subject.courseCode} - ${cleanSession} - ${lecture.title}`;
 
+    // Wait for quiz states to resolve before printing so stealth slides are
+    // correctly excluded. Fallback after 4 s in case Firebase is unavailable.
+    if (!quizReady) {
+      return () => { document.title = originalTitle; };
+    }
+
     const timer = setTimeout(() => {
       window.print();
-    }, 1500);
+    }, 800);
 
     const handleAfterPrint = () => {
       window.close();
@@ -247,12 +269,12 @@ export const PrintView: React.FC<PrintViewProps> = ({
       window.removeEventListener('afterprint', handleAfterPrint);
       document.title = originalTitle;
     };
-  }, [subject.courseCode, session, lecture.title]);
+  }, [subject.courseCode, session, lecture.title, quizReady]);
 
   return (
     <div className="print-layout w-full min-h-screen bg-white text-black">
       {/* Hidden offscreen container for click step and layout type detection */}
-      <div 
+      <div
         style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}
         aria-hidden="true"
       >

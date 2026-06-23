@@ -36,7 +36,8 @@
     width: 980px;
     height: 551.25px;
     position: relative;
-    overflow: hidden;
+    /* overflow visible so absolutely-positioned overlays (e.g. QR badge) are not clipped */
+    overflow: visible;
     margin: 0 auto !important;
     background: white;
   }
@@ -47,7 +48,9 @@
     break-after: avoid !important;
   }
 
-  svg {
+  /* Force full-colour print rendering for SVG and QR overlay elements */
+  svg,
+  .print-qr-overlay {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
   }

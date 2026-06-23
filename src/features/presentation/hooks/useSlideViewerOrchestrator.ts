@@ -78,7 +78,7 @@ export const useSlideViewerOrchestrator = () => {
   );
 
   // Manage quiz subscriptions
-  const quizStates = useQuizSubscriptions(activeSub, activeLec, isLoadingDeck);
+  const { quizStates } = useQuizSubscriptions(activeSub, activeLec, isLoadingDeck);
 
   const visibleSlideNumbers = useMemo(() => {
     const list: number[] = [];

@@ -11,6 +11,7 @@ export const useQuizSubscriptions = (
 ) => {
   const firebaseService = useFirebase();
   const [quizStates, setQuizStates] = useState<Record<string, QuizState>>({});
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (isLoadingDeck || !activeLec || !activeSub) return;
@@ -21,13 +22,20 @@ export const useQuizSubscriptions = (
 
     if (quizIds.length === 0) {
       setQuizStates({});
+      setReady(true);
       return;
     }
 
+    let resolvedCount = 0;
     const unsubscribes = quizIds.map((id) =>
       firebaseService.subscribeQuizState(id, (state) => {
         if (state) {
           setQuizStates((prev) => ({ ...prev, [id]: state }));
+        }
+        // Count each quiz ID as resolved (whether state exists or not)
+        resolvedCount += 1;
+        if (resolvedCount >= quizIds.length) {
+          setReady(true);
         }
       })
     );
@@ -37,6 +45,6 @@ export const useQuizSubscriptions = (
     };
   }, [activeLec, activeSub, firebaseService, isLoadingDeck]);
 
-  return quizStates;
+  return { quizStates, ready };
 };
 
