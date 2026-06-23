@@ -21,7 +21,8 @@ export const InteractiveCard: React.FC<InteractiveCardProps> = ({
   if (isBlog) {
     cardClasses = 'w-full border border-border/50 rounded-xl p-4 bg-transparent';
   } else if (variant === 'plain') {
-    cardClasses = 'w-full p-4 border border-border/40 rounded-xl bg-transparent';
+    const hasBorderOverride = className.includes('border-0') || className.includes('border-none');
+    cardClasses = `w-full p-4 ${hasBorderOverride ? '' : 'border border-border/40'} rounded-xl bg-transparent`;
   } else {
     // default premium PowerPoint ash card with border accents
     cardClasses = 'relative p-5 md:p-6 bg-muted/60 dark:bg-muted/20 border-l-[6px] border-primary rounded-r-xl text-foreground font-medium before:absolute before:top-0 before:left-[-6px] before:w-10 before:h-[6px] before:bg-primary after:absolute after:bottom-0 after:left-[-6px] after:w-10 after:h-[6px] after:bg-primary';

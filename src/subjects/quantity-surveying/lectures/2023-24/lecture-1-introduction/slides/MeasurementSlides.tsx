@@ -59,10 +59,10 @@ export const Slide24: React.FC = () => {
               <InteractiveCard 
                 title="" 
                 variant="plain" 
-                className="w-full py-2.5 px-3 md:py-3 md:px-4 bg-muted/15 border-l-4 border-primary rounded-r-lg border-y-0 border-r-0"
+                className="w-full py-2.5 px-3 md:py-3 md:px-4 bg-muted/60 dark:bg-muted/20 border-0"
               >
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between border-b border-border/30 pb-1.5">
+                  <div className="flex items-center justify-between pb-1.5">
                     <div className="flex items-center gap-1.5">
                       {card.icon}
                       <h3 className="text-xs font-bold text-foreground">{card.title}</h3>
@@ -74,7 +74,7 @@ export const Slide24: React.FC = () => {
                   <SlideParagraph variant="plain" className="text-[10px] md:text-[11px] text-muted-foreground leading-snug select-text">
                     {card.description}
                   </SlideParagraph>
-                  <div className="flex flex-col gap-0.5 border-t border-dashed border-border/30 pt-1.5">
+                  <div className="flex flex-col gap-0.5 pt-1">
                     <span className="text-[8px] uppercase font-bold text-muted-foreground/80 tracking-wider">Examples:</span>
                     <ul className="flex flex-col gap-1 pl-1 leading-tight mt-1">
                       {card.examples.map((ex, exIdx) => (
