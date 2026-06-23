@@ -21,6 +21,7 @@ interface ClickSyncedTabsProps {
   rightTitle?: string;
   leftWidth?: string;
   bgVariant?: 'default' | 'calculation' | 'gallery';
+  clickToTabMap?: number[];
 }
 
 export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
@@ -30,6 +31,7 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
   rightTitle,
   leftWidth = '55%',
   bgVariant = 'default',
+  clickToTabMap,
 }) => {
   const clickContext = useClickStepsContext();
   const { currentClick, setClick } = clickContext;
@@ -46,16 +48,37 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
 
   const isScrollOrBlog = viewMode === 'scroll' || viewMode === 'blog';
 
+  const startClicks = React.useMemo(() => {
+    if (clickToTabMap) {
+      const firstOccurrences: Record<number, number> = {};
+      clickToTabMap.forEach((tabIdx, clickIdx) => {
+        if (firstOccurrences[tabIdx] === undefined) {
+          firstOccurrences[tabIdx] = clickIdx;
+        }
+      });
+      return firstOccurrences;
+    }
+    return null;
+  }, [clickToTabMap]);
+
   // Active item index: driven by local state in scroll/blog modes, and by context in presentation mode
   const activeIndex = isScrollOrBlog
     ? (localActiveIndex !== null ? Math.min(items.length - 1, Math.max(0, localActiveIndex)) : null)
-    : Math.min(items.length - 1, Math.max(0, currentClick));
+    : (clickToTabMap
+        ? (clickToTabMap[currentClick] !== undefined ? clickToTabMap[currentClick] : items.length - 1)
+        : Math.min(items.length - 1, Math.max(0, currentClick))
+      );
 
   const handleItemClick = (idx: number) => {
     if (isScrollOrBlog) {
       setLocalActiveIndex((prev) => (prev === idx ? null : idx));
     } else {
-      setClick(idx);
+      if (clickToTabMap && startClicks) {
+        const targetClick = startClicks[idx] !== undefined ? startClicks[idx] : idx;
+        setClick(targetClick);
+      } else {
+        setClick(idx);
+      }
     }
   };
 
@@ -82,7 +105,13 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
                 }`}
               >
                 {/* Register click highlights implicitly in the presentation click-steps */}
-                {idx > 0 && <ClickHighlight at={idx} className="hidden">{' '}</ClickHighlight>}
+                {clickToTabMap ? (
+                  startClicks && startClicks[idx] !== undefined && startClicks[idx] > 0 && (
+                    <ClickHighlight at={startClicks[idx]} className="hidden">{' '}</ClickHighlight>
+                  )
+                ) : (
+                  idx > 0 && <ClickHighlight at={idx} className="hidden">{' '}</ClickHighlight>
+                )}
 
                 <div className="flex justify-between items-center mb-1">
                   <h4 className={`text-xs font-bold ${isExpanded ? 'text-primary' : 'text-foreground'}`}>
@@ -141,7 +170,13 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
                   }`}
                 >
                   {/* Register click highlights implicitly in the presentation click-steps */}
-                  {idx > 0 && <ClickHighlight at={idx} className="hidden">{' '}</ClickHighlight>}
+                  {clickToTabMap ? (
+                    startClicks && startClicks[idx] !== undefined && startClicks[idx] > 0 && (
+                      <ClickHighlight at={startClicks[idx]} className="hidden">{' '}</ClickHighlight>
+                    )
+                  ) : (
+                    idx > 0 && <ClickHighlight at={idx} className="hidden">{' '}</ClickHighlight>
+                  )}
 
                   <div className="flex justify-between items-center mb-0.5">
                     <h4 className={`text-xs font-bold ${isActive ? 'text-primary' : 'text-foreground'}`}>

@@ -15,6 +15,8 @@ interface PlanDrawingCanvasProps {
   activeElementId: string;
   onSelectElement: (id: string) => void;
   onChangeSchema: (schema: PlanLayoutSchema) => void;
+  children?: React.ReactNode;
+  className?: string;
 }
 
 export const PlanDrawingCanvas: React.FC<PlanDrawingCanvasProps> = ({
@@ -22,6 +24,8 @@ export const PlanDrawingCanvas: React.FC<PlanDrawingCanvasProps> = ({
   activeElementId,
   onSelectElement,
   onChangeSchema,
+  children,
+  className,
 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [dragState, setDragState] = useState<{
@@ -122,9 +126,8 @@ export const PlanDrawingCanvas: React.FC<PlanDrawingCanvasProps> = ({
         viewBox={viewBox}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        className="w-full h-full bg-background border border-border/40 rounded-xl shadow-inner min-h-[360px]"
+        className={className || "w-full h-full bg-background border border-border/40 rounded-xl shadow-inner min-h-[360px]"}
       >
-        <PlanGridlines grid={schema.grid} />
 
         {calculatedBeams.map(beam => {
           const spec = schema.beams.find(b => b.id === beam.id);
@@ -171,6 +174,8 @@ export const PlanDrawingCanvas: React.FC<PlanDrawingCanvasProps> = ({
           );
         })}
 
+        <PlanGridlines grid={schema.grid} />
+
         {activeElementId && (
           <>
             {calculatedColumns.find(c => c.id === activeElementId) && (() => {
@@ -189,6 +194,7 @@ export const PlanDrawingCanvas: React.FC<PlanDrawingCanvasProps> = ({
             })()}
           </>
         )}
+        {children}
       </svg>
     </div>
   );

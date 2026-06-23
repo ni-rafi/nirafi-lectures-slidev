@@ -7,14 +7,14 @@ import {
   LatexFormula, 
   InteractiveCard, 
   ParameterSlider, 
-  CalculationOutput
+  CalculationOutput,
+  ClickSyncedTabs,
+  type ClickSyncedTabItem
 } from '@/features/presentation/components/elements';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import { Droplet } from 'lucide-react';
-import { calculateBeamsGeometry } from '@/features/building-drawing/engines/planLayoutEngine';
-import { computeFractionalSegments } from '@/features/building-drawing/engines/fractionalSplitter';
-import { AnnotationOverlay } from '@/features/building-drawing/components/atoms/elements/AnnotationOverlay';
-import { PlanLayoutSchema } from '@/features/building-drawing/types/layoutSchema';
+import { JunctionDrawing } from '@/subjects/quantity-surveying/features';
 
 /**
  * Slide 3: Topic Divider - Earthwork
@@ -30,180 +30,31 @@ export const Slide3: React.FC = () => (
  * Slide 4: Centre Line Method & T-Junction Deductions
  */
 export const Slide4: React.FC = () => {
-  const [clickedJunction, setClickedJunction] = useUrlSyncedState<boolean>('junction_clicked', true);
-  const [currentClick] = useUrlSyncedState<number>('presentation_step', 0);
+  const [clickedJunction, setClickedJunction] = useUrlSyncedState<boolean>('junction_clicked', false);
+  const { currentClick } = useClickStepsContext();
 
-  // Configuration for the T-junction drawing using the building drawing spec
-  const tJunctionSchema: PlanLayoutSchema = {
-    grid: {
-      xAxes: [
-        { id: 'Left', offset: 20, label: 'L' },
-        { id: 'A', offset: 110, label: 'A' },
-        { id: 'Right', offset: 200, label: 'R' },
-      ],
-      yAxes: [
-        { id: '1', offset: 60, label: '1' },
-        { id: 'Bottom', offset: 160, label: 'B' },
-      ],
-    },
-    columns: [],
-    beams: [
-      {
-        id: 'Horizontal-Wall',
-        startNodeId: 'Left-1',
-        endNodeId: 'Right-1',
-        thickness: 40,
-      },
-      {
-        id: 'Cross-Wall',
-        startNodeId: 'A-1',
-        endNodeId: 'A-Bottom',
-        thickness: 40,
-        highlights: [
-          {
-            startFraction: 0,
-            endFraction: 0.2, // 20 units overlap out of 100 units total span (20/100 = 0.2)
-            strokeClass: 'stroke-destructive/75',
-          },
-        ],
-      },
-    ],
-    slabs: [],
-  };
-
-  // Resolve geometries dynamically from layout engine
-  const beamsGeo = calculateBeamsGeometry(tJunctionSchema.beams, [], tJunctionSchema.grid);
-  const horizontalBeam = beamsGeo.find(b => b.id === 'Horizontal-Wall')!;
-  const crossBeam = beamsGeo.find(b => b.id === 'Cross-Wall')!;
-
-  const showHighlight = clickedJunction || currentClick >= 1;
-  const crossWallSpec = tJunctionSchema.beams.find(b => b.id === 'Cross-Wall');
-  const activeHighlights = (showHighlight && crossWallSpec) ? crossWallSpec.highlights || [] : [];
-  const crossWallSegments = computeFractionalSegments(crossBeam.start, crossBeam.end, activeHighlights);
-
-  return (
-    <TwoColumnLayout
-      title="Centre Line: T-Junction Deductions"
-      bgVariant="default"
-      leftWidth="45%"
-      leftContent={
-        <SlideContent
-          blocks={[
-            {
-              type: 'paragraph',
-              text: (
-                <span>
-                  When tracing the continuous centerline of walls, the junction zones are counted twice.
-                </span>
-              ),
-            },
-            {
-              type: 'bullet',
-              text: (
-                <span>
-                  <strong>Junction Deduction Rule:</strong> For every T-junction, deduct{' '}
-                  <ClickHighlight at={1} variant="paint">
-                    <LatexFormula math="0.5 \times \text{Breadth } (B)" />
-                  </ClickHighlight>{' '}
-                  from the total centerline length.
-                </span>
-              ),
-              revealAt: 0,
-            },
-            {
-              type: 'bullet',
-              text: (
-                <span>
-                  <strong>L-Junctions:</strong> L-corners require{' '}
-                  <ClickHighlight at={2} variant="bold">no deductions</ClickHighlight> as the centerline perfectly balances the inner and outer areas.
-                </span>
-              ),
-              revealAt: 0,
-            },
-          ]}
-        />
-      }
-      rightContent={
-        <div className="flex flex-col justify-between h-full bg-muted/20 p-4 border border-border/40 rounded-xl">
-          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">T-Junction Interactive Alignment</h3>
-          <div className="relative h-56 bg-muted/40 rounded-lg border border-border/30 flex items-center justify-center p-4">
-            <svg width="220" height="200" viewBox="0 0 220 200" className="select-none">
-              {/* Horizontal Wall Outer Boundaries */}
-              <rect x="20" y="40" width="180" height="40" className="fill-muted stroke-border/60" opacity="0.8" strokeWidth="1.5" />
-              {/* Vertical Wall Outer Boundaries */}
-              <rect x="90" y="80" width="40" height="80" className="fill-muted stroke-border/60" opacity="0.8" strokeWidth="1.5" />
-              
-              {/* Centerlines (Dashed presentation centerlines driven by calculated geometry) */}
-              <line
-                x1={horizontalBeam.start.x}
-                y1={horizontalBeam.start.y}
-                x2={horizontalBeam.end.x}
-                y2={horizontalBeam.end.y}
-                stroke="var(--color-primary, #f59e0b)"
-                strokeWidth="2"
-                strokeDasharray="5,3"
-              />
-              <line
-                x1={crossBeam.start.x}
-                y1={crossBeam.start.y}
-                x2={crossBeam.end.x}
-                y2={crossBeam.end.y}
-                stroke="var(--color-primary, #f59e0b)"
-                strokeWidth="2"
-                strokeDasharray="5,3"
-              />
-              
-              {/* Dynamic Overlap Highlight Area (Calculated dynamically via fractionalSplitter) */}
-              {crossWallSegments.map((seg, idx) => (
-                <rect
-                  key={idx}
-                  x={seg.p1.x - 20}
-                  y={seg.p1.y}
-                  width="40"
-                  height={Math.abs(seg.p2.y - seg.p1.y)}
-                  fill="var(--color-destructive, #ef4444)"
-                  fillOpacity="0.45"
-                  stroke="var(--color-destructive, #ef4444)"
-                  strokeWidth="1.5"
-                  onClick={() => setClickedJunction(!clickedJunction)}
-                  className="transition-colors duration-350 cursor-pointer"
-                />
-              ))}
-              
-              {/* Text labels */}
-              <text x="50" y="30" className="fill-muted-foreground" fontSize="10" textAnchor="middle" fontWeight="bold">Horizontal Main Wall</text>
-              <text x="110" y="125" className="fill-muted-foreground/60" fontSize="9" textAnchor="middle" fontWeight="bold">Cross Wall</text>
-              
-              {/* Reinforce Dimension Overlay (Calculated dynamically via AnnotationOverlay) */}
-              <AnnotationOverlay
-                p1={{ x: 90, y: 160 }}
-                p2={{ x: 130, y: 160 }}
-                offset={20}
-                text="B"
-                colorClass="stroke-destructive fill-destructive"
-              />
-              
-              {/* Interactive Highlight tag */}
-              <g
-                transform="translate(110, 60)"
-                onClick={() => setClickedJunction(!clickedJunction)}
-                className="cursor-pointer"
-              >
-                <circle r="8" className="fill-primary animate-ping" opacity="0.4" />
-                <circle r="4" className="fill-primary" />
-              </g>
-            </svg>
-            
-            {showHighlight && (
-              <div className="absolute top-2 right-2 bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] p-2 rounded-md font-mono animate-fadeIn">
-                <strong>Double-counted:</strong>
-                <br />
-                Deduction = 0.5 × B
-              </div>
-            )}
-          </div>
-          
-          <div className="bg-muted/40 p-3 rounded-lg border border-border/40">
+  const junctionRules: ClickSyncedTabItem[] = [
+    {
+      title: "Junction Deduction Rule",
+      badge: "Deduction Rule",
+      badgeColor: "border-destructive text-destructive bg-destructive/10",
+      description: (
+        <span>
+          For every T-junction, deduct{' '}
+          <ClickHighlight at={1} variant="paint">
+            <LatexFormula math="0.5 \times \text{Breadth } (B)" />
+          </ClickHighlight>{' '}
+          from the total centerline length.
+        </span>
+      ),
+      rightContent: (
+        <div className="w-full space-y-3">
+          <JunctionDrawing
+            type="t-junction"
+            showHighlight={clickedJunction || currentClick >= 1}
+            onJunctionClick={() => setClickedJunction(!clickedJunction)}
+          />
+          <div className="bg-muted/40 p-3 rounded-lg border border-border/40 select-text">
             <span className="text-[10px] font-mono text-muted-foreground uppercase">BoQ centerline length correction formula</span>
             <div className="text-sm font-black text-foreground font-mono mt-1">
               Net L = Total L - (0.5 &times; B &times; N)
@@ -211,7 +62,43 @@ export const Slide4: React.FC = () => {
             <span className="text-[9px] text-muted-foreground mt-0.5 block">Where N = number of T-junctions</span>
           </div>
         </div>
-      }
+      )
+    },
+    {
+      title: "L-Junction Corners",
+      badge: "Balanced Corners",
+      badgeColor: "border-emerald-500 text-emerald-500 bg-emerald-500/10",
+      description: (
+        <span>
+          L-corners require{' '}
+          <ClickHighlight at={3} variant="paint">
+            no deductions
+          </ClickHighlight>{' '}
+          as the centerline perfectly balances the inner and outer areas.
+        </span>
+      ),
+      rightContent: (
+        <div className="w-full space-y-3">
+          <JunctionDrawing type="l-corner" showHighlight={currentClick >= 3} />
+          <div className="bg-muted/40 p-3 rounded-lg border border-border/40 select-text">
+            <span className="text-[10px] font-mono text-muted-foreground uppercase">Corner balanced geometric law</span>
+            <div className="text-xs font-bold text-foreground mt-1 leading-relaxed">
+              Surplus Corner Area (+0.5 B) matches Deficit Area (-0.5 B) exactly. Net corner correction = 0.
+            </div>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <ClickSyncedTabs
+      title="Centre Line Deductions"
+      leftTitle="Measurement Rules"
+      rightTitle="Junction Geometry Analysis"
+      items={junctionRules}
+      leftWidth="45%"
+      clickToTabMap={[0, 0, 1, 1]}
     />
   );
 };
