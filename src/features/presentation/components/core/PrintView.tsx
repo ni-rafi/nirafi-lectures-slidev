@@ -6,9 +6,11 @@ import { PresentationContext } from '../../context/PresentationContext';
 import SlideContainer from './SlideContainer';
 import MorphingBackground from '@/shared/components/MorphingBackground';
 import GlobalTop from '../layers/GlobalTop';
-import SlideRenderer, { getSlideMetadata, getLectureSlideCount, getBgVariant } from '../slides/SlideRenderer';
+import SlideRenderer, { getSlideMetadata, getBgVariant, getLectureDeck, getLectureSlideCount } from '../slides/SlideRenderer';
 import { SvgElementsRenderer } from '../layers/SvgElementsRenderer';
 import GlobalBottom from '../layers/GlobalBottom';
+
+import { useQuizSubscriptions } from '../../hooks/useQuizSubscriptions';
 
 interface PrintSlideItemProps {
   slideNo: number;
@@ -18,6 +20,8 @@ interface PrintSlideItemProps {
   includeAnnotations: boolean;
   clickStep?: number;
   subPageLabel?: string;
+  currentNumber: number;
+  totalSlidesCount: number;
 }
 
 const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
@@ -28,6 +32,8 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
   includeAnnotations,
   clickStep,
   subPageLabel,
+  currentNumber,
+  totalSlidesCount,
 }) => {
   const meta = getSlideMetadata(slideNo, subject, lecture);
   const bgVariant = getBgVariant(meta.type);
@@ -100,8 +106,8 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
           )}
           
           <GlobalBottom 
-            current={subPageLabel ? `${slideNo}-${subPageLabel}` : slideNo} 
-            total={getLectureSlideCount(lecture.id)} 
+            current={subPageLabel ? `${currentNumber}-${subPageLabel}` : currentNumber} 
+            total={totalSlidesCount} 
             hide={isCoverPage} 
           />
         </SlideContainer>
@@ -136,8 +142,27 @@ export const PrintView: React.FC<PrintViewProps> = ({
   session,
   includeAnnotations,
 }) => {
+  const quizStates = useQuizSubscriptions(subject, lecture, false);
+
   const totalSlides = getLectureSlideCount(lecture.id);
-  const slideNumbers = useMemo(() => Array.from({ length: totalSlides }, (_, i) => i + 1), [totalSlides]);
+
+  const filteredSlideNumbers = useMemo(() => {
+    const list: number[] = [];
+    const deck = getLectureDeck(lecture.id);
+
+    for (let i = 1; i <= totalSlides; i++) {
+      const meta = deck.slideMetadata[i];
+      if (meta && meta.quizId && meta.quizVisibilityMode === 'stealth') {
+        const qState = quizStates[meta.quizId];
+        const isLive = qState?.status === 'active' || qState?.status === 'closed';
+        if (!isLive) {
+          continue;
+        }
+      }
+      list.push(i);
+    }
+    return list;
+  }, [totalSlides, lecture.id, quizStates]);
 
   const [detectedData, setDetectedData] = useState<Record<number, { totalClicks: number; isTabbed: boolean }>>({});
 
@@ -157,7 +182,7 @@ export const PrintView: React.FC<PrintViewProps> = ({
   const printPages = useMemo(() => {
     const pages: Array<{ slideNo: number; clickStep: number; subPageLabel?: string }> = [];
 
-    for (let slideNo = 1; slideNo <= totalSlides; slideNo++) {
+    for (const slideNo of filteredSlideNumbers) {
       const data = detectedData[slideNo];
       
       if (data && data.isTabbed && data.totalClicks > 0) {
@@ -180,7 +205,7 @@ export const PrintView: React.FC<PrintViewProps> = ({
     }
 
     return pages;
-  }, [totalSlides, detectedData]);
+  }, [filteredSlideNumbers, detectedData]);
 
   useEffect(() => {
     const originalTitle = document.title;
@@ -210,7 +235,7 @@ export const PrintView: React.FC<PrintViewProps> = ({
         style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}
         aria-hidden="true"
       >
-        {slideNumbers.map((slideNo) => (
+        {filteredSlideNumbers.map((slideNo) => (
           <ClickStepsProvider key={`detect-${slideNo}`}>
             <SlideRenderer slideNo={slideNo} subject={subject} lecture={lecture} session={session} />
             <ClickStepDetector slideNo={slideNo} onDetect={handleDetect} />
@@ -219,19 +244,24 @@ export const PrintView: React.FC<PrintViewProps> = ({
       </div>
 
       {/* Main Print Sheets Layout */}
-      {printPages.map((page, index) => (
-        <ClickStepsProvider key={`page-${page.slideNo}-${page.clickStep}-${index}`} currentClickOverride={page.clickStep}>
-          <PrintSlideItem
-            slideNo={page.slideNo}
-            subject={subject}
-            lecture={lecture}
-            session={session}
-            includeAnnotations={includeAnnotations}
-            clickStep={page.clickStep}
-            subPageLabel={page.subPageLabel}
-          />
-        </ClickStepsProvider>
-      ))}
+      {printPages.map((page, index) => {
+        const currentNumber = filteredSlideNumbers.indexOf(page.slideNo) + 1;
+        return (
+          <ClickStepsProvider key={`page-${page.slideNo}-${page.clickStep}-${index}`} currentClickOverride={page.clickStep}>
+            <PrintSlideItem
+              slideNo={page.slideNo}
+              subject={subject}
+              lecture={lecture}
+              session={session}
+              includeAnnotations={includeAnnotations}
+              clickStep={page.clickStep}
+              subPageLabel={page.subPageLabel}
+              currentNumber={currentNumber}
+              totalSlidesCount={filteredSlideNumbers.length}
+            />
+          </ClickStepsProvider>
+        );
+      })}
     </div>
   );
 };
