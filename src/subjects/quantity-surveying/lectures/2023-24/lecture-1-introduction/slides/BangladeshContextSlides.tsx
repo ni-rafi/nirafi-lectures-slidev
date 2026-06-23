@@ -32,7 +32,15 @@ export const Slide6: React.FC = () => (
             type: 'bullet',
             text: (
               <span>
-                <strong>Legal Framework:</strong> Serves as the official baseline for government infrastructure budgeting and public procurement in Bangladesh.
+                <strong>Legal Framework:</strong> Serves as the official baseline for{' '}
+                <ClickHighlight at={0} variant="paint">
+                  government infrastructure budgeting
+                </ClickHighlight>{' '}
+                and{' '}
+                <ClickHighlight at={0} variant="paint">
+                  public procurement
+                </ClickHighlight>{' '}
+                in Bangladesh.
               </span>
             ),
           },
@@ -40,7 +48,11 @@ export const Slide6: React.FC = () => (
             type: 'bullet',
             text: (
               <span>
-                <strong>PWD Code Structure:</strong> Organized into systematic chapters (e.g., Chapter 1: Site Facilities, Chapter 4: Earthwork, Chapter 5: Concrete, Chapter 7: Brickwork).
+                <strong>PWD Code Structure:</strong> Organized into{' '}
+                <ClickHighlight at={0} variant="paint">
+                  systematic chapters
+                </ClickHighlight>{' '}
+                (e.g., Chapter 1: Site Facilities, Chapter 4: Earthwork, Chapter 5: Concrete, Chapter 7: Brickwork).
               </span>
             ),
           },
@@ -94,17 +106,34 @@ export const Slide8: React.FC = () => (
       blocks={[
         {
           type: 'bullet',
-          text: 'Universal Log Layout: Before moving to automated software tracking, Bangladeshi sub-divisional engineers record all field work manually in standard MB log layouts.',
+          text: (
+            <span>
+              <strong>Universal Log Layout:</strong> Before moving to automated software tracking, Bangladeshi sub-divisional engineers{' '}
+              <ClickHighlight at={1} variant="paint">
+                record all field work manually
+              </ClickHighlight>{' '}
+              in standard MB log layouts.
+            </span>
+          ),
         },
         {
           type: 'bullet',
-          text: 'Anatomy of an MB Entry Table: Every row must systematically document dimensions across the standard columns shown below:',
+          text: (
+            <span>
+              <strong>Anatomy of an MB Entry Table:</strong> Every row must{' '}
+              <ClickHighlight at={2} variant="paint">
+                systematically document dimensions
+              </ClickHighlight>{' '}
+              across the standard columns shown below:
+            </span>
+          ),
         },
       ]}
     />
     <ClickReveal at={3}>
       <div className="mt-4 overflow-x-auto text-[13px]">
         <SlideTable
+          dense="tight"
           caption="Detailed Measurement Book (MB Format)"
           headers={[
             { label: 'Item No.', align: 'left', width: '60px' },

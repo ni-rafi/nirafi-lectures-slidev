@@ -22,7 +22,15 @@ export const Slide15: React.FC = () => (
           Core Definition
         </span>
         <p className="text-xs md:text-sm text-foreground leading-relaxed">
-          An estimate is the anticipated or probable computation of quantities and likely expenditures required for a project before construction begins.
+          An estimate is the{' '}
+          <ClickHighlight at={0} variant="paint">
+            anticipated or probable computation of quantities
+          </ClickHighlight>{' '}
+          and{' '}
+          <ClickHighlight at={0} variant="paint">
+            likely expenditures
+          </ClickHighlight>{' '}
+          required for a project before construction begins.
         </p>
       </div>
 

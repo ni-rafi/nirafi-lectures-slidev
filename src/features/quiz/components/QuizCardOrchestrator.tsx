@@ -1,5 +1,4 @@
-import React, { useContext } from 'react';
-import { PresentationContext } from '@/features/presentation/context/PresentationContext';
+import React from 'react';
 import { useQuizState } from '../hooks/useQuizState';
 import { getQuizVisibilityMode } from '@/features/presentation/components/slides/SlideRenderer';
 import { StudentQuizView } from './StudentQuizView';
@@ -21,8 +20,6 @@ export const QuizCardOrchestrator: React.FC<QuizCardOrchestratorProps> = ({
   quizType = 'numeric-input',
   options = [],
 }) => {
-  const presentation = useContext(PresentationContext);
-  const viewMode = presentation?.viewMode || 'present';
   const { userProfile } = useUserContext();
 
   const {

@@ -19,7 +19,15 @@ export const Slide2: React.FC = () => (
           Core Definition
         </span>
         <p className="text-xs md:text-sm text-foreground leading-relaxed">
-          Quantity Surveying is the rigorous cost assessment of construction projects based on local market rates for materials and labor.
+          Quantity Surveying is the{' '}
+          <ClickHighlight at={0} variant="paint">
+            rigorous cost assessment of construction projects
+          </ClickHighlight>{' '}
+          based on{' '}
+          <ClickHighlight at={0} variant="paint">
+            local market rates for materials and labor
+          </ClickHighlight>
+          .
         </p>
       </div>
 
@@ -53,27 +61,41 @@ export const Slide3: React.FC = () => (
       <SlideGrid cols={2} gap="md">
         <InteractiveCard title="Baseline Financial Blueprint" variant="default">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Establishes a realistic, mathematically sound prediction of total project expenditure at every stage of infrastructure development.
+            Establishes a realistic,{' '}
+            <ClickHighlight at={0} variant="paint">
+              mathematically sound prediction
+            </ClickHighlight>{' '}
+            of total project expenditure at every stage of infrastructure development.
           </p>
         </InteractiveCard>
         <ClickReveal at={1}>
           <InteractiveCard title="Role in Project Budgeting" variant="default">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Prevents cost overruns, anchors pre-tender estimates, and manages critical feasibility boundaries before committing capital.
+              <ClickHighlight at={1} variant="paint">
+                Prevents cost overruns
+              </ClickHighlight>
+              , anchors pre-tender estimates, and manages critical feasibility boundaries before committing capital.
             </p>
           </InteractiveCard>
         </ClickReveal>
         <ClickReveal at={2}>
           <InteractiveCard title="Material &amp; Resource Scheduling" variant="default">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Translates 2D blueprints into exact logistical bills of materials (cement, sand, bricks) to optimize site inventory and minimize waste.
+              Translates 2D blueprints into exact logistical bills of materials (cement, sand, bricks) to{' '}
+              <ClickHighlight at={2} variant="paint">
+                optimize site inventory
+              </ClickHighlight>{' '}
+              and minimize waste.
             </p>
           </InteractiveCard>
         </ClickReveal>
         <ClickReveal at={3}>
           <InteractiveCard title="Time &amp; Cost Control" variant="default">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Manages field variations, acts as a legal rate baseline for disputes, and structures monthly interim contractor progress billings.
+              <ClickHighlight at={3} variant="paint">
+                Manages field variations
+              </ClickHighlight>
+              , acts as a legal rate baseline for disputes, and structures monthly interim contractor progress billings.
             </p>
           </InteractiveCard>
         </ClickReveal>
@@ -95,17 +117,29 @@ export const Slide4: React.FC = () => {
             <ul className="flex flex-col gap-2.5">
               <SlideBullet title="Technical Translation:">
                 <span>
-                  Describing complex architectural requirements in flawless, completely unambiguous technical language so builders can price accurately.
+                  Describing complex architectural requirements in{' '}
+                  <ClickHighlight at={0} variant="paint">
+                    flawless, completely unambiguous
+                  </ClickHighlight>{' '}
+                  technical language so builders can price accurately.
                 </span>
               </SlideBullet>
-              <SlideBullet title="Market Grounding:">
+              <SlideBullet revealAt={1} title="Market Grounding:">
                 <span>
-                  Possessing an absolute command of raw construction materials, modern site methods, and local trade customs.
+                  Possessing an{' '}
+                  <ClickHighlight at={1} variant="paint">
+                    absolute command
+                  </ClickHighlight>{' '}
+                  of raw construction materials, modern site methods, and local trade customs.
                 </span>
               </SlideBullet>
-              <SlideBullet title="Accountability:">
+              <SlideBullet revealAt={2} title="Accountability:">
                 <span>
-                  Demands strict personal discipline, organized spatial take-off habits, and absolute arithmetical accuracy.
+                  Demands{' '}
+                  <ClickHighlight at={2} variant="paint">
+                    strict personal discipline
+                  </ClickHighlight>{' '}
+                  , organized spatial take-off habits, and absolute arithmetical accuracy.
                 </span>
               </SlideBullet>
             </ul>
@@ -114,20 +148,29 @@ export const Slide4: React.FC = () => {
       }
       rightContent={
         <div className="flex flex-col gap-3">
-          <InteractiveCard title="The Sector Split (Responsibilities)" variant="default" className="w-full">
-            <ul className="flex flex-col gap-3">
-              <SlideBullet revealAt={1} title="Private Practice (Client-Side):">
-                <span>
-                  Protecting the owner's investment, providing independent cost advice, and managing lifecycle budgets from inception to handover.
-                </span>
-              </SlideBullet>
-              <SlideBullet revealAt={2} title="Commercial Management (Contracting):">
-                <span>
-                  Working for the contractor to manage site supply chains, monitor cash flow, and secure project profitability.
-                </span>
-              </SlideBullet>
-            </ul>
-          </InteractiveCard>
+          <ClickReveal at={3}>
+            <InteractiveCard title="The Sector Split (Responsibilities)" variant="default" className="w-full">
+              <ul className="flex flex-col gap-3">
+                <SlideBullet revealAt={3} title="Private Practice (Client-Side):">
+                  <span>
+                    <ClickHighlight at={3} variant="paint">
+                      Protecting the owner's investment
+                    </ClickHighlight>
+                    , providing independent cost advice, and managing lifecycle budgets from inception to handover.
+                  </span>
+                </SlideBullet>
+                <SlideBullet revealAt={4} title="Commercial Management (Contracting):">
+                  <span>
+                    Working for the contractor to manage site supply chains, monitor cash flow, and{' '}
+                    <ClickHighlight at={4} variant="paint">
+                      secure project profitability
+                    </ClickHighlight>{' '}
+                    .
+                  </span>
+                </SlideBullet>
+              </ul>
+            </InteractiveCard>
+          </ClickReveal>
         </div>
       }
     />
