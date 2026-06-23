@@ -9,14 +9,14 @@ import {
   CalculationOutput 
 } from '@/features/presentation/components/elements';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
+import { FootingDrawingCanvas } from '@/subjects/quantity-surveying/features';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 
 /**
  * Slide 7: Brick Flat Soling (BFS) Bedding
  */
 export const Slide7: React.FC = () => {
-  const [length, setLength] = useUrlSyncedState<number>('bfs_len', 3.0);
-  const [width, setWidth] = useUrlSyncedState<number>('bfs_width', 2.4);
-  const area = length * width;
+  const { currentClick } = useClickStepsContext();
 
   return (
     <TwoColumnLayout
@@ -50,7 +50,7 @@ export const Slide7: React.FC = () => {
                   <strong>Billing Standard:</strong> BFS is measured strictly as a <strong>surface area item</strong> (<ClickHighlight at={1} variant="paint"><LatexFormula math="\text{m}^2" /></ClickHighlight>).
                 </span>
               ),
-              revealAt: 0,
+              revealAt: 1,
             },
             {
               type: 'bullet',
@@ -65,6 +65,30 @@ export const Slide7: React.FC = () => {
         />
       }
       rightContent={
+        <FootingDrawingCanvas
+          width={2.4}
+          length={3.0}
+          depth={1.5}
+          ccThickness={0.075}
+          activeHighlight={currentClick >= 1 ? 'bfs' : 'none'}
+        />
+      }
+    />
+  );
+};
+
+export const Slide7B: React.FC = () => {
+  const [length, setLength] = useUrlSyncedState<number>('bfs_len', 3.0);
+  const [width, setWidth] = useUrlSyncedState<number>('bfs_width', 2.4);
+  const { currentClick } = useClickStepsContext();
+  const area = length * width;
+
+  return (
+    <TwoColumnLayout
+      title="BFS Area Take-off Sandbox"
+      bgVariant="default"
+      leftWidth="45%"
+      leftContent={
         <InteractiveCard title="BFS Area Take-off Sandbox">
           <div className="space-y-4 mb-4">
             <ParameterSlider
@@ -87,15 +111,6 @@ export const Slide7: React.FC = () => {
             />
           </div>
 
-          <div className="relative h-24 bg-muted/40 rounded-lg border border-border/30 flex items-center justify-center p-2 mb-4 overflow-hidden">
-            {/* Flat bricks grid representation */}
-            <div className="grid grid-cols-6 gap-1 w-40 h-16 border border-primary/40 p-1 bg-primary/5 rounded-md">
-              {[...Array(12)].map((_, i) => (
-                <div key={i} className="bg-primary/20 border border-primary/40 rounded-sm" />
-              ))}
-            </div>
-          </div>
-
           <div className="border-t border-border/40 pt-2">
             <CalculationOutput 
               title="Net BFS Surface Area" 
@@ -105,6 +120,15 @@ export const Slide7: React.FC = () => {
           </div>
         </InteractiveCard>
       }
+      rightContent={
+        <FootingDrawingCanvas
+          width={width}
+          length={length}
+          depth={1.5}
+          ccThickness={0.075}
+          activeHighlight={currentClick >= 1 ? 'bfs' : 'none'}
+        />
+      }
     />
   );
 };
@@ -113,10 +137,7 @@ export const Slide7: React.FC = () => {
  * Slide 8: Lean Cement Concrete (CC) Base
  */
 export const Slide8: React.FC = () => {
-  const [length, setLength] = useUrlSyncedState<number>('cc_len', 3.0);
-  const [width, setWidth] = useUrlSyncedState<number>('cc_width', 2.4);
-  const [thickness, setThickness] = useUrlSyncedState<number>('cc_thick', 0.075);
-  const volume = length * width * thickness;
+  const { currentClick } = useClickStepsContext();
 
   return (
     <TwoColumnLayout
@@ -150,12 +171,37 @@ export const Slide8: React.FC = () => {
                   <strong>Billing Standard:</strong> CC base is measured as a <strong>volumetric item</strong> (<ClickHighlight at={1} variant="paint"><LatexFormula math="\text{m}^3" /></ClickHighlight>).
                 </span>
               ),
-              revealAt: 0,
+              revealAt: 1,
             },
           ]}
         />
       }
       rightContent={
+        <FootingDrawingCanvas
+          width={2.4}
+          length={3.0}
+          depth={1.5}
+          ccThickness={0.075}
+          activeHighlight={currentClick >= 1 ? 'lean' : 'none'}
+        />
+      }
+    />
+  );
+};
+
+export const Slide8B: React.FC = () => {
+  const [length, setLength] = useUrlSyncedState<number>('cc_len', 3.0);
+  const [width, setWidth] = useUrlSyncedState<number>('cc_width', 2.4);
+  const [thickness, setThickness] = useUrlSyncedState<number>('cc_thick', 0.075);
+  const { currentClick } = useClickStepsContext();
+  const volume = length * width * thickness;
+
+  return (
+    <TwoColumnLayout
+      title="Lean CC Volume Sandbox"
+      bgVariant="default"
+      leftWidth="45%"
+      leftContent={
         <InteractiveCard title="Lean CC Volume Sandbox">
           <div className="space-y-3 mb-4">
             <ParameterSlider
@@ -195,6 +241,15 @@ export const Slide8: React.FC = () => {
             />
           </div>
         </InteractiveCard>
+      }
+      rightContent={
+        <FootingDrawingCanvas
+          width={width}
+          length={length}
+          depth={1.5}
+          ccThickness={thickness}
+          activeHighlight={currentClick >= 1 ? 'lean' : 'none'}
+        />
       }
     />
   );

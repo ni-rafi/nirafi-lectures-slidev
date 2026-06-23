@@ -13,8 +13,7 @@ import {
 } from '@/features/presentation/components/elements';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
-import { Droplet } from 'lucide-react';
-import { JunctionDrawing } from '@/subjects/quantity-surveying/features';
+import { JunctionDrawing, ShoringDewateringDrawing, EarthworkVolumeDrawing } from '@/subjects/quantity-surveying/features';
 
 /**
  * Slide 3: Topic Divider - Earthwork
@@ -107,6 +106,8 @@ export const Slide4: React.FC = () => {
  * Slide 5: Practical Realities & Dewatering
  */
 export const Slide5: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
   return (
     <TwoColumnLayout
       title="Field Realities: Shoring & Dewatering"
@@ -127,7 +128,7 @@ export const Slide5: React.FC = () => {
               type: 'bullet',
               text: (
                 <span>
-                  <strong>Timbering & Shoring:</strong> Supporting structural trench walls when depth exceeds 1.5m to prevent side collapses. Billed as area ($m^2$).
+                  <strong>Timbering & Shoring:</strong> Supporting structural trench walls when depth exceeds 1.5m to prevent side collapses. Billed as area (<LatexFormula math="\text{m}^2" />).
                 </span>
               ),
               revealAt: 1,
@@ -145,27 +146,7 @@ export const Slide5: React.FC = () => {
         />
       }
       rightContent={
-        <div className="flex flex-col justify-between h-full bg-muted/20 p-4 border border-border/40 rounded-xl">
-          <div className="h-48 bg-muted/40 rounded-lg border border-border/30 relative flex items-center justify-center overflow-hidden">
-            {/* Water levels & Trench elevation visual */}
-            <div className="absolute bottom-0 left-0 right-0 h-16 bg-blue-500/10 border-t border-blue-500/20 flex items-center justify-center">
-              <span className="text-blue-500 font-mono text-[10px] uppercase tracking-wider flex items-center gap-1">
-                <Droplet className="w-3.5 h-3.5 animate-bounce" /> Sub-grade Groundwater Table
-              </span>
-            </div>
-            <div className="w-40 h-24 border-x-2 border-dashed border-amber-600/40 relative flex flex-col justify-between p-2">
-              <span className="text-[9px] text-amber-500 font-mono self-center">Excavated Trench</span>
-              <div className="flex justify-between w-full">
-                <div className="w-1.5 h-16 bg-primary border border-primary/80 rounded" />
-                <div className="w-1.5 h-16 bg-primary border border-primary/80 rounded" />
-              </div>
-              <span className="text-[8px] text-primary font-mono self-center">Timber Bracing</span>
-            </div>
-          </div>
-          <div className="p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg text-xs text-blue-600 dark:text-blue-400">
-            <strong>PWD Bangladesh Spec:</strong> Any pumping due to spring water/rainwater during concrete work must be explicitly measured or included in operational rates.
-          </div>
-        </div>
+        <ShoringDewateringDrawing currentStep={currentClick} />
       }
     />
   );
@@ -175,11 +156,7 @@ export const Slide5: React.FC = () => {
  * Slide 6: Bulking vs Backfill Computations
  */
 export const Slide6: React.FC = () => {
-  const [netExcavation, setNetExcavation] = useUrlSyncedState<number>('earth_net_exc', 30.0);
-  const [bulkingFactor, setBulkingFactor] = useUrlSyncedState<number>('earth_bulk_fac', 1.2);
-
-  const transitVolume = netExcavation * bulkingFactor;
-  const backfillVolume = netExcavation * 0.35; // typical footing volume displacement deduction
+  const { currentClick } = useClickStepsContext();
 
   return (
     <TwoColumnLayout
@@ -228,6 +205,30 @@ export const Slide6: React.FC = () => {
         />
       }
       rightContent={
+        <EarthworkVolumeDrawing
+          netVolume={30.0}
+          bulkingFactor={1.2}
+          currentStep={currentClick}
+        />
+      }
+    />
+  );
+};
+
+export const Slide6B: React.FC = () => {
+  const [netExcavation, setNetExcavation] = useUrlSyncedState<number>('earth_net_exc', 30.0);
+  const [bulkingFactor, setBulkingFactor] = useUrlSyncedState<number>('earth_bulk_fac', 1.2);
+  const { currentClick } = useClickStepsContext();
+
+  const transitVolume = netExcavation * bulkingFactor;
+  const backfillVolume = netExcavation * 0.35; // typical footing volume displacement deduction
+
+  return (
+    <TwoColumnLayout
+      title="Soil Bulking Sandbox"
+      bgVariant="default"
+      leftWidth="45%"
+      leftContent={
         <InteractiveCard title="Bulking & Backfill Modeler">
           <div className="space-y-4 mb-4">
             <ParameterSlider
@@ -268,6 +269,14 @@ export const Slide6: React.FC = () => {
           </div>
         </InteractiveCard>
       }
+      rightContent={
+        <EarthworkVolumeDrawing
+          netVolume={netExcavation}
+          bulkingFactor={bulkingFactor}
+          currentStep={currentClick}
+        />
+      }
     />
   );
 };
+

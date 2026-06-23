@@ -73,8 +73,8 @@ export const BeamPlanPrimitive: React.FC<BeamPlanPrimitiveProps> = ({
           fill: fillColor || undefined,
           stroke: strokeColor || undefined,
         }}
-        fillOpacity={isActive ? 0.2 : 0.8}
-        strokeOpacity={isActive ? 0.9 : 0.6}
+        fillOpacity={isActive ? 0.2 : 0.15}
+        strokeOpacity={isActive ? 0.95 : 0.8}
         strokeWidth={1.5}
       />
 
