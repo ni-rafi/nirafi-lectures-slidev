@@ -3,7 +3,10 @@ import {
   calculateSteelWeightInternal,
   calculateStirrupsCountInternal,
   calculateHookAdditionInternal,
-  calculateCrankAdditionInternal
+  calculateCrankAdditionInternal,
+  calculatePlateWeightInternal,
+  calculateRafterLengthInternal,
+  calculatePurlinsCountInternal
 } from '../steel';
 
 describe('Steel Reinforcement Module', () => {
@@ -85,5 +88,51 @@ describe('Steel Reinforcement Module', () => {
       expect(calculateCrankAdditionInternal(0.12, 0)).toBe(0);
     });
   });
+
+  describe('Plate Weight Calculation', () => {
+    test('should calculate correct plate weight in kilograms', () => {
+      // 0.4m * 0.4m * 0.012m (12mm) * 7850 kg/m³ = 1.92 * 7.85 = 15.072 kg
+      expect(calculatePlateWeightInternal(0.4, 0.4, 0.012)).toBe(15.072);
+
+      // 0.3m * 0.3m * 0.008m (8mm) * 7850 = 0.72 * 7.85 = 5.652 kg
+      expect(calculatePlateWeightInternal(0.3, 0.3, 0.008)).toBe(5.652);
+    });
+
+    test('should return 0 for invalid inputs', () => {
+      expect(calculatePlateWeightInternal(-0.4, 0.4, 0.012)).toBe(0);
+      expect(calculatePlateWeightInternal(0.4, 0.4, 0)).toBe(0);
+    });
+  });
+
+  describe('Rafter Length Calculation', () => {
+    test('should calculate correct sloped rafter length in meters', () => {
+      // Rise = 2.5m, Half-span = 6.0m -> sqrt(6.25 + 36) = sqrt(42.25) = 6.50m
+      expect(calculateRafterLengthInternal(2.5, 6.0)).toBe(6.5);
+
+      // Rise = 3.0m, Half-span = 4.0m -> sqrt(9 + 16) = sqrt(25) = 5.0m
+      expect(calculateRafterLengthInternal(3.0, 4.0)).toBe(5);
+    });
+
+    test('should return 0 for invalid inputs', () => {
+      expect(calculateRafterLengthInternal(-2.5, 6.0)).toBe(0);
+      expect(calculateRafterLengthInternal(2.5, -6.0)).toBe(0);
+    });
+  });
+
+  describe('Purlin Count Calculation', () => {
+    test('should calculate correct number of purlins', () => {
+      // Rafter = 6.5m, Spacing = 1.3m -> (6.5 / 1.3) + 1 = 5 + 1 = 6
+      expect(calculatePurlinsCountInternal(6.5, 1.3)).toBe(6);
+
+      // Rafter = 5.0m, Spacing = 1.2m -> floor(4.166) + 1 = 5
+      expect(calculatePurlinsCountInternal(5.0, 1.2)).toBe(5);
+    });
+
+    test('should return 0 for invalid inputs', () => {
+      expect(calculatePurlinsCountInternal(-6.5, 1.3)).toBe(0);
+      expect(calculatePurlinsCountInternal(6.5, -1.3)).toBe(0);
+    });
+  });
 });
+
 

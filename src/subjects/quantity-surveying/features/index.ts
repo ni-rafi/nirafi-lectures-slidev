@@ -11,6 +11,10 @@ export { EarthworkVolumeDrawing } from './components/EarthworkVolumeDrawing';
 export { HookCrankDrawing } from './components/HookCrankDrawing';
 export { StirrupCountingDrawing } from './components/StirrupCountingDrawing';
 export { WeightConversionDrawing } from './components/WeightConversionDrawing';
+export { SteelSectionsDrawing } from './components/SteelSectionsDrawing';
+export { BasePlatePedestalDrawing } from './components/BasePlatePedestalDrawing';
+export { RoofTrussLayoutDrawing } from './components/RoofTrussLayoutDrawing';
+export { GussetPlateBoundingDrawing } from './components/GussetPlateBoundingDrawing';
 export * from './calculators';
 
 

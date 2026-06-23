@@ -6,7 +6,10 @@ export {
   calculateSteelWeightInternal,
   calculateStirrupsCountInternal,
   calculateHookAdditionInternal,
-  calculateCrankAdditionInternal
+  calculateCrankAdditionInternal,
+  calculatePlateWeightInternal,
+  calculateRafterLengthInternal,
+  calculatePurlinsCountInternal
 } from './steel';
 export { CONCRETE_SHRINKAGE_FACTOR } from './constants';
 

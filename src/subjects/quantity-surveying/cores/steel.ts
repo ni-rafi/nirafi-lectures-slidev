@@ -68,3 +68,47 @@ export function calculateCrankAdditionInternal(
   return Math.round(additionM * 1000) / 1000;
 }
 
+/**
+ * Calculates standard flat plate weight in kg.
+ * Formula: Weight = L * B * T * 7850
+ * inputs are in meters (SI base units).
+ */
+export function calculatePlateWeightInternal(
+  lengthM: number,
+  widthM: number,
+  thicknessM: number
+): number {
+  if (lengthM <= 0 || widthM <= 0 || thicknessM <= 0) return 0;
+  const weight = lengthM * widthM * thicknessM * 7850;
+  return Math.round(weight * 1000) / 1000;
+}
+
+/**
+ * Calculates sloped rafter length in meters using Pythagoras theorem.
+ * Formula: Length = sqrt(rise^2 + halfSpan^2)
+ * inputs are in meters (SI base units).
+ */
+export function calculateRafterLengthInternal(
+  riseM: number,
+  halfSpanM: number
+): number {
+  if (riseM <= 0 || halfSpanM <= 0) return 0;
+  const length = Math.sqrt(riseM * riseM + halfSpanM * halfSpanM);
+  return Math.round(length * 1000) / 1000;
+}
+
+/**
+ * Calculates total number of purlin lines.
+ * Formula: No. = (Rafter Length / Spacing) + 1 (rounded down)
+ * inputs are in meters (SI base units).
+ */
+export function calculatePurlinsCountInternal(
+  rafterLengthM: number,
+  spacingM: number
+): number {
+  if (rafterLengthM <= 0 || spacingM <= 0) return 0;
+  const ratio = rafterLengthM / spacingM;
+  return Math.floor(Math.round(ratio * 100000) / 100000) + 1;
+}
+
+
