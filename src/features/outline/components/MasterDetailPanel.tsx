@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { usePresentation } from '@/features/presentation/context/PresentationContext';
+import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { BookOpen, ChevronRight } from 'lucide-react';
 
 export interface MasterDetailItem {
@@ -17,6 +18,7 @@ interface MasterDetailPanelProps {
   badgePrefix?: string; // Default prefix for badges (e.g. "CC")
   activeLabel?: string; // Label for highlighted active items (e.g. "Covered")
   inactiveLabel?: string; // Label for non-highlighted items (e.g. "Not Covered")
+  syncKey?: string;
 }
 
 export const MasterDetailPanel: React.FC<MasterDetailPanelProps> = ({
@@ -27,11 +29,15 @@ export const MasterDetailPanel: React.FC<MasterDetailPanelProps> = ({
   badgePrefix = 'CC',
   activeLabel = 'Covered',
   inactiveLabel = 'Not Covered',
+  syncKey,
 }) => {
   const presentation = usePresentation();
   const currentClick = presentation?.activeSubStep ?? 0;
   const isBlog = presentation?.viewMode === 'blog';
-  const [activeItemId, setActiveItemId] = useState<number>(items[0]?.id ?? 1);
+
+  const fallbackId = React.useId();
+  const activeSyncKey = syncKey || `panel-${fallbackId.replace(/:/g, '')}`;
+  const [activeItemId, setActiveItemId] = useUrlSyncedState<number>(activeSyncKey, items[0]?.id ?? 1);
 
   if (isBlog) {
     return (
@@ -46,11 +52,10 @@ export const MasterDetailPanel: React.FC<MasterDetailPanelProps> = ({
             return (
               <div
                 key={item.id}
-                className={`p-4 border rounded-xl transition-all duration-300 ${
-                  isActiveItem
+                className={`p-4 border rounded-xl transition-all duration-300 ${isActiveItem
                     ? 'bg-card/20 border-primary/20 bg-primary/5'
                     : 'opacity-40 border-dashed saturate-50 bg-card/5'
-                }`}
+                  }`}
               >
                 <h4 className="text-xs font-bold text-foreground mb-1 flex items-center justify-between">
                   <span>{item.badgeLabel || `${badgePrefix} ${item.id}`}: {item.title}</span>
@@ -76,12 +81,12 @@ export const MasterDetailPanel: React.FC<MasterDetailPanelProps> = ({
         <BookOpen className="h-4 w-4 text-primary" />
         {panelTitle}
       </h3>
-      <div 
+      <div
         className="gap-4 flex-1 items-stretch min-h-0"
         style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))' }}
       >
         {/* Master Buttons List */}
-        <div 
+        <div
           className="flex flex-col gap-1.5 overflow-y-auto pr-1"
           style={{ gridColumn: 'span 5 / span 5', maxHeight: '300px' }}
         >
@@ -117,7 +122,7 @@ export const MasterDetailPanel: React.FC<MasterDetailPanelProps> = ({
         </div>
 
         {/* Detail Box */}
-        <div 
+        <div
           className="border border-border/40 bg-muted/10 rounded-lg p-3.5 flex flex-col gap-2 overflow-y-auto transition-all duration-300"
           style={{ gridColumn: 'span 7 / span 7', maxHeight: '300px' }}
         >

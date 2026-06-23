@@ -51,7 +51,7 @@ export const InteractiveScheduleTable: React.FC<InteractiveScheduleTableProps> =
     return match ? `${match.title}: ${match.description}` : '';
   };
 
-  const renderBadge = (code: string, isTL: boolean) => {
+  const renderBadge = (code: string, isTL: boolean, weekNo: number) => {
     if (code.trim() === '---' || !code.trim()) return <span className="text-muted-foreground/40">—</span>;
     const desc = getStrategyDescription(code, isTL);
 
@@ -59,34 +59,36 @@ export const InteractiveScheduleTable: React.FC<InteractiveScheduleTableProps> =
       <HoverTooltip
         key={code}
         trigger={
-          <span className="bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary px-1.5 py-0.5 rounded text-[9px] font-bold font-mono transition-all select-none">
+          <span className="bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary px-1.5 py-0.5 rounded text-xs font-bold font-mono transition-all select-none">
             {code}
           </span>
         }
         title={code}
         content={desc}
+        syncKey={`outline-wk${weekNo}-${isTL ? 'tl' : 'as'}-${code.trim().toLowerCase().replace(/[^a-zA-Z0-9]/g, '-')}`}
       />
     );
   };
 
-  const renderCCBadge = (code: string) => {
+  const renderCCBadge = (code: string, weekNo: number) => {
     if (code.trim() === '---' || !code.trim()) return <span className="text-muted-foreground/45 font-mono">—</span>;
     const codes = code.split(',').map((c) => c.trim());
     return (
       <div className="flex flex-wrap gap-1 justify-center select-none pointer-events-auto">
         {codes.map((c) => {
           const desc = getContentDescription(c);
-          if (!desc) return <span key={c} className="font-mono text-muted-foreground">{c}</span>;
+          if (!desc) return <span key={c} className="font-mono text-muted-foreground text-xs">{c}</span>;
           return (
             <HoverTooltip
               key={c}
               trigger={
-                <span className="cursor-pointer underline decoration-dotted decoration-muted-foreground hover:text-primary font-mono transition-colors">
+                <span className="cursor-pointer underline decoration-dotted decoration-muted-foreground hover:text-primary font-mono text-xs transition-colors">
                   {c}
                 </span>
               }
               title={`Chapter ${c}`}
               content={desc}
+              syncKey={`outline-wk${weekNo}-cc-${c}`}
             />
           );
         })}
@@ -94,24 +96,25 @@ export const InteractiveScheduleTable: React.FC<InteractiveScheduleTableProps> =
     );
   };
 
-  const renderCOBadge = (code: string) => {
+  const renderCOBadge = (code: string, weekNo: number) => {
     if (code.trim() === '---' || !code.trim()) return <span className="text-muted-foreground/45 font-mono">—</span>;
     const codes = code.split(',').map((c) => c.trim());
     return (
       <div className="flex flex-wrap gap-1 justify-center select-none pointer-events-auto">
         {codes.map((c) => {
           const desc = getOutcomeDescription(c);
-          if (!desc) return <span key={c} className="font-mono text-primary font-bold">{c}</span>;
+          if (!desc) return <span key={c} className="font-mono text-primary font-bold text-xs">{c}</span>;
           return (
             <HoverTooltip
               key={c}
               trigger={
-                <span className="cursor-pointer font-bold bg-primary/5 hover:bg-primary/10 text-primary border border-primary/20 hover:border-primary/30 px-1.5 py-0.5 rounded text-[9px] font-mono transition-all">
+                <span className="cursor-pointer font-bold bg-primary/5 hover:bg-primary/10 text-primary border border-primary/20 hover:border-primary/30 px-1.5 py-0.5 rounded text-xs font-mono transition-all">
                   {c}
                 </span>
               }
               title={`Outcome CO ${c}`}
               content={desc}
+              syncKey={`outline-wk${weekNo}-co-${c}`}
             />
           );
         })}
@@ -140,15 +143,15 @@ export const InteractiveScheduleTable: React.FC<InteractiveScheduleTableProps> =
 
   // Map rows to pass to SlideTable
   const rows = filteredSchedule.map((row) => [
-    <span key="week" className="font-bold text-foreground">{row.week}</span>,
-    <span key="topic" className="font-semibold text-foreground leading-snug">{row.topic}</span>,
-    <React.Fragment key="cc">{renderCCBadge(row.contentCode)}</React.Fragment>,
-    <React.Fragment key="co">{renderCOBadge(row.coCovered)}</React.Fragment>,
+    <span key="week" className="font-bold text-foreground text-xs">{row.week}</span>,
+    <span key="topic" className="font-semibold text-foreground text-xs leading-snug">{row.topic}</span>,
+    <React.Fragment key="cc">{renderCCBadge(row.contentCode, row.week)}</React.Fragment>,
+    <React.Fragment key="co">{renderCOBadge(row.coCovered, row.week)}</React.Fragment>,
     <div key="tl" className="flex flex-wrap gap-1 select-none pointer-events-auto">
-      {row.tlStrategy.map((code) => renderBadge(code, true))}
+      {row.tlStrategy.map((code) => renderBadge(code, true, row.week))}
     </div>,
     <div key="assessment" className="flex flex-wrap gap-1 select-none pointer-events-auto">
-      {row.assessmentStrategy.map((code) => renderBadge(code, false))}
+      {row.assessmentStrategy.map((code) => renderBadge(code, false, row.week))}
     </div>,
   ]);
 
@@ -162,13 +165,13 @@ export const InteractiveScheduleTable: React.FC<InteractiveScheduleTableProps> =
             <Calendar className="h-4 w-4 text-primary" />
             Weekly Outline Table (Weeks {part === 1 ? '1–7' : '8–14'})
           </h3>
-          <span className="flex items-center gap-1 text-[9px] text-muted-foreground font-medium select-none">
+          <span className="flex items-center gap-1 text-xs text-muted-foreground font-medium select-none">
             <HelpCircle className="h-3 w-3" />
             Hover on codes for definitions
           </span>
         </div>
       ) : (
-        <div className="flex items-center justify-end select-none text-[9px] text-muted-foreground font-medium pr-1">
+        <div className="flex items-center justify-end select-none text-xs text-muted-foreground font-medium pr-1 mb-1">
           <HelpCircle className="h-3.5 w-3.5 mr-1 text-primary animate-pulse" />
           Hover on codes for definitions
         </div>
@@ -178,7 +181,7 @@ export const InteractiveScheduleTable: React.FC<InteractiveScheduleTableProps> =
         <SlideTable
           headers={headers}
           rows={rows}
-          className="text-[10px] w-full"
+          className="text-xs w-full"
           striped
           bordered
           hoverable
