@@ -9,7 +9,6 @@ import GlobalTop from '../layers/GlobalTop';
 import SlideRenderer, { getSlideMetadata, getBgVariant, getLectureDeck, getLectureSlideCount } from '../slides/SlideRenderer';
 import { SvgElementsRenderer } from '../layers/SvgElementsRenderer';
 import GlobalBottom from '../layers/GlobalBottom';
-import { QRCodeSVG } from '@/shared/components/QRCodeSVG';
 
 import { useQuizSubscriptions } from '../../hooks/useQuizSubscriptions';
 
@@ -65,10 +64,6 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
     isThumbnail: false,
   }), [presentation, slideNo, clickStep]);
 
-  const lectureUrl = useMemo(() => {
-    return `${window.location.origin}/${subject.id}/${session?.id || '2023-24'}/${lecture.id}`;
-  }, [subject.id, session?.id, lecture.id]);
-
   return (
     <div className="print-slide-page">
       <PresentationContext.Provider value={cardContextValue}>
@@ -117,38 +112,6 @@ const PrintSlideItem: React.FC<PrintSlideItemProps> = ({
           />
         </SlideContainer>
       </PresentationContext.Provider>
-
-      {/* QR code overlay — outside SlideContainer to avoid overflow:hidden clipping */}
-      {slideNo === 1 && (
-        <div
-          className="print-qr-overlay"
-          style={{
-            position: 'absolute',
-            bottom: '24px',
-            right: '32px',
-            zIndex: 50,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            padding: '8px 10px 8px 8px',
-            borderRadius: '12px',
-            backgroundColor: '#ffffff',
-            border: '1px solid rgba(0, 0, 0, 0.15)',
-            color: '#111827',
-            WebkitPrintColorAdjust: 'exact',
-            printColorAdjust: 'exact',
-          } as React.CSSProperties}
-        >
-          <QRCodeSVG value={lectureUrl} size={64} fgColor="#111827" bgColor="#ffffff" />
-          <div style={{ display: 'flex', flexDirection: 'column', fontSize: '10px', maxWidth: '160px', lineHeight: '1.3' }}>
-            <span style={{ fontWeight: 700, color: '#6b7280', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>Online Lecture</span>
-            <a href={lectureUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#4f46e5', fontFamily: 'monospace', fontWeight: 600, wordBreak: 'break-all', textDecoration: 'none' }}>
-              {lectureUrl.replace(/^https?:\/\//, '')}
-            </a>
-            <span style={{ fontSize: '8px', color: '#9ca3af', marginTop: '4px' }}>Scan QR or click to join</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

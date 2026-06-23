@@ -1,7 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { PresentationContext } from '../../features/presentation/context/PresentationContext';
 import presenter from '@/config/presenter.json';
 import sustLogoUrl from '@/assets/Logos/SUST Logo.svg';
+import { QRCodeSVG } from '@/shared/components/QRCodeSVG';
 
 interface PresenterInfo {
   name: string;
@@ -46,6 +48,17 @@ export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
   const viewMode = presentation?.viewMode || 'present';
   const isThumbnail = presentation?.isThumbnail || false;
   const headerTitleClass = isThumbnail ? '' : 'slide-header-title';
+
+  const { subjectId, sessionId, lectureId } = useParams<{
+    subjectId: string;
+    sessionId: string;
+    lectureId: string;
+  }>();
+
+  const lectureUrl = useMemo(() => {
+    if (!subjectId || !lectureId) return '';
+    return `${window.location.origin}/${subjectId}/${sessionId || '2023-24'}/${lectureId}`;
+  }, [subjectId, sessionId, lectureId]);
 
   if (viewMode === 'blog') {
     return (
@@ -206,6 +219,32 @@ export const TitleV2Layout: React.FC<TitleV2LayoutProps> = ({
             {teacher.institution}
           </span>
         </div>
+
+        {lectureUrl && (
+          <div 
+            className="flex items-center gap-3 bg-card/60 dark:bg-card/30 backdrop-blur-sm border border-border/40 p-2 rounded-xl text-left shadow-sm select-text hover:bg-card/80 dark:hover:bg-card/45 transition-colors duration-200"
+            style={{
+              WebkitPrintColorAdjust: 'exact',
+              printColorAdjust: 'exact',
+            } as React.CSSProperties}
+          >
+            <div className="p-1 bg-white rounded-lg flex items-center justify-center shrink-0">
+              <QRCodeSVG value={lectureUrl} size={52} fgColor="#0f172a" bgColor="#ffffff" />
+            </div>
+            <div className="flex flex-col gap-0.5 font-mono">
+              <span className="text-[9px] font-extrabold text-primary uppercase tracking-widest leading-none">Interactive Deck</span>
+              <a 
+                href={lectureUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[8px] text-primary hover:underline font-semibold leading-normal break-all max-w-[150px]"
+              >
+                {lectureUrl.replace(/^https?:\/\//, '')}
+              </a>
+              <span className="text-[8px] text-muted-foreground/80 font-semibold leading-none mt-0.5">Scan to follow along</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
