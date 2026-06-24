@@ -11,5 +11,12 @@ export {
   calculateRafterLengthInternal,
   calculatePurlinsCountInternal
 } from './steel';
+export {
+  calculatePipeLengthWithAllowanceInternal,
+  calculateInvertLevelDifferenceInternal,
+  calculateSandCushionVolumeInternal,
+  calculateManholeBrickworkVolumeInternal,
+  calculateManholePlasterAreaInternal,
+} from './plumbing';
 export { CONCRETE_SHRINKAGE_FACTOR } from './constants';
 

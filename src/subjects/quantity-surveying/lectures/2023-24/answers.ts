@@ -9,7 +9,11 @@ export const QUIZ_METADATA = [
   { id: 'qs_2023_lec5_q1', header: 'Lec 5 Steel Nomenclature' },
   { id: 'qs_2023_lec5_q2', header: 'Lec 5 Base Plate Weight' },
   { id: 'qs_2023_lec5_q3', header: 'Lec 5 Truss Purlin Lines' },
-  { id: 'qs_2023_lec5_q4', header: 'Lec 5 Gusset Bounding Box' }
+  { id: 'qs_2023_lec5_q4', header: 'Lec 5 Gusset Bounding Box' },
+  { id: 'qs_2023_lec6_q1', header: 'Lec 6 Pipe Transitions' },
+  { id: 'qs_2023_lec6_q2', header: 'Lec 6 Fixture Packs' },
+  { id: 'qs_2023_lec6_q3', header: 'Lec 6 Trench Hydraulics' },
+  { id: 'qs_2023_lec6_q4', header: 'Lec 6 Inspection Chambers' }
 ];
 
 export const QUIZ_ANSWERS: Record<
@@ -100,4 +104,9 @@ export const QUIZ_ANSWERS: Record<
       return ((12 + parameterResolver.getLastDigit(reg)) * 1.236375).toFixed(3);
     },
   },
+
+  qs_2023_lec6_q1: 'Add all vertical transitions: 3.20m (horizontal) + 2.80m (riser) + 1.20m (drop) = 7.20m centerline length',
+  qs_2023_lec6_q2: '73200',
+  qs_2023_lec6_q3: '0.750',
+  qs_2023_lec6_q4: '0.509',
 };

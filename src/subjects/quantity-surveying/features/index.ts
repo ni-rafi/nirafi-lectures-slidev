@@ -15,6 +15,10 @@ export { SteelSectionsDrawing } from './components/SteelSectionsDrawing';
 export { BasePlatePedestalDrawing } from './components/BasePlatePedestalDrawing';
 export { RoofTrussLayoutDrawing } from './components/RoofTrussLayoutDrawing';
 export { GussetPlateBoundingDrawing } from './components/GussetPlateBoundingDrawing';
+export { WaterPipeNetworkDrawing } from './components/WaterPipeNetworkDrawing';
+export { FixturePackageDrawing } from './components/FixturePackageDrawing';
+export { DrainageSlopeDrawing } from './components/DrainageSlopeDrawing';
+export { ManholeSectionDrawing } from './components/ManholeSectionDrawing';
 export * from './calculators';
 
 
