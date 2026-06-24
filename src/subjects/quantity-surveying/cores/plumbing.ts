@@ -85,3 +85,75 @@ export function calculateManholePlasterAreaInternal(
   const area = 2 * (lengthM + widthM) * depthM;
   return Math.round(area * 1000) / 1000;
 }
+
+/**
+ * Calculates groove cutting length cost and concrete/mortar filling volume
+ */
+export function calculateGrooveCuttingAndConcealment(
+  lengthM: number,
+  wallType: 'brick' | 'rcc',
+  rateBrick: number,
+  rateRcc: number
+): { grooveCostBdt: number; concreteFillingVolM3: number } {
+  if (lengthM <= 0 || rateBrick < 0 || rateRcc < 0) {
+    return { grooveCostBdt: 0, concreteFillingVolM3: 0 };
+  }
+  const rate = wallType === 'brick' ? rateBrick : rateRcc;
+  const cost = lengthM * rate;
+  const vol = lengthM * 0.05 * 0.05; // Standard 50mm x 50mm groove
+  return {
+    grooveCostBdt: Math.round(cost * 1000) / 1000,
+    concreteFillingVolM3: Math.round(vol * 1000) / 1000,
+  };
+}
+
+/**
+ * Calculates total MEP pipelines (Gas riser + branches and Rainwater downpipes)
+ */
+export function calculateMepSubNetworks(
+  floorsCount: number,
+  typicalFloorHeightM: number,
+  horizontalGasRunM: number,
+  gasPipeRateBdt: number,
+  rwpRateBdt: number
+): {
+  rwpLengthM: number;
+  gasPipeLengthM: number;
+  rwpCostBdt: number;
+  gasPipeCostBdt: number;
+  totalMepCostBdt: number;
+} {
+  if (
+    floorsCount <= 0 ||
+    typicalFloorHeightM <= 0 ||
+    horizontalGasRunM < 0 ||
+    gasPipeRateBdt < 0 ||
+    rwpRateBdt < 0
+  ) {
+    return {
+      rwpLengthM: 0,
+      gasPipeLengthM: 0,
+      rwpCostBdt: 0,
+      gasPipeCostBdt: 0,
+      totalMepCostBdt: 0,
+    };
+  }
+  const totalHeight = floorsCount * typicalFloorHeightM;
+  // 4 rainwater downpipes dropping down the building
+  const rwpLength = 4 * totalHeight;
+  // 1 vertical gas riser running the height, plus horizontal runs on each floor
+  const gasLength = totalHeight + floorsCount * horizontalGasRunM;
+
+  const rwpCost = rwpLength * rwpRateBdt;
+  const gasCost = gasLength * gasPipeRateBdt;
+  const totalCost = rwpCost + gasCost;
+
+  return {
+    rwpLengthM: Math.round(rwpLength * 1000) / 1000,
+    gasPipeLengthM: Math.round(gasLength * 1000) / 1000,
+    rwpCostBdt: Math.round(rwpCost * 1000) / 1000,
+    gasPipeCostBdt: Math.round(gasCost * 1000) / 1000,
+    totalMepCostBdt: Math.round(totalCost * 1000) / 1000,
+  };
+}
+

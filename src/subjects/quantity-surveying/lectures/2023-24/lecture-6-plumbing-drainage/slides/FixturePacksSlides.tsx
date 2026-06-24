@@ -6,12 +6,10 @@ import {
   SlideParagraph, 
   SlideList, 
   SlideCallout, 
-  ClickReveal,
-  InteractiveCard,
-  CalculationOutput
+  ClickReveal
 } from '@/features/presentation/components/elements';
 import { FixturePackageDrawing } from '@/subjects/quantity-surveying/features/components/FixturePackageDrawing';
-import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
+import { FixtureAssemblySandbox } from '@/subjects/quantity-surveying/features';
 import { QuizCardOrchestrator } from '@/features/quiz';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 
@@ -137,94 +135,7 @@ export const Slide9: React.FC = () => (
 // Slide 10: Sanitary Fixtures Sandbox
 // ============================================================================
 export const Slide10: React.FC = () => {
-  const [fixtureType, setFixtureType] = useUrlSyncedState<'Indian' | 'European'>('fixture_wc_type', 'European');
-  const [hasCistern, setHasCistern] = useUrlSyncedState<boolean>('fixture_wc_cistern', true);
-  const [hasPushShower, setHasPushShower] = useUrlSyncedState<boolean>('fixture_wc_shower', true);
-  const [hasLowBibcock, setHasLowBibcock] = useUrlSyncedState<boolean>('fixture_wc_bibcock', true);
-
-  // Custom pricing model:
-  const baseCost = fixtureType === 'European' ? 9500 : 5000;
-  const cisternCost = hasCistern ? 1500 : 0;
-  const showerCost = hasPushShower ? 1200 : 0;
-  const bibcockCost = hasLowBibcock ? 850 : 0;
-  const totalCost = baseCost + cisternCost + showerCost + bibcockCost;
-
-  return (
-    <TwoColumnLayout
-      title="2.3 WC Assembly Package Sandbox"
-      leftWidth="40%"
-      leftContent={
-        <InteractiveCard title="Package Accessories">
-          <div className="flex justify-center gap-2 mb-4">
-            {(['Indian', 'European'] as const).map((type) => (
-              <button
-                key={type}
-                onClick={() => setFixtureType(type)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                  fixtureType === type
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted border border-border/50 text-foreground hover:bg-muted/80'
-                }`}
-              >
-                {type} Type
-              </button>
-            ))}
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <button
-              onClick={() => setHasCistern(!hasCistern)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-all flex justify-between items-center ${
-                hasCistern ? 'border-primary/50 bg-primary/5 text-primary' : 'border-border bg-transparent text-muted-foreground'
-              }`}
-            >
-              <span>Flushing Cistern (+1500 BDT)</span>
-              <span className="font-mono">{hasCistern ? '[ON]' : '[OFF]'}</span>
-            </button>
-
-            <button
-              onClick={() => setHasPushShower(!hasPushShower)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-all flex justify-between items-center ${
-                hasPushShower ? 'border-primary/50 bg-primary/5 text-primary' : 'border-border bg-transparent text-muted-foreground'
-              }`}
-            >
-              <span>Push Shower (+1200 BDT)</span>
-              <span className="font-mono">{hasPushShower ? '[ON]' : '[OFF]'}</span>
-            </button>
-
-            <button
-              onClick={() => setHasLowBibcock(!hasLowBibcock)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold border transition-all flex justify-between items-center ${
-                hasLowBibcock ? 'border-primary/50 bg-primary/5 text-primary' : 'border-border bg-transparent text-muted-foreground'
-              }`}
-            >
-              <span>Ablution Bib-cock (+850 BDT)</span>
-              <span className="font-mono">{hasLowBibcock ? '[ON]' : '[OFF]'}</span>
-            </button>
-          </div>
-
-          <div className="border-t border-border/40 mt-4 pt-3">
-            <CalculationOutput 
-              title="Estimated Assembly Cost" 
-              value={totalCost.toString()} 
-              unit="BDT"
-              subtitle="PWD schedule composite estimate including fittings"
-            />
-          </div>
-        </InteractiveCard>
-      }
-      rightContent={
-        <div className="w-full h-full flex items-center justify-center">
-          <FixturePackageDrawing
-            fixtureType={fixtureType}
-            hasCistern={hasCistern}
-            hasPushShower={hasPushShower}
-            hasLowBibcock={hasLowBibcock}
-          />
-        </div>
-      }
-    />
-  );
+  return <FixtureAssemblySandbox />;
 };
 
 // ============================================================================
@@ -241,5 +152,64 @@ export const Slide11: React.FC = () => {
         />
       </div>
     </FullWidthLayout>
+  );
+};
+
+// ============================================================================
+// Slide 17: Smart & Automated Bathroom Fixtures (New slide)
+// ============================================================================
+export const AutomatedFixturesSlide: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
+  const highlightMap: Record<number, 'none' | 'accessories' | 'smart'> = {
+    0: 'none',
+    1: 'accessories',
+    2: 'smart',
+  };
+
+  const activeHighlight = highlightMap[currentClick] || 'none';
+
+  return (
+    <TwoColumnLayout
+      title="2.4 Smart & Automated Bathroom Fixtures"
+      bgVariant="default"
+      leftWidth="50%"
+      leftContent={
+        <div className="space-y-4 text-left select-text">
+          <SlideParagraph title="Commercial and Smart Fixture Elements">
+            Modern green buildings and public utilities require calculating both standard wall accessories and automatic sensor-based upgrades.
+          </SlideParagraph>
+
+          <SlideList
+            revealMode="each-click"
+            items={[
+              {
+                title: "Standard Accessory Bundles",
+                text: "Includes mirrors (Nos.), towel rails (Nos.), and recessed soap trays (Nos.). These are itemized individually in standard BoQs."
+              },
+              {
+                title: "Active Sensor-based Fixtures",
+                text: "Automatic infrared soap dispensers (Nos.) and HEPA-filter hand dryers (Nos.) are billed separately with power-supply point runs."
+              }
+            ]}
+          />
+        </div>
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <FixturePackageDrawing
+            toiletType="EuropeanWallHung"
+            basinType="Counter"
+            hasMirror={true}
+            hasTowelRail={true}
+            hasSoapTray={true}
+            hasSmartSoap={currentClick >= 2}
+            hasSmartDryer={currentClick >= 2}
+            activeHighlight={activeHighlight}
+            className="flex-1"
+          />
+        </div>
+      }
+    />
   );
 };

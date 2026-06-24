@@ -40,6 +40,8 @@ export {
   calculateSandCushionVolumeInternal,
   calculateManholeBrickworkVolumeInternal,
   calculateManholePlasterAreaInternal,
+  calculateGrooveCuttingAndConcealment,
+  calculateMepSubNetworks,
 } from './plumbing';
 export {
   calculateRoadwayArea,

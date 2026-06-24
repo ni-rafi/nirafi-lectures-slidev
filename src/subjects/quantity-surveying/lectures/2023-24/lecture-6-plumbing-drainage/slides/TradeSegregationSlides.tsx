@@ -4,8 +4,11 @@ import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import {
   SlideParagraph,
   SlideCallout,
-  InteractiveCard
+  InteractiveCard,
+  SlideList
 } from '@/features/presentation/components/elements';
+import { MepSubNetworksDrawing, MepSubNetworksSandbox } from '@/subjects/quantity-surveying/features';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 
 // ============================================================================
 // Slide 25: Trade Segregation in MEP
@@ -89,3 +92,69 @@ export const Slide26: React.FC = () => (
     </div>
   </FullWidthLayout>
 );
+
+// ============================================================================
+// Slide 29: MEP Pipeline Sub-Networks
+// ============================================================================
+export const MepSubNetworksSlide: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
+  const highlightMap: Record<number, 'none' | 'rwp' | 'gas'> = {
+    0: 'none',
+    1: 'rwp',
+    2: 'gas',
+  };
+
+  const activeHighlight = highlightMap[currentClick] || 'none';
+
+  return (
+    <TwoColumnLayout
+      title="4.6 MEP Pipeline Sub-Networks"
+      bgVariant="default"
+      leftWidth="48%"
+      leftContent={
+        <div className="space-y-4 text-left select-text">
+          <SlideParagraph title="Secondary Pipeline Networks">
+            In modern multi-story buildings, quantity take-offs must isolate secondary sub-networks: rainwater drainage and utility gas supply networks.
+          </SlideParagraph>
+
+          <SlideList
+            revealMode="each-click"
+            items={[
+              {
+                title: "Rainwater Downpipe Drops (RWP)",
+                text: "Measured in linear meters (m). Clamps and shoes are absorbed in the item rates for uPVC downpipes."
+              },
+              {
+                title: "Utility Gas Supply Network",
+                text: "Billed in linear meters (m) for API 5L black M.S. pipes. Directional welds, reducers, and stop cock valves are counted separately (Nos.)."
+              }
+            ]}
+          />
+        </div>
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <MepSubNetworksDrawing
+            highlight={activeHighlight === 'none' ? 'all' : activeHighlight}
+            className="flex-1"
+          />
+        </div>
+      }
+    />
+  );
+};
+
+// ============================================================================
+// Slide 30: MEP Sub-Networks Sandbox
+// ============================================================================
+export const MepSubNetworksSandboxSlide: React.FC = () => {
+  return (
+    <FullWidthLayout title="4.7 Live Sandbox: Rainwater & Gas Networks">
+      <div className="w-full h-full mt-2">
+        <MepSubNetworksSandbox />
+      </div>
+    </FullWidthLayout>
+  );
+};
+

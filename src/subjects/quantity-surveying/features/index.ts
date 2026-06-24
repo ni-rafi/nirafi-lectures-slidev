@@ -46,6 +46,8 @@ export { PwdWeightDiscrepancyDrawing } from './components/PwdWeightDiscrepancyDr
 export { CgiRoofingDrawing } from './components/CgiRoofingDrawing';
 export { PwdSectionWeightDrawing } from './components/PwdSectionWeightDrawing';
 export { SecondaryFramingDrawing } from './components/SecondaryFramingDrawing';
+export { GrooveWeldingDrawing } from './components/GrooveWeldingDrawing';
+export { MepSubNetworksDrawing } from './components/MepSubNetworksDrawing';
 export * from './calculators';
 
 

@@ -31,4 +31,7 @@ export { PwdWeightDiscrepancySandbox } from './PwdWeightDiscrepancySandbox';
 export { CgiRoofingSandbox } from './CgiRoofingSandbox';
 export { PwdSectionWeightSandbox } from './PwdSectionWeightSandbox';
 export { SecondaryFramingSandbox } from './SecondaryFramingSandbox';
+export { FixtureAssemblySandbox } from './FixtureAssemblySandbox';
+export { GrooveWeldingSandbox } from './GrooveWeldingSandbox';
+export { MepSubNetworksSandbox } from './MepSubNetworksSandbox';
 

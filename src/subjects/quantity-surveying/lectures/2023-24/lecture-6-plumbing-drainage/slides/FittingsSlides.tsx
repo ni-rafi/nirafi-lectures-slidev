@@ -1,5 +1,6 @@
 import React from 'react';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
+import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import {
   SlideParagraph,
   SlideList,
@@ -8,6 +9,7 @@ import {
   ClickHighlight
 } from '@/features/presentation/components/elements';
 import { PipeFittingsDrawing } from '@/subjects/quantity-surveying/features/components/PipeFittingsDrawing';
+import { GrooveWeldingDrawing, GrooveWeldingSandbox } from '@/subjects/quantity-surveying/features';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 
 // ============================================================================
@@ -142,5 +144,70 @@ export const Slide9: React.FC = () => {
         </div>
       }
     />
+  );
+};
+
+// ============================================================================
+// Slide 10: Advanced Jointing & Wall Concealment
+// ============================================================================
+export const GrooveWeldingSlide: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
+  const highlightMap: Record<number, 'none' | 'groove' | 'joint'> = {
+    0: 'none',
+    1: 'groove',
+    2: 'joint',
+  };
+
+  const activeHighlight = highlightMap[currentClick] || 'none';
+
+  return (
+    <TwoColumnLayout
+      title="1.7 Advanced Jointing & Wall Concealment"
+      bgVariant="default"
+      leftWidth="48%"
+      leftContent={
+        <div className="space-y-4 text-left select-text">
+          <SlideParagraph title="Wall-Groove Concealment & Jointing">
+            Modern building specifications conceal interior pipelines inside wall chases. High-performance lines like HDPE also require advanced heat fusion jointing techniques.
+          </SlideParagraph>
+
+          <SlideList
+            revealMode="each-click"
+            items={[
+              {
+                title: "Wall Groove Chasing & Concrete Sealing",
+                text: "Cutting a 50x50mm vertical/horizontal groove in brickwork or concrete walls, laying the conduit, and sealing with cement mortar/concrete."
+              },
+              {
+                title: "HDPE Electro-Fusion & Butt Welding",
+                text: "Applying electric currents to resistive coils inside a sleeve coupler. This melts the plastic interface to form a joint stronger than the pipe."
+              }
+            ]}
+          />
+        </div>
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <GrooveWeldingDrawing
+            highlightType={activeHighlight}
+            className="flex-1"
+          />
+        </div>
+      }
+    />
+  );
+};
+
+// ============================================================================
+// Slide 11: Groove & Jointing Sandbox
+// ============================================================================
+export const GrooveWeldingSandboxSlide: React.FC = () => {
+  return (
+    <FullWidthLayout title="1.8 Live Sandbox: Wall Concealment & Jointing">
+      <div className="w-full h-full mt-2">
+        <GrooveWeldingSandbox />
+      </div>
+    </FullWidthLayout>
   );
 };

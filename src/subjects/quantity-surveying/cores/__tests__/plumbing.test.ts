@@ -5,6 +5,8 @@ import {
   calculateSandCushionVolumeInternal,
   calculateManholeBrickworkVolumeInternal,
   calculateManholePlasterAreaInternal,
+  calculateGrooveCuttingAndConcealment,
+  calculateMepSubNetworks,
 } from '../plumbing';
 
 describe('Plumbing Core Math Engine', () => {
@@ -78,6 +80,49 @@ describe('Plumbing Core Math Engine', () => {
     test('should return 0 for invalid inputs', () => {
       expect(calculateManholePlasterAreaInternal(-0.8, 0.8, 1.1)).toBe(0);
       expect(calculateManholePlasterAreaInternal(0.8, 0.8, 0)).toBe(0);
+    });
+  });
+
+  describe('Groove Cutting and Concealment', () => {
+    test('should calculate correct cost and filling volume for brickwork', () => {
+      const res = calculateGrooveCuttingAndConcealment(10, 'brick', 150, 450);
+      expect(res.grooveCostBdt).toBe(1500);
+      // 10m * 0.05m * 0.05m = 0.025m3
+      expect(res.concreteFillingVolM3).toBe(0.025);
+    });
+
+    test('should calculate correct cost and filling volume for rcc', () => {
+      const res = calculateGrooveCuttingAndConcealment(5.5, 'rcc', 150, 450);
+      expect(res.grooveCostBdt).toBe(2475);
+      // 5.5m * 0.05m * 0.05m = 0.01375 -> 0.014
+      expect(res.concreteFillingVolM3).toBe(0.014);
+    });
+
+    test('should return 0 for invalid inputs', () => {
+      const res = calculateGrooveCuttingAndConcealment(-10, 'brick', 150, 450);
+      expect(res.grooveCostBdt).toBe(0);
+      expect(res.concreteFillingVolM3).toBe(0);
+    });
+  });
+
+  describe('MEP Sub-Networks', () => {
+    test('should calculate correct pipe lengths and costs', () => {
+      // floorsCount = 5, height = 3m -> building height = 15m.
+      // RWP = 4 * 15 = 60m. Cost = 60 * 120 = 7200.
+      // Gas = 15 + 5 * 2 = 25m. Cost = 25 * 300 = 7500.
+      // Total = 7200 + 7500 = 14700.
+      const res = calculateMepSubNetworks(5, 3.0, 2.0, 300, 120);
+      expect(res.rwpLengthM).toBe(60);
+      expect(res.gasPipeLengthM).toBe(25);
+      expect(res.rwpCostBdt).toBe(7200);
+      expect(res.gasPipeCostBdt).toBe(7500);
+      expect(res.totalMepCostBdt).toBe(14700);
+    });
+
+    test('should return 0 for invalid inputs', () => {
+      const res = calculateMepSubNetworks(0, 3.0, 2.0, 300, 120);
+      expect(res.rwpLengthM).toBe(0);
+      expect(res.totalMepCostBdt).toBe(0);
     });
   });
 });
