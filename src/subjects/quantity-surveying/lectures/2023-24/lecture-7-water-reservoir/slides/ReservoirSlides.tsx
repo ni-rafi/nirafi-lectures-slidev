@@ -7,6 +7,13 @@ import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedSta
 import { WaterReservoirShellDrawing } from '@/subjects/quantity-surveying/features';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import {
+  calculateReservoirExcavation,
+  calculateReservoirRaft,
+  calculateReservoirWalls,
+  calculateReservoirPlasterArea,
+  calculatePudloRequirement
+} from '@/subjects/quantity-surveying/cores';
+import {
   SlideParagraph,
   SlideList,
   SlideCallout,
@@ -87,7 +94,7 @@ export const Slide4: React.FC = () => {
   const [depth, setDepth] = useUrlSyncedState<number>('res_exc_depth', 3.0);
   const [clearance, setClearance] = useUrlSyncedState<number>('res_exc_clear', 0.5);
 
-  const totalExcVol = (length + 2 * clearance) * (width + 2 * clearance) * depth;
+  const totalExcVol = calculateReservoirExcavation(length, width, depth, clearance);
 
   return (
     <TwoColumnLayout
@@ -158,8 +165,8 @@ export const Slide6: React.FC = () => {
   const [wallThick, setWallThick] = useUrlSyncedState<number>('res_shell_thick', 0.25);
   const [height, setHeight] = useUrlSyncedState<number>('res_shell_height', 2.5);
 
-  const baseSlabVol = (length + 2 * wallThick) * (width + 2 * wallThick) * 0.3; // 300mm raft
-  const wallVol = 2 * (length + width + 2 * wallThick) * wallThick * height;
+  const baseSlabVol = calculateReservoirRaft(length, width, wallThick, 0.3);
+  const wallVol = calculateReservoirWalls(length, width, wallThick, height);
 
   return (
     <TwoColumnLayout
@@ -232,9 +239,8 @@ export const Slide8: React.FC = () => {
   const [width, setWidth] = useUrlSyncedState<number>('res_water_width', 3.0);
   const [height, setHeight] = useUrlSyncedState<number>('res_water_height', 2.5);
 
-  const internalPerimeter = 2 * (length + width);
-  const plasterArea = internalPerimeter * height + (length * width);
-  const pudloKg = plasterArea * 0.015 * 50;
+  const plasterArea = calculateReservoirPlasterArea(length, width, height);
+  const pudloKg = calculatePudloRequirement(plasterArea, 0.015, 50);
 
   return (
     <TwoColumnLayout

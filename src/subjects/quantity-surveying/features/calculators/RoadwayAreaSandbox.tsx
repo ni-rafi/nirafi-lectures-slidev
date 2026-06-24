@@ -6,7 +6,7 @@ import {
   CalculationOutput
 } from '@/features/presentation/components/elements';
 import { calculateRoadwayArea } from '../../cores';
-import { RoadwaySectionDrawing } from './RoadwaySectionDrawing';
+import { RoadwaySectionDrawing } from '../components/RoadwaySectionDrawing';
 
 interface RoadwayAreaSandboxProps {
   hideControls?: boolean;

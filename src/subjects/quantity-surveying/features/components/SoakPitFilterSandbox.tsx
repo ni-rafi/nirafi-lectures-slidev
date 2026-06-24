@@ -6,6 +6,7 @@ import {
   CalculationOutput
 } from '@/features/presentation/components/elements';
 import { CircleDot } from 'lucide-react';
+import { calculateSoakPitNetVolume, calculateSoakPitLooseVolume } from '../../cores';
 
 interface SoakPitFilterSandboxProps {
   hideControls?: boolean;
@@ -23,9 +24,8 @@ export const SoakPitFilterSandbox: React.FC<SoakPitFilterSandboxProps> = ({
   const [voidRatio, setVoidRatio] = useUrlSyncedState<number>('soak_void', 0.35);
   const [containerFactor, setContainerFactor] = useUrlSyncedState<number>('soak_loose', 1.33);
 
-  const radius = diameter / 2;
-  const netVolume = Math.PI * radius * radius * depth;
-  const looseVolume = netVolume * containerFactor;
+  const netVolume = calculateSoakPitNetVolume(diameter, depth);
+  const looseVolume = calculateSoakPitLooseVolume(netVolume, containerFactor);
   const voidVolume = netVolume * voidRatio;
 
   // Determine if a step is active for conceptual reveals
