@@ -15,7 +15,11 @@ export const QUIZ_METADATA = [
   { id: 'qs_2023_lec6_q3', header: 'Lec 6 Trench Hydraulics' },
   { id: 'qs_2023_lec6_q4', header: 'Lec 6 Inspection Chambers' },
   { id: 'qs_2023_lec7_q1', header: 'Lec 7 Reservoir Excavation' },
-  { id: 'qs_2023_lec7_q2', header: 'Lec 7 Soak Pit Aggregates' }
+  { id: 'qs_2023_lec7_q2', header: 'Lec 7 Soak Pit Aggregates' },
+  { id: 'qs_2023_lec8_q1', header: 'Lec 8 Roadway Area' },
+  { id: 'qs_2023_lec8_q2', header: 'Lec 8 Embankment Compaction' },
+  { id: 'qs_2023_lec9_q1', header: 'Lec 9 Pavement Volume' },
+  { id: 'qs_2023_lec9_q2', header: 'Lec 9 Box Culvert RCC' }
 ];
 
 export const QUIZ_ANSWERS: Record<
@@ -106,33 +110,81 @@ export const QUIZ_ANSWERS: Record<
       return ((12 + parameterResolver.getLastDigit(reg)) * 1.236375).toFixed(3);
     },
   },
+ 
+   qs_2023_lec6_q1: 'Add all vertical transitions: 3.20m (horizontal) + 2.80m (riser) + 1.20m (drop) = 7.20m centerline length',
+   qs_2023_lec6_q2: '73200',
+   qs_2023_lec6_q3: '0.750',
+   qs_2023_lec6_q4: '0.509',
+   
+   qs_2023_lec7_q1: {
+     formula: '((6.50 + 2 × 0.50) × (4.50 + 2 × 0.50) × (2.0 + [last digit] × 0.1)) m³',
+     digitsRequired: 1,
+     resolve: (reg) => {
+       const digits = reg.replace(/\D/g, '');
+       if (digits.length < 1) return '((6.50 + 2 × 0.50) × (4.50 + 2 × 0.50) × (2.0 + [last digit] × 0.1)) m³';
+       const h = 2.0 + parameterResolver.getLastDigit(reg) * 0.1;
+       const vol = 7.50 * 5.50 * h;
+       return vol.toFixed(3);
+     },
+   },
+   
+   qs_2023_lec7_q2: {
+     formula: '(3.14159265 × 1.0² × (2.5 + [last digit] × 0.1) × 1.33) m³',
+     digitsRequired: 1,
+     resolve: (reg) => {
+       const digits = reg.replace(/\D/g, '');
+       if (digits.length < 1) return '(3.14159265 × 1.0² × (2.5 + [last digit] × 0.1) × 1.33) m³';
+       const h = 2.5 + parameterResolver.getLastDigit(reg) * 0.1;
+       const vol = Math.PI * 1.0 * 1.0 * h * 1.33;
+       return vol.toFixed(3);
+     },
+   },
 
-  qs_2023_lec6_q1: 'Add all vertical transitions: 3.20m (horizontal) + 2.80m (riser) + 1.20m (drop) = 7.20m centerline length',
-  qs_2023_lec6_q2: '73200',
-  qs_2023_lec6_q3: '0.750',
-  qs_2023_lec6_q4: '0.509',
-  
-  qs_2023_lec7_q1: {
-    formula: '((6.50 + 2 × 0.50) × (4.50 + 2 × 0.50) × (2.0 + [last digit] × 0.1)) m³',
-    digitsRequired: 1,
-    resolve: (reg) => {
-      const digits = reg.replace(/\D/g, '');
-      if (digits.length < 1) return '((6.50 + 2 × 0.50) × (4.50 + 2 × 0.50) × (2.0 + [last digit] × 0.1)) m³';
-      const h = 2.0 + parameterResolver.getLastDigit(reg) * 0.1;
-      const vol = 7.50 * 5.50 * h;
-      return vol.toFixed(3);
-    },
-  },
-  
-  qs_2023_lec7_q2: {
-    formula: '(3.14159265 × 1.0² × (2.5 + [last digit] × 0.1) × 1.33) m³',
-    digitsRequired: 1,
-    resolve: (reg) => {
-      const digits = reg.replace(/\D/g, '');
-      if (digits.length < 1) return '(3.14159265 × 1.0² × (2.5 + [last digit] × 0.1) × 1.33) m³';
-      const h = 2.5 + parameterResolver.getLastDigit(reg) * 0.1;
-      const vol = Math.PI * 1.0 * 1.0 * h * 1.33;
-      return vol.toFixed(3);
-    },
-  },
+   qs_2023_lec8_q1: {
+     formula: '((10.00 × (1.5 + [last digit] × 0.1)) + 2.0 × (1.5 + [last digit] × 0.1)²) m²',
+     digitsRequired: 1,
+     resolve: (reg) => {
+       const digits = reg.replace(/\D/g, '');
+       if (digits.length < 1) return '((10.00 × (1.5 + [last digit] × 0.1)) + 2.0 × (1.5 + [last digit] × 0.1)²) m²';
+       const d = 1.5 + parameterResolver.getLastDigit(reg) * 0.1;
+       const area = 10.0 * d + 2.0 * d * d;
+       return area.toFixed(3);
+     },
+   },
+
+   qs_2023_lec8_q2: {
+     formula: '((500 + [last digit] × 10) / 0.90) m³',
+     digitsRequired: 1,
+     resolve: (reg) => {
+       const digits = reg.replace(/\D/g, '');
+       if (digits.length < 1) return '((500 + [last digit] × 10) / 0.90) m³';
+       const vNet = 500 + parameterResolver.getLastDigit(reg) * 10;
+       const rawExc = vNet / 0.90;
+       return rawExc.toFixed(3);
+     },
+   },
+
+   qs_2023_lec9_q1: {
+     formula: '(150 × 6.60 × (0.15 + [last digit] × 0.01) × 1.25) m³',
+     digitsRequired: 1,
+     resolve: (reg) => {
+       const digits = reg.replace(/\D/g, '');
+       if (digits.length < 1) return '(150 × 6.60 × (0.15 + [last digit] × 0.01) × 1.25) m³';
+       const h = 0.15 + parameterResolver.getLastDigit(reg) * 0.01;
+       const vol = 150 * 6.60 * h * 1.25;
+       return vol.toFixed(3);
+     },
+   },
+
+   qs_2023_lec9_q2: {
+     formula: '((2.50 × 2.20 - 1.50 × (1.20 + [last digit] × 0.05)) × 10.0) m³',
+     digitsRequired: 1,
+     resolve: (reg) => {
+       const digits = reg.replace(/\D/g, '');
+       if (digits.length < 1) return '((2.50 × 2.20 - 1.50 × (1.20 + [last digit] × 0.05)) × 10.0) m³';
+       const h = 1.20 + parameterResolver.getLastDigit(reg) * 0.05;
+       const vol = (2.50 * 2.20 - 1.50 * h) * 10.0;
+       return vol.toFixed(3);
+     },
+   },
 };

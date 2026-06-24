@@ -18,5 +18,19 @@ export {
   calculateManholeBrickworkVolumeInternal,
   calculateManholePlasterAreaInternal,
 } from './plumbing';
+export {
+  calculateRoadwayArea,
+  calculateRoadwayVolumeMidSectional,
+  calculateTransitVolume,
+  calculateRequiredExcavation,
+  calculateExtraLeadsAndLifts
+} from './earthwork';
 export { CONCRETE_SHRINKAGE_FACTOR } from './constants';
+export {
+  calculatePavementLayerVolume,
+  calculateBitumenWeight,
+  calculateRetainingWallVolume,
+  calculateBoxCulvertVolume,
+} from './roadway';
+
 
