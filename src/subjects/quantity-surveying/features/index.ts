@@ -31,6 +31,8 @@ export { SteelLedgerTrussDrawing } from './components/SteelLedgerTrussDrawing';
 export { PipeFittingsDrawing } from './components/PipeFittingsDrawing';
 export { ReservoirBBSDrawing } from './components/ReservoirBBSDrawing';
 export { InspectionPitDrawing } from './components/InspectionPitDrawing';
+export { GridMethodDrawing } from './components/GridMethodDrawing';
+export { EarthworkMethodDrawing } from './components/EarthworkMethodDrawing';
 export * from './calculators';
 
 

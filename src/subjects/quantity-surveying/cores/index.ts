@@ -32,9 +32,12 @@ export {
 export {
   calculateRoadwayArea,
   calculateRoadwayVolumeMidSectional,
+  calculateRoadwayVolumeTrapezoidal,
+  calculateRoadwayVolumePrismoidal,
   calculateTransitVolume,
   calculateRequiredExcavation,
-  calculateExtraLeadsAndLifts
+  calculateExtraLeadsAndLifts,
+  calculateGridEarthworkVolume
 } from './earthwork';
 export { CONCRETE_SHRINKAGE_FACTOR } from './constants';
 export {

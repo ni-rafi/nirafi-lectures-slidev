@@ -2,9 +2,12 @@ import { describe, test, expect } from 'vitest';
 import {
   calculateRoadwayArea,
   calculateRoadwayVolumeMidSectional,
+  calculateRoadwayVolumeTrapezoidal,
+  calculateRoadwayVolumePrismoidal,
   calculateTransitVolume,
   calculateRequiredExcavation,
   calculateExtraLeadsAndLifts,
+  calculateGridEarthworkVolume,
 } from '../earthwork';
 
 describe('Roadway Earthwork Core Calculations', () => {
@@ -51,5 +54,39 @@ describe('Roadway Earthwork Core Calculations', () => {
     const { extraLeads, extraLifts } = calculateExtraLeadsAndLifts(80, 2.5);
     expect(extraLeads).toBe(2);
     expect(extraLifts).toBe(1);
+  });
+
+  test('should calculate correct volume using trapezoidal (average end area) method', () => {
+    // Embankment: B = 10.0, sFill = 2.0, sCut = 1.5, d1 = 1.2, d2 = 0.6, L = 30.0
+    // area1 = 10 * 1.2 + 2 * 1.2^2 = 12 + 2.88 = 14.88
+    // area2 = 10 * 0.6 + 2 * 0.6^2 = 6 + 0.72 = 6.72
+    // areaMean = (14.88 + 6.72) / 2 = 10.80
+    // volume = 10.80 * 30 = 324.0
+    const result = calculateRoadwayVolumeTrapezoidal(10.0, 1.5, 2.0, 1.2, 0.6, 30.0);
+    expect(result.area1).toBe(14.88);
+    expect(result.area2).toBe(6.72);
+    expect(result.areaMean).toBe(10.8);
+    expect(result.volume).toBe(324.0);
+  });
+
+  test('should calculate correct volume using prismoidal method', () => {
+    // Embankment: B = 10.0, sFill = 2.0, sCut = 1.5, d1 = 1.2, d2 = 0.6, L = 30.0
+    // area1 = 14.88, area2 = 6.72
+    // dMid = (1.2 + 0.6) / 2 = 0.9
+    // areaMid = 10 * 0.9 + 2 * 0.9^2 = 9 + 1.62 = 10.62
+    // volume = (30 / 6) * (14.88 + 4 * 10.62 + 6.72) = 5 * (14.88 + 42.48 + 6.72) = 5 * 64.08 = 320.400
+    const result = calculateRoadwayVolumePrismoidal(10.0, 1.5, 2.0, 1.2, 0.6, 30.0);
+    expect(result.area1).toBe(14.88);
+    expect(result.area2).toBe(6.72);
+    expect(result.areaMid).toBe(10.62);
+    expect(result.volume).toBe(320.4);
+  });
+
+  test('should calculate correct volume using grid method', () => {
+    // 2x2 grid cell with area 25 m2 and corner depths [1.2, 1.5, 0.8, 1.1]
+    // avgDepth = (1.2 + 1.5 + 0.8 + 1.1) / 4 = 4.6 / 4 = 1.15
+    // volume = 1.15 * 25 = 28.750
+    const result = calculateGridEarthworkVolume([1.2, 1.5, 0.8, 1.1], 25.0);
+    expect(result).toBe(28.75);
   });
 });
