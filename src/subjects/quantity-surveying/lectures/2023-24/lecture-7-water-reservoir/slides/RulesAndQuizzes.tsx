@@ -14,8 +14,8 @@ import {
   ClickHighlight,
 } from '@/features/presentation/components/elements';
 
-// Slide 14: Section Divider
-export const Slide14: React.FC = () => (
+// Slide 13: Section Divider
+export const Slide13: React.FC = () => (
   <TopicDividerLayout
     topicNumber="03"
     title="PWD SoR Integration & Measurement Rules"
@@ -23,8 +23,8 @@ export const Slide14: React.FC = () => (
   />
 );
 
-// Slide 15: Trade Segregation
-export const Slide15: React.FC = () => {
+// Slide 14: Trade Segregation
+export const Slide14: React.FC = () => {
   return (
     <TwoColumnLayout
       title="3.1 Dissecting Structural Trades vs. Sanitary Items"
@@ -70,8 +70,8 @@ export const Slide15: React.FC = () => {
   );
 };
 
-// Slide 16: Quiz Checkpoint 1 (Reservoir Excavation Volume)
-export const Slide16: React.FC = () => {
+// Slide 15: Quiz Checkpoint 1 (Reservoir Excavation Volume)
+export const Slide15: React.FC = () => {
   const questionText = React.useMemo(() => {
     const qFn = (reg: string) => parameterResolver.resolveTemplate(
       'Calculate the total excavation volume in cubic meters (m³) for an underground water reservoir where the net base slab is 6.50m long, 4.50m wide, the perimeter clearance c is 0.50m, and the excavation depth H is {H} m. Round your final answer to exactly 3 decimal places.',
@@ -96,8 +96,8 @@ export const Slide16: React.FC = () => {
   );
 };
 
-// Slide 17: Quiz Checkpoint 2 (Soak Pit Loose Aggregates)
-export const Slide17: React.FC = () => {
+// Slide 16: Quiz Checkpoint 2 (Soak Pit Loose Aggregates)
+export const Slide16: React.FC = () => {
   const questionText = React.useMemo(() => {
     const qFn = (reg: string) => parameterResolver.resolveTemplate(
       'Calculate the loose aggregate volume in cubic meters (m³) required to pack a circular soak pit of diameter 2.00 m and depth H = {H} m, assuming a compaction factor of 1.33. Round your final answer to exactly 3 decimal places.',
@@ -122,8 +122,8 @@ export const Slide17: React.FC = () => {
   );
 };
 
-// Slide 18: Thank You / Conclusion
-export const Slide18: React.FC<SlideProps> = () => (
+// Slide 17: Thank You / Conclusion
+export const Slide17: React.FC<SlideProps> = () => (
   <ThankYouLayout
     title="Thank You"
     subtitle="Let's proceed to the lab exercise for Water Reservoirs & Septic Tanks!"

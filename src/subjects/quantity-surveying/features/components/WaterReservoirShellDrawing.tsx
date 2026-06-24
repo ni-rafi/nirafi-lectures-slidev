@@ -22,13 +22,13 @@ export const WaterReservoirShellDrawing: React.FC<WaterReservoirShellDrawingProp
   };
 
   return (
-    <div className={`w-full flex flex-col justify-between h-full bg-muted/20 p-4 border border-border/40 rounded-xl ${className}`}>
+    <div className={`w-full flex flex-col justify-between bg-muted/20 p-4 border border-border/40 rounded-xl ${className}`}>
       <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground mb-2 block text-center">
         Reservoir Section Visualizer
       </span>
 
-      <div className="h-56 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
-        <svg viewBox="0 0 300 200" className="w-full h-full select-none overflow-visible">
+      <div className="h-44 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
+        <svg viewBox="0 25 300 155" className="w-full h-full select-none overflow-visible">
           {/* Ground Level Line */}
           <line
             x1="10"
@@ -47,13 +47,13 @@ export const WaterReservoirShellDrawing: React.FC<WaterReservoirShellDrawingProp
             d="M 40,40 L 40,175 L 260,175 L 260,40"
             fill="none"
             className={`transition-all duration-300 ${
-              isExc && isStepActive(2) ? 'stroke-amber-500 stroke-[2px]' : 'stroke-muted-foreground/30 stroke-1'
+              isExc && isStepActive(3) ? 'stroke-amber-500 stroke-[2px]' : 'stroke-muted-foreground/30 stroke-1'
             }`}
-            strokeDasharray={isExc && isStepActive(2) ? 'none' : '3 3'}
+            strokeDasharray={isExc && isStepActive(3) ? 'none' : '3 3'}
           />
 
           {/* Working space arrows & labels (c) */}
-          {isExc && isStepActive(1) && (
+          {isExc && isStepActive(2) && (
             <g className="animate-fadeIn text-amber-500">
               {/* Left space */}
               <line x1="40" y1="140" x2="70" y2="140" stroke="currentColor" strokeWidth="1" />
@@ -78,7 +78,7 @@ export const WaterReservoirShellDrawing: React.FC<WaterReservoirShellDrawingProp
             height="15"
             rx="1"
             className={`transition-all duration-300 ${
-              isShell && isStepActive(0) ? 'fill-primary/20 stroke-primary stroke-[1.5px]' : 'fill-muted/40 stroke-border/50'
+              isShell && isStepActive(1) ? 'fill-primary/20 stroke-primary stroke-[1.5px]' : 'fill-muted/40 stroke-border/50'
             }`}
           />
           {/* Left Vertical Retaining Wall */}
@@ -89,7 +89,7 @@ export const WaterReservoirShellDrawing: React.FC<WaterReservoirShellDrawingProp
             height="95"
             rx="1"
             className={`transition-all duration-300 ${
-              isShell && isStepActive(1) ? 'fill-primary/20 stroke-primary stroke-[1.5px]' : 'fill-muted/40 stroke-border/50'
+              isShell && isStepActive(2) ? 'fill-primary/20 stroke-primary stroke-[1.5px]' : 'fill-muted/40 stroke-border/50'
             }`}
           />
           {/* Right Vertical Retaining Wall */}
@@ -100,14 +100,14 @@ export const WaterReservoirShellDrawing: React.FC<WaterReservoirShellDrawingProp
             height="95"
             rx="1"
             className={`transition-all duration-300 ${
-              isShell && isStepActive(1) ? 'fill-primary/20 stroke-primary stroke-[1.5px]' : 'fill-muted/40 stroke-border/50'
+              isShell && isStepActive(2) ? 'fill-primary/20 stroke-primary stroke-[1.5px]' : 'fill-muted/40 stroke-border/50'
             }`}
           />
           {/* Roof Slab */}
           <path
             d="M 70,65 L 125,65 M 155,65 L 230,65"
             className={`transition-all duration-300 fill-none ${
-              isShell && isStepActive(2) ? 'stroke-primary stroke-[12px]' : 'stroke-border/50 stroke-[12px]'
+              isShell && isStepActive(3) ? 'stroke-primary stroke-[12px]' : 'stroke-border/50 stroke-[12px]'
             }`}
             strokeLinecap="square"
           />
@@ -146,8 +146,8 @@ export const WaterReservoirShellDrawing: React.FC<WaterReservoirShellDrawingProp
           {/* Dimension markings for shell */}
           {isShell && (
             <g className="text-primary text-[11px] font-mono font-bold animate-fadeIn">
-              {isStepActive(0) && <text x="150" y="171" textAnchor="middle" className="fill-primary font-extrabold">Base Raft</text>}
-              {isStepActive(1) && (
+              {isStepActive(1) && <text x="150" y="171" textAnchor="middle" className="fill-primary font-extrabold">Base Raft</text>}
+              {isStepActive(2) && (
                 <>
                   <text x="77" y="115" textAnchor="middle" className="fill-primary font-extrabold rotate-90">Wall</text>
                   <text x="222" y="115" textAnchor="middle" className="fill-primary font-extrabold rotate-90">Wall</text>

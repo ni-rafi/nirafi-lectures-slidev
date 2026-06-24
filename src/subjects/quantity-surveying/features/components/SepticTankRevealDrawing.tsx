@@ -16,13 +16,13 @@ export const SepticTankRevealDrawing: React.FC<SepticTankRevealDrawingProps> = (
   const isFittings = activeStep === 3;
 
   return (
-    <div className={`w-full flex flex-col justify-between h-full bg-muted/20 p-4 border border-border/40 rounded-xl ${className}`}>
+    <div className={`w-full flex flex-col justify-between bg-muted/20 p-4 border border-border/40 rounded-xl ${className}`}>
       <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground mb-2 block text-center">
         Septic Tank Structural Anatomy
       </span>
 
-      <div className="h-56 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
-        <svg viewBox="0 0 300 200" className="w-full h-full select-none overflow-visible">
+      <div className="h-44 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
+        <svg viewBox="0 30 300 150" className="w-full h-full select-none overflow-visible">
           {/* Natural Ground Line */}
           <line x1="10" y1="50" x2="290" y2="50" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" className="text-muted-foreground/40" />
 

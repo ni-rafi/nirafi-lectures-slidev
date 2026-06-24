@@ -34,13 +34,13 @@ export const SoakPitFilterSandbox: React.FC<SoakPitFilterSandboxProps> = ({
   };
 
   const renderSvg = () => (
-    <div className={`flex flex-col justify-between bg-muted/20 p-4 border border-border/40 rounded-xl w-full h-full ${hideControls ? className : ''}`}>
+    <div className={`flex flex-col justify-between bg-muted/20 p-4 border border-border/40 rounded-xl w-full ${hideControls ? className : 'h-full'}`}>
       <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground mb-2 block text-center">
         Subsoil Filtration Section
       </span>
 
-      <div className="h-52 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
-        <svg viewBox="0 0 200 180" className="w-full h-full select-none">
+      <div className="h-44 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
+        <svg viewBox="0 10 200 170" className="w-full h-full select-none">
           {/* Cylinder boundary lines */}
           <line x1="60" y1="20" x2="60" y2="160" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/30" />
           <line x1="140" y1="20" x2="140" y2="160" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/30" />

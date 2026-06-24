@@ -14,15 +14,14 @@ import {
   Slide9,
   Slide10,
   Slide11,
-  Slide12,
-  Slide13
+  Slide12
 } from './slides/SepticTankSlides';
 import {
+  Slide13,
   Slide14,
   Slide15,
   Slide16,
-  Slide17,
-  Slide18
+  Slide17
 } from './slides/RulesAndQuizzes';
 
 export const slides: Record<number, React.ComponentType<SlideProps>> = {
@@ -43,7 +42,6 @@ export const slides: Record<number, React.ComponentType<SlideProps>> = {
   15: Slide15,
   16: Slide16,
   17: Slide17,
-  18: Slide18,
 };
 
 export const slideMetadata: Record<
@@ -59,13 +57,12 @@ export const slideMetadata: Record<
   7: { title: 'Waterproofing Admixtures & Finishes', type: 'Concept Details', section: 'Water Reservoir' },
   8: { title: 'Plaster Area & Chemical Sandbox', type: 'Live Sandbox', section: 'Water Reservoir' },
   9: { title: 'Septic Tank Divider', type: 'Cover Slide', section: 'Septic Tank' },
-  10: { title: 'Septic Tank Structural Anatomy', type: 'Concept Details', section: 'Septic Tank' },
-  11: { title: 'Septic Tank Interactive Reveal', type: 'Live Sandbox', section: 'Septic Tank' },
-  12: { title: 'Soak Pit Aggregate Geometry', type: 'Concept Details', section: 'Septic Tank' },
-  13: { title: 'Soak Pit Filtration Sandbox', type: 'Live Sandbox', section: 'Septic Tank' },
-  14: { title: 'PWD SoR Divider', type: 'Cover Slide', section: 'PWD Measurement' },
-  15: { title: 'Structural Trades vs. Plumbing Items', type: 'Concept Details', section: 'PWD Measurement' },
-  16: { title: 'Excavation Parameterized Checkpoint', type: 'Concept Details', section: 'Quizzes', quizId: 'qs_2023_lec7_q1' },
-  17: { title: 'Soak Pit Loose Aggregate Checkpoint', type: 'Concept Details', section: 'Quizzes', quizId: 'qs_2023_lec7_q2' },
-  18: { title: 'Conclusion', type: 'Thank You Slide', section: 'Conclusion' },
+  10: { title: 'Septic Tank Anatomy & Take-offs', type: 'Concept Details', section: 'Septic Tank' },
+  11: { title: 'Soak Pit Filtration Structure', type: 'Concept Details', section: 'Septic Tank' },
+  12: { title: 'Soak Pit Volume Sandbox', type: 'Live Sandbox', section: 'Septic Tank' },
+  13: { title: 'PWD SoR Divider', type: 'Cover Slide', section: 'PWD Measurement' },
+  14: { title: 'Structural Trades vs. Plumbing Items', type: 'Concept Details', section: 'PWD Measurement' },
+  15: { title: 'Excavation Parameterized Checkpoint', type: 'Concept Details', section: 'Quizzes', quizId: 'qs_2023_lec7_q1' },
+  16: { title: 'Soak Pit Loose Aggregate Checkpoint', type: 'Concept Details', section: 'Quizzes', quizId: 'qs_2023_lec7_q2' },
+  17: { title: 'Conclusion', type: 'Thank You Slide', section: 'Conclusion' },
 };

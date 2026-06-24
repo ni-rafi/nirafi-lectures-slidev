@@ -142,6 +142,8 @@ For plan-view grid alignments, foundation pile layouts, road pavement cross-sect
 * **drawings.md**: Refer to the [Interactive Drawing Canvases Reference Guide](file:///d:/Websites/nirafi-workspace/.agent/skills/lecture-development/references/drawings.md) for full coordinate mapping engines, canvas configurations, and props schemas.
   * *Building Drawings*: `<PlanDrawingCanvas>`, `<SectionDrawingCanvas>`
   * *Civil Drawings*: `<FoundationDrawingCanvas>`, `<RoadSectionCanvas>`, `<EarthworkProfileCanvas>`
+* **Drawing Wrapper Height Boundaries**: Outer drawing containers must never hardcode fixed height constraints like `h-full` internally. Allow height to be configured dynamically or inherit sizing via parent flex boundaries (e.g. `flex-1` when stacked under vertical columns). This enables other stacked components (like formula cards or descriptions) to occupy remaining vertical space cleanly.
+* **Vertical Space Optimization**: Keep SVG canvas containers bounded (e.g., changing container heights from `h-56` to `h-44` and cropping the viewBox to remove unnecessary margins) so that slides remain spacious on standard 16:9 presentation viewports without scrollbars or text cutoff.
 
 ---
 
@@ -173,6 +175,7 @@ When authoring or modifying slides:
 - [ ] **Layout Delegation**: Headers/footers delegated to `<LayoutHeader>` and `<LayoutFooter>` to guarantee transitions.
 - [ ] **Semantic Presentational Elements**: No raw HTML `<p>`, `<ul>`, `<li>`, or `<table>` tags are used; use `<SlideParagraph>`, `<SlideBullet>`, `<SlideTable>`, etc.
 - [ ] **SVG & Drawings Separation**: No raw SVG markup is coupled directly inside the slide file. Drawings are imported as reusable components and driven by JSON parameters.
+- [ ] **Drawing Wrapper Heights**: Outer drawing card containers do not define hardcoded `h-full` height constraints, allowing them to scale dynamically via parent flex boundaries when stacked with formulas/notes.
 - [ ] **Cross-Window Sync**: All interactive parameters and values (inputs, sliders, dropdown choices) are declared via `useUrlSyncedState` (not `useState`).
 - [ ] **Draggables**: Every draggable element is assigned a stable, explicit string for `syncKey`.
 - [ ] **Theme Contrast**: Slide content is fully readable in both Light and Dark modes.

@@ -5,6 +5,7 @@ import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { WaterReservoirShellDrawing } from '@/subjects/quantity-surveying/features';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import {
   SlideParagraph,
   SlideList,
@@ -12,6 +13,8 @@ import {
   InteractiveCard,
   ParameterSlider,
   CalculationOutput,
+  ClickReveal,
+  ClickHighlight,
 } from '@/features/presentation/components/elements';
 
 // Slide 1: Cover Slide
@@ -37,40 +40,45 @@ export const Slide2: React.FC = () => (
   />
 );
 
-// Slide 3: Excavation Logistics Concepts
-export const Slide3: React.FC = () => (
-  <TwoColumnLayout
-    title="1.1 Underground Excavation & Shoring"
-    bgVariant="default"
-    leftWidth="55%"
-    leftContent={
-      <div className="space-y-4">
-        <SlideParagraph title="Underground Volume Parameters">
-          Deep excavation for reservoirs requires safety allowances and clearances.
-        </SlideParagraph>
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { title: "Net Base Dimension", text: "Structure base slab boundary profile (length × width)." },
-            { title: "Working Space Offset (c)", text: "Extra 0.3m to 0.5m perimeter margin to construct forms and external damp-proof walls." },
-            { title: "Timbering & Shoring Area", text: "Vertical wall supports billed in square meters (m²) when digging depth > 1.5m." }
-          ]}
-        />
-      </div>
-    }
-    rightContent={
-      <div className="h-full flex flex-col justify-center">
-        <SlideCallout variant="warning" title="Excavation Volume Formula">
-          <p className="text-sm text-muted-foreground mb-3">Surveying criteria mandate adding the working space perimeter offsets:</p>
-          <div className="text-xl font-mono text-center text-amber-500 bg-muted/40 p-4 rounded-xl border border-amber-500/20 font-bold">
-            V = (L + 2c) × (B + 2c) × H
-          </div>
-          <span className="text-[11px] text-muted-foreground block mt-2 text-center">Where H = excavation depth from Natural Ground level (EGL)</span>
-        </SlideCallout>
-      </div>
-    }
-  />
-);
+// Slide 3: Excavation Logistics Concepts (With Integrated Drawing)
+export const Slide3: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+  return (
+    <TwoColumnLayout
+      title="1.1 Underground Excavation & Shoring"
+      bgVariant="default"
+      leftWidth="50%"
+      leftContent={
+        <div className="space-y-3">
+          <SlideParagraph title="Underground Volume Parameters">
+            Deep excavation for reservoirs requires safety allowances and clearances.
+          </SlideParagraph>
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { title: "Net Base Dimension", text: <span>Structure <ClickHighlight variant="paint" at={1}>base slab boundary profile</ClickHighlight> (length × width).</span> },
+              { title: "Working Space Offset (c)", text: <span>Extra 0.3m to 0.5m perimeter margin to construct forms and damp-proofing, known as <ClickHighlight variant="paint" at={2}>Working Space Offset (c)</ClickHighlight>.</span> },
+              { title: "Timbering & Shoring Area", text: <span>Vertical wall supports, known as <ClickHighlight variant="paint" at={3}>Timbering & Shoring</ClickHighlight>, are billed in square meters (m²) when digging depth &gt; 1.5m.</span> }
+            ]}
+          />
+        </div>
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-between space-y-2">
+          <WaterReservoirShellDrawing mode="excavation" currentClick={currentClick} className="flex-1" />
+          <ClickReveal at={3} preset="up">
+            <SlideCallout variant="warning" title="Excavation Volume Formula" className="py-2">
+              <div className="text-base font-mono text-center text-amber-500 bg-muted/40 p-2 rounded-xl border border-amber-500/20 font-bold">
+                V = (L + 2c) × (B + 2c) × H
+              </div>
+              <span className="text-[9px] text-muted-foreground block mt-1 text-center">Where H = excavation depth from Natural Ground level (EGL)</span>
+            </SlideCallout>
+          </ClickReveal>
+        </div>
+      }
+    />
+  );
+};
 
 // Slide 4: Excavation Volume Sandbox
 export const Slide4: React.FC = () => {
@@ -104,38 +112,44 @@ export const Slide4: React.FC = () => {
   );
 };
 
-// Slide 5: RCC Concrete Shell Concepts
-export const Slide5: React.FC = () => (
-  <TwoColumnLayout
-    title="1.2 RCC Structural Containment Shell"
-    bgVariant="default"
-    leftWidth="55%"
-    leftContent={
-      <div className="space-y-4">
-        <SlideParagraph title="Intersection Geometry">
-          A liquid-retaining structure is an integrated monolithic concrete box. To avoid double-counting materials, overlaps must be deducted.
-        </SlideParagraph>
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { title: "Base Raft Slab", text: "Monolithic concrete slab at the bottom. Carries self-weight and fluid mass." },
-            { title: "Vertical Walls Ring", text: "Retaining walls. Calculate long walls out-to-out, then short walls in-to-in." },
-            { title: "Roof Cover Slab", text: "Top horizontal plate. Net area minus manhole access openings." }
-          ]}
-        />
-      </div>
-    }
-    rightContent={
-      <div className="h-full flex flex-col justify-center">
-        <SlideCallout variant="info" title="Take-off Ledger Bounds">
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Short walls must systematically deduct the thickness of the overlapping long walls. Neglect reinforcement steel displacement when taking off structural concrete.
-          </p>
-        </SlideCallout>
-      </div>
-    }
-  />
-);
+// Slide 5: RCC Concrete Shell Concepts (With Integrated Drawing)
+export const Slide5: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+  return (
+    <TwoColumnLayout
+      title="1.2 RCC Structural Containment Shell"
+      bgVariant="default"
+      leftWidth="50%"
+      leftContent={
+        <div className="space-y-3">
+          <SlideParagraph title="Intersection Geometry">
+            A liquid-retaining structure is an integrated monolithic concrete box. To avoid double-counting materials, overlaps must be deducted.
+          </SlideParagraph>
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { title: "Base Raft Slab", text: <span>Monolithic concrete slab at the bottom. Carries self-weight and fluid mass, known as the <ClickHighlight variant="paint" at={1}>Base Raft Slab</ClickHighlight>.</span> },
+              { title: "Vertical Walls Ring", text: <span>Retaining walls. Calculate long walls out-to-out, then short walls in-to-in to avoid <ClickHighlight variant="paint" at={2}>double-counting overlaps</ClickHighlight>.</span> },
+              { title: "Roof Cover Slab", text: <span>Top horizontal plate. Net area minus manhole access openings, known as <ClickHighlight variant="paint" at={3}>Roof Cover Slab</ClickHighlight>.</span> }
+            ]}
+          />
+        </div>
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-between space-y-2">
+          <WaterReservoirShellDrawing mode="shell" currentClick={currentClick} className="flex-1" />
+          <ClickReveal at={3} preset="up">
+            <SlideCallout variant="info" title="Take-off Ledger Overlap Deduction" className="py-2">
+              <p className="text-[10px] text-muted-foreground leading-normal">
+                Short walls must systematically deduct the thickness of the overlapping long walls. Neglect reinforcement displacement when taking off structural concrete.
+              </p>
+            </SlideCallout>
+          </ClickReveal>
+        </div>
+      }
+    />
+  );
+};
 
 // Slide 6: RCC Shell Volume Sandbox
 export const Slide6: React.FC = () => {
@@ -173,38 +187,44 @@ export const Slide6: React.FC = () => {
   );
 };
 
-// Slide 7: Waterproofing & Finishing Concepts
-export const Slide7: React.FC = () => (
-  <TwoColumnLayout
-    title="1.3 Waterproofing & Plastering Finishes"
-    bgVariant="default"
-    leftWidth="55%"
-    leftContent={
-      <div className="space-y-4">
-        <SlideParagraph title="Preventing Fluid Seepage">
-          Hydraulic structures must be impervious to seepage and external groundwater infiltration.
-        </SlideParagraph>
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { title: "Waterproofing Admixture", text: "PWD criteria require adding chemical compounds (e.g. Pudlo) at 1.5% to 2% of total cement weight." },
-            { title: "Internal Plaster Coat (1:3)", text: "12mm cement plaster applied to internal walls and floor. Billed in square meters (m²)." }
-          ]}
-        />
-      </div>
-    }
-    rightContent={
-      <div className="h-full flex flex-col justify-center">
-        <SlideCallout variant="success" title="Plaster Area Equation">
-          <div className="text-xl font-mono text-center text-emerald-600 dark:text-emerald-400 bg-muted/40 p-4 rounded-xl border border-emerald-500/20 font-bold">
-            Area = 2(L + B) × h + L × B
-          </div>
-          <span className="text-[11px] text-muted-foreground block mt-2 text-center">Walls Area (Wet Perimeter × height) + Floor Area</span>
-        </SlideCallout>
-      </div>
-    }
-  />
-);
+// Slide 7: Waterproofing & Finishing Concepts (With Integrated Drawing)
+export const Slide7: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+  return (
+    <TwoColumnLayout
+      title="1.3 Waterproofing & Plastering Finishes"
+      bgVariant="default"
+      leftWidth="50%"
+      leftContent={
+        <div className="space-y-3">
+          <SlideParagraph title="Preventing Fluid Seepage">
+            Hydraulic structures must be impervious to seepage and external groundwater infiltration.
+          </SlideParagraph>
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { title: "Waterproofing Admixture", text: <span>PWD criteria require adding <ClickHighlight variant="paint" at={1}>waterproofing admixture</ClickHighlight> (e.g. Pudlo) at 1.5% to 2% of total cement weight.</span> },
+              { title: "Internal Plaster Coat (1:3)", text: <span>12mm cement plaster applied to internal walls and floor, covering <ClickHighlight variant="paint" at={2}>Internal Surface Area</ClickHighlight>. Billed in m².</span> }
+            ]}
+          />
+        </div>
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-between space-y-2">
+          <WaterReservoirShellDrawing mode="waterproofing" currentClick={currentClick} className="flex-1" />
+          <ClickReveal at={2} preset="up">
+            <SlideCallout variant="success" title="Plaster Area Equation" className="py-2">
+              <div className="text-base font-mono text-center text-emerald-600 dark:text-emerald-400 bg-muted/40 p-2 rounded-xl border border-emerald-500/20 font-bold">
+                Area = 2(L + B) × h + L × B
+              </div>
+              <span className="text-[9px] text-muted-foreground block mt-1 text-center">Walls Area (Wet Perimeter × height) + Floor Area</span>
+            </SlideCallout>
+          </ClickReveal>
+        </div>
+      }
+    />
+  );
+};
 
 // Slide 8: Plaster Area & Chemical Sandbox
 export const Slide8: React.FC = () => {
@@ -240,3 +260,4 @@ export const Slide8: React.FC = () => {
     />
   );
 };
+
