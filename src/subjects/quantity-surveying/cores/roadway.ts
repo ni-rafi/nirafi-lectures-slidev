@@ -76,3 +76,58 @@ export function calculateBoxCulvertVolume(
 
   return roundTo3(netArea * l);
 }
+
+/**
+ * Calculates concrete volume for Slab Culvert Abutments.
+ * If applyDeduction is true, deducts the space occupied by the slab bearing.
+ */
+export function calculateSlabCulvertAbutmentConcrete(
+  length: number,
+  width: number,
+  height: number,
+  bearingWidth: number,
+  slabThickness: number,
+  applyDeduction: boolean
+): number {
+  const l = length < 0 ? 0 : length;
+  const w = width < 0 ? 0 : width;
+  const h = height < 0 ? 0 : height;
+  const bw = bearingWidth < 0 ? 0 : bearingWidth;
+  const st = slabThickness < 0 ? 0 : slabThickness;
+
+  const grossVol = l * w * h;
+  const deduction = applyDeduction ? bw * st * l : 0;
+  return roundTo3(Math.max(0, grossVol - deduction));
+}
+
+/**
+ * Calculates the length of steel reinforcement bars running along the inclined (tapered) face of a retaining wall stem.
+ */
+export function calculateRetainingWallInclinedBarLength(
+  height: number,
+  topWidth: number,
+  bottomWidth: number,
+  coverM: number
+): number {
+  const h = height < 0 ? 0 : height;
+  const tw = topWidth < 0 ? 0 : topWidth;
+  const bw = bottomWidth < 0 ? 0 : bottomWidth;
+  const c = coverM < 0 ? 0 : coverM;
+
+  const bSlope = Math.abs(bw - tw);
+  const inclinedLength = Math.sqrt(h * h + bSlope * bSlope);
+  return roundTo3(Math.max(0, inclinedLength - 2 * c));
+}
+
+/**
+ * Calculates reinforcement bar count for Slab Culvert Wing Walls.
+ * Does NOT add the (+1) starter bar because the corner contains the terminal bar of the abutment's run.
+ */
+export function calculateSlabCulvertWingWallReinforcementCount(
+  wallLength: number,
+  spacing: number
+): number {
+  const wl = wallLength < 0 ? 0 : wallLength;
+  const s = spacing <= 0 ? 1 : spacing;
+  return Math.round(wl / s);
+}

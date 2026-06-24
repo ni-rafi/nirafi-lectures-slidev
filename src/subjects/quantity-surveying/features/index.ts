@@ -33,6 +33,8 @@ export { ReservoirBBSDrawing } from './components/ReservoirBBSDrawing';
 export { InspectionPitDrawing } from './components/InspectionPitDrawing';
 export { GridMethodDrawing } from './components/GridMethodDrawing';
 export { EarthworkMethodDrawing } from './components/EarthworkMethodDrawing';
+export { RetainingWallBBSDrawing } from './components/RetainingWallBBSDrawing';
+export { SlabCulvertAnatomyDrawing } from './components/SlabCulvertAnatomyDrawing';
 export * from './calculators';
 
 

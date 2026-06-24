@@ -45,6 +45,9 @@ export {
   calculateBitumenWeight,
   calculateRetainingWallVolume,
   calculateBoxCulvertVolume,
+  calculateSlabCulvertAbutmentConcrete,
+  calculateRetainingWallInclinedBarLength,
+  calculateSlabCulvertWingWallReinforcementCount
 } from './roadway';
 export {
   calculateReservoirExcavation,
