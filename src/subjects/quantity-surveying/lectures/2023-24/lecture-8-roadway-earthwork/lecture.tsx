@@ -7,7 +7,7 @@ import {
   Slide4,
   Slide5,
   Slide6
-} from './slides/RoadwaySection1Slides';
+} from './slides/RoadwayGeometrySlides';
 import {
   Slide7,
   Slide8,
@@ -15,14 +15,14 @@ import {
   Slide10,
   Slide11,
   Slide12
-} from './slides/RoadwaySection2Slides';
+} from './slides/SoilVolumetricsSlides';
 import {
   Slide13,
   Slide14,
   Slide15,
   Slide16,
   Slide17
-} from './slides/RoadwaySection3Slides';
+} from './slides/PWDRateAnalysisRulesAndQuizzes';
 
 export const slides: Record<number, React.ComponentType<SlideProps>> = {
   1: Slide1,

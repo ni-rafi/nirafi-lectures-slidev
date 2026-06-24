@@ -19,7 +19,9 @@ export const QUIZ_METADATA = [
   { id: 'qs_2023_lec8_q1', header: 'Lec 8 Roadway Area' },
   { id: 'qs_2023_lec8_q2', header: 'Lec 8 Embankment Compaction' },
   { id: 'qs_2023_lec9_q1', header: 'Lec 9 Pavement Volume' },
-  { id: 'qs_2023_lec9_q2', header: 'Lec 9 Box Culvert RCC' }
+  { id: 'qs_2023_lec9_q2', header: 'Lec 9 Box Culvert RCC' },
+  { id: 'qs_2023_lec10_q1', header: 'Lec 10 IPC Billing Check' },
+  { id: 'qs_2023_lec10_q2', header: 'Lec 10 Source VAT Check' }
 ];
 
 export const QUIZ_ANSWERS: Record<
@@ -185,6 +187,30 @@ export const QUIZ_ANSWERS: Record<
        const h = 1.20 + parameterResolver.getLastDigit(reg) * 0.05;
        const vol = (2.50 * 2.20 - 1.50 * h) * 10.0;
        return vol.toFixed(3);
+     },
+   },
+
+   qs_2023_lec10_q1: {
+     formula: '(1000000 + [last digit] × 10000) × 0.625 + 30000 BDT',
+     digitsRequired: 1,
+     resolve: (reg) => {
+       const digits = reg.replace(/\D/g, '');
+       if (digits.length < 1) return '(1000000 + [last digit] × 10000) × 0.625 + 30000 BDT';
+       const gross = 1000000 + parameterResolver.getLastDigit(reg) * 10000;
+       const netPay = gross * 0.625 + 30000;
+       return netPay.toFixed(3);
+     },
+   },
+
+   qs_2023_lec10_q2: {
+     formula: '(1000000 + [last digit] × 10000) × 0.075 BDT',
+     digitsRequired: 1,
+     resolve: (reg) => {
+       const digits = reg.replace(/\D/g, '');
+       if (digits.length < 1) return '(1000000 + [last digit] × 10000) × 0.075 BDT';
+       const gross = 1000000 + parameterResolver.getLastDigit(reg) * 10000;
+       const vatVal = gross * 0.075;
+       return vatVal.toFixed(3);
      },
    },
 };
