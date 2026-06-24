@@ -9,7 +9,11 @@ import {
   calculatePurlinsCountInternal,
   calculateSlabBarsCountInternal,
   calculateSteelLedgerRowInternal,
-  calculateBarLengthInternal
+  calculateBarLengthInternal,
+  calculateSteelMacroBudget,
+  calculateHookAdditionDetailed,
+  calculateCouplerComparison,
+  calculateRebarWeightPwdVsFormula
 } from '../steel';
 
 describe('Steel Reinforcement Module', () => {
@@ -187,6 +191,56 @@ describe('Steel Reinforcement Module', () => {
     test('should handle zero cover or zero hooks correctly', () => {
       expect(calculateBarLengthInternal(6.0, 0, 0.20)).toBe(6.20);
       expect(calculateBarLengthInternal(4.5, 0.04, 0)).toBe(4.42);
+    });
+  });
+
+  describe('Macro Steel Estimation (Thumb Rules)', () => {
+    test('should calculate correct macro budget steel weight', () => {
+      const result = calculateSteelMacroBudget(10, 1.0);
+      expect(result.steelWeightKg).toBe(785);
+    });
+
+    test('should return 0 for negative or zero inputs', () => {
+      expect(calculateSteelMacroBudget(-10, 1.0).steelWeightKg).toBe(0);
+      expect(calculateSteelMacroBudget(10, 0).steelWeightKg).toBe(0);
+    });
+  });
+
+  describe('Detailed Hook Addition Geometry', () => {
+    test('should calculate correct hook additions for different angles and bar types', () => {
+      const result180 = calculateHookAdditionDetailed(10, 2, 180, 'plain');
+      expect(result180.additionM).toBe(0.180);
+      expect(result180.multiplier).toBe(9);
+
+      const result90Def = calculateHookAdditionDetailed(16, 2, 90, 'deformed');
+      expect(result90Def.additionM).toBe(0.384);
+      expect(result90Def.multiplier).toBe(12);
+
+      const result90Plain = calculateHookAdditionDetailed(16, 2, 90, 'plain');
+      expect(result90Plain.additionM).toBe(0.512);
+
+      const result135Def = calculateHookAdditionDetailed(10, 2, 135, 'deformed');
+      expect(result135Def.additionM).toBe(0.120);
+    });
+  });
+
+  describe('Mechanical Splicing Coupler Comparison', () => {
+    test('should calculate savings and weights of lap vs couplers correctly', () => {
+      const comparison = calculateCouplerComparison(20, 3.5, 8, 95, 250);
+      expect(comparison.lapWeightKg).toBe(19.728);
+      expect(comparison.lapCostBdt).toBe(1874.16);
+      expect(comparison.couplersCostBdt).toBe(2000.0);
+      expect(comparison.netSavingsBdt).toBe(-125.84);
+      expect(comparison.weightSavedKg).toBe(19.728);
+    });
+  });
+
+  describe('PWD Weight vs Theoretical Formula Weight', () => {
+    test('should compare weights using formula vs PWD constants correctly', () => {
+      const result = calculateRebarWeightPwdVsFormula(10, 1000);
+      expect(result.weightFormulaKg).toBe(617.284);
+      expect(result.weightPwdKg).toBe(616.000);
+      expect(result.diffKg).toBe(1.284);
     });
   });
 });

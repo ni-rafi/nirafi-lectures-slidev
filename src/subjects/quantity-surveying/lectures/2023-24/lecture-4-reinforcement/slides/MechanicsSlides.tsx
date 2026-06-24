@@ -13,7 +13,7 @@ import { QuizCardOrchestrator } from '@/features/quiz';
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
 import { HookCrankDrawing } from '@/subjects/quantity-surveying/features/components/HookCrankDrawing';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
-import { HooksCranksSandbox } from '@/subjects/quantity-surveying/features';
+import { HooksCranksSandbox, HookGeometrySandbox, MechanicalCouplerSandbox } from '@/subjects/quantity-surveying/features';
 
 // ============================================================================
 // Slide 4: Section Title Deck
@@ -177,3 +177,17 @@ export const Slide5C: React.FC = () => {
     </FullWidthLayout>
   );
 };
+
+// ============================================================================
+// Slide: Hook Geometry & Bends
+// ============================================================================
+export const Slide_HookGeometry: React.FC = () => (
+  <HookGeometrySandbox />
+);
+
+// ============================================================================
+// Slide: Mechanical Splicing vs Lapping
+// ============================================================================
+export const Slide_MechanicalCouplers: React.FC = () => (
+  <MechanicalCouplerSandbox />
+);

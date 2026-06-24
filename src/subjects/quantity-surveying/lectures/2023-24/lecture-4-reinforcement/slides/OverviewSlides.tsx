@@ -6,13 +6,14 @@ import {
   SlideParagraph, 
   SlideList, 
   SlideCallout, 
-  ClickReveal
+  ClickReveal,
+  ClickSyncedTabs
 } from '@/features/presentation/components/elements';
 import { LectureCover } from '@/shared/layouts/LectureCover';
 import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 import { QuizCardOrchestrator } from '@/features/quiz';
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
-import { ClearCoverSandbox } from '@/subjects/quantity-surveying/features';
+import { ClearCoverSandbox, SteelMacroBudgetSandbox, HookGeometryDrawing } from '@/subjects/quantity-surveying/features';
 
 // ============================================================================
 // Slide 1: Main Lecture Cover (TitleV2Layout representation)
@@ -186,5 +187,86 @@ export const Slide3C: React.FC = () => {
         />
       </div>
     </FullWidthLayout>
+  );
+};
+
+// ============================================================================
+// Slide: Preliminary Steel Estimation (Thumb Rules)
+// ============================================================================
+export const Slide_ThumbRules: React.FC = () => (
+  <SteelMacroBudgetSandbox />
+);
+
+// ============================================================================
+// Slide: Reinforcement Types: Plain vs. Deformed Bars
+// ============================================================================
+export const Slide_BarTypes: React.FC = () => {
+  const tabItems = [
+    {
+      title: 'Plain Mild Steel Round Bars',
+      description: (
+        <div className="space-y-4">
+          <SlideParagraph title="Standard MS Round Bars (Grade 40)">
+            Smooth cylindrical shape without surface patterns. Primarily used in older structures or light reinforcement elements (like stirrups/ties and minor masonry walls).
+          </SlideParagraph>
+          <SlideList
+            items={[
+              { title: "Bonding Mechanism", text: "Relies entirely on chemical adhesion and mechanical hook anchors at the ends to prevent slipping." },
+              { title: "Standard Rule", text: "Because bond strength is low, every plain round bar must be strictly anchored with a standard 180° hook at both ends." },
+              { title: "Tensile Strength", text: "Typically Grade 40 (yield strength of 250 MPa or 40,000 psi)." }
+            ]}
+          />
+        </div>
+      ),
+      rightContent: (
+        <div className="w-full flex items-center justify-center">
+          <HookGeometryDrawing
+            barType="plain"
+            angle={180}
+            diameterMm={12}
+            multiplier={9}
+            additionM={0.216}
+          />
+        </div>
+      )
+    },
+    {
+      title: 'High-Strength Deformed Bars',
+      description: (
+        <div className="space-y-4">
+          <SlideParagraph title="Deformed Rebar (Grade 60 / 75 / 500W)">
+            Features raised ridges, ribs, or lugs rolled onto the surface to increase the contact area and bond capacity with concrete.
+          </SlideParagraph>
+          <SlideList
+            items={[
+              { title: "Mechanical Interlocking", text: "Lugs physically lock into the surrounding concrete, preventing relative movement." },
+              { title: "Estimation Advantage", text: "Much higher bond strength. Allows using straight splice joints or standard 90°/135° bends instead of requiring full 180° hooks at all ends." },
+              { title: "Tensile Strength", text: "Commonly Grade 60 (400 MPa) or Grade 75 (500 MPa / 500W)." }
+            ]}
+          />
+        </div>
+      ),
+      rightContent: (
+        <div className="w-full flex items-center justify-center">
+          <HookGeometryDrawing
+            barType="deformed"
+            angle={90}
+            diameterMm={12}
+            multiplier={12}
+            additionM={0.144}
+          />
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <ClickSyncedTabs
+      title="Reinforcement Types: Plain vs. Deformed Bars"
+      leftTitle="Material Properties"
+      rightTitle="Hook Mechanics"
+      items={tabItems}
+      leftWidth="52%"
+    />
   );
 };

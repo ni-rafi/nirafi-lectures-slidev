@@ -20,7 +20,12 @@ export {
   calculateEffectiveDepth,
   calculateSlabBarsCountInternal,
   calculateSteelLedgerRowInternal,
-  calculateBarLengthInternal
+  calculateBarLengthInternal,
+  PWD_REBAR_WEIGHTS,
+  calculateSteelMacroBudget,
+  calculateHookAdditionDetailed,
+  calculateCouplerComparison,
+  calculateRebarWeightPwdVsFormula
 } from './steel';
 export {
   calculatePipeLengthWithAllowanceInternal,

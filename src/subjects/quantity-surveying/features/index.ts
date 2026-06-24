@@ -38,6 +38,11 @@ export { SlabCulvertAnatomyDrawing } from './components/SlabCulvertAnatomyDrawin
 export { CompleteEstimateTreeDrawing } from './components/CompleteEstimateTreeDrawing';
 export { AnalysisOfRatesLedger } from './components/AnalysisOfRatesLedger';
 export { TwoStoryPlanDrawing } from './components/TwoStoryPlanDrawing';
+export { SteelMacroBudgetDrawing } from './components/SteelMacroBudgetDrawing';
+export { HookGeometryDrawing } from './components/HookGeometryDrawing';
+export { MechanicalCouplerDrawing } from './components/MechanicalCouplerDrawing';
+export { RebarBbsLedgerDrawing } from './components/RebarBbsLedgerDrawing';
+export { PwdWeightDiscrepancyDrawing } from './components/PwdWeightDiscrepancyDrawing';
 export * from './calculators';
 
 

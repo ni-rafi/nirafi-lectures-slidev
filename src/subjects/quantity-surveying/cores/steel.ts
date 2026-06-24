@@ -196,6 +196,109 @@ export function calculateBarLengthInternal(
   return Math.round(Math.max(0, len) * 1000) / 1000;
 }
 
+export const PWD_REBAR_WEIGHTS: Record<number, number> = {
+  8: 0.395,
+  10: 0.616,
+  12: 0.888,
+  16: 1.579,
+  20: 2.466,
+  22: 2.984,
+  25: 3.853,
+  28: 4.834,
+  32: 6.313
+};
+
+export function calculateSteelMacroBudget(
+  concreteVolM3: number,
+  ratioPercent: number
+): { steelWeightKg: number } {
+  if (concreteVolM3 <= 0 || ratioPercent <= 0) return { steelWeightKg: 0 };
+  const steelVol = concreteVolM3 * (ratioPercent / 100);
+  const weight = steelVol * 7850;
+  return {
+    steelWeightKg: Math.round(weight * 1000) / 1000
+  };
+}
+
+export function calculateHookAdditionDetailed(
+  diameterMm: number,
+  hookCount: number,
+  angle: 90 | 135 | 180,
+  barType: 'plain' | 'deformed'
+): { additionM: number; multiplier: number } {
+  if (diameterMm <= 0 || hookCount <= 0) return { additionM: 0, multiplier: 0 };
+  let multiplier = 0;
+  if (angle === 180) {
+    multiplier = 9;
+  } else if (angle === 90) {
+    multiplier = barType === 'deformed' ? 12 : 16;
+  } else if (angle === 135) {
+    multiplier = barType === 'deformed' ? 6 : 8;
+  }
+  const additionM = (hookCount * multiplier * diameterMm) / 1000;
+  return {
+    additionM: Math.round(additionM * 1000) / 1000,
+    multiplier
+  };
+}
+
+export function calculateCouplerComparison(
+  barDiaMm: number,
+  columnHeightM: number,
+  numBars: number,
+  steelRateBdt: number,
+  couplerRateBdt: number
+): {
+  lapWeightKg: number;
+  lapCostBdt: number;
+  couplersCostBdt: number;
+  netSavingsBdt: number;
+  weightSavedKg: number;
+} {
+  if (barDiaMm <= 0 || columnHeightM <= 0 || numBars <= 0) {
+    return { lapWeightKg: 0, lapCostBdt: 0, couplersCostBdt: 0, netSavingsBdt: 0, weightSavedKg: 0 };
+  }
+  const unitWeight = PWD_REBAR_WEIGHTS[barDiaMm] || (barDiaMm * barDiaMm) / 162;
+  const lapLengthM = (50 * barDiaMm) / 1000;
+  const lapWeightKg = numBars * lapLengthM * unitWeight;
+  const lapCostBdt = lapWeightKg * steelRateBdt;
+  const couplersCostBdt = numBars * couplerRateBdt;
+  const netSavingsBdt = lapCostBdt - couplersCostBdt;
+
+  return {
+    lapWeightKg: Math.round(lapWeightKg * 1000) / 1000,
+    lapCostBdt: Math.round(lapCostBdt * 1000) / 1000,
+    couplersCostBdt: Math.round(couplersCostBdt * 1000) / 1000,
+    netSavingsBdt: Math.round(netSavingsBdt * 1000) / 1000,
+    weightSavedKg: Math.round(lapWeightKg * 1000) / 1000
+  };
+}
+
+export function calculateRebarWeightPwdVsFormula(
+  diameterMm: number,
+  lengthM: number
+): {
+  weightFormulaKg: number;
+  weightPwdKg: number;
+  diffKg: number;
+} {
+  if (diameterMm <= 0 || lengthM <= 0) {
+    return { weightFormulaKg: 0, weightPwdKg: 0, diffKg: 0 };
+  }
+  const unitWeightFormula = (diameterMm * diameterMm) / 162;
+  const unitWeightPwd = PWD_REBAR_WEIGHTS[diameterMm] || unitWeightFormula;
+
+  const weightFormulaKg = unitWeightFormula * lengthM;
+  const weightPwdKg = unitWeightPwd * lengthM;
+  const diffKg = weightFormulaKg - weightPwdKg;
+
+  return {
+    weightFormulaKg: Math.round(weightFormulaKg * 1000) / 1000,
+    weightPwdKg: Math.round(weightPwdKg * 1000) / 1000,
+    diffKg: Math.round(diffKg * 1000) / 1000
+  };
+}
+
 
 
 

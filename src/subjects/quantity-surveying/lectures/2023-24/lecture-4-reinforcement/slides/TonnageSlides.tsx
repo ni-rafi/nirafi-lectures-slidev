@@ -10,7 +10,7 @@ import {
 } from '@/features/presentation/components/elements';
 import { QuizCardOrchestrator } from '@/features/quiz';
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
-import { TonnageSandbox } from '@/subjects/quantity-surveying/features';
+import { TonnageSandbox, RebarBbsLedgerSandbox, PwdWeightDiscrepancySandbox } from '@/subjects/quantity-surveying/features';
 
 // ============================================================================
 // Slide 10: Section Title Deck
@@ -154,3 +154,17 @@ export const Slide11C: React.FC = () => {
     </FullWidthLayout>
   );
 };
+
+// ============================================================================
+// Slide: BBS Tabular Ledger Format
+// ============================================================================
+export const Slide_RebarBbsLedger: React.FC = () => (
+  <RebarBbsLedgerSandbox />
+);
+
+// ============================================================================
+// Slide: PWD Weight Discrepancies
+// ============================================================================
+export const Slide_PwdWeightDiscrepancy: React.FC = () => (
+  <PwdWeightDiscrepancySandbox />
+);
