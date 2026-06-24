@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { calculateIPCBill, calculateSteelCostWithMarkupInternal } from '../budget';
+import { calculateIPCBill, calculateSteelCostWithMarkupInternal, calculatePlumbingBudgetInternal } from '../budget';
 
 describe('Project Budgeting & IPC Core Calculations', () => {
   test('should calculate correct values with zero progress', () => {
@@ -109,5 +109,27 @@ describe('Steel Cost with Markup Calculations', () => {
     expect(result.materialCost).toBe(0);
     expect(result.erectionMarkupCost).toBe(0);
     expect(result.totalCost).toBe(0);
+  });
+});
+
+describe('Plumbing Preliminary Budget Calculations', () => {
+  test('should calculate correct plumbing budget based on structural civil cost', () => {
+    // Civil Cost = 1,000,000 BDT, default rate = 8%
+    // Plumbing budget = 1,000,000 * 0.08 = 80,000 BDT
+    const result = calculatePlumbingBudgetInternal(1000000);
+    expect(result).toBe(80000);
+  });
+
+  test('should support custom percentage rates', () => {
+    // Civil Cost = 1,000,000 BDT, custom rate = 7.5%
+    // Plumbing budget = 1,000,000 * 0.075 = 75,000 BDT
+    const result = calculatePlumbingBudgetInternal(1000000, 7.5);
+    expect(result).toBe(75000);
+  });
+
+  test('should return 0 for negative or zero inputs', () => {
+    expect(calculatePlumbingBudgetInternal(-500000)).toBe(0);
+    expect(calculatePlumbingBudgetInternal(1000000, -2.5)).toBe(0);
+    expect(calculatePlumbingBudgetInternal(0)).toBe(0);
   });
 });

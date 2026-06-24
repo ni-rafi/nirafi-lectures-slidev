@@ -153,3 +153,18 @@ export function calculateSteelCostWithMarkupInternal(
   };
 }
 
+/**
+ * Calculates preliminary plumbing budget based on a percentage of the structural civil cost.
+ * civilCost: base structural cost.
+ * ratePercent: plumbing/sanitary budget multiplier (default 8%).
+ */
+export function calculatePlumbingBudgetInternal(
+  civilCost: number,
+  ratePercent: number = 8.0
+): number {
+  const baseCost = Math.max(0, civilCost);
+  const percent = Math.max(0, ratePercent);
+  return round3(baseCost * (percent / 100));
+}
+
+

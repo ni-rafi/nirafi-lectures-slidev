@@ -28,6 +28,7 @@ export { RetainingWallDrawing } from './components/RetainingWallDrawing';
 export { CulvertDrawing } from './components/CulvertDrawing';
 export { TrussTypologyDrawing } from './components/TrussTypologyDrawing';
 export { SteelLedgerTrussDrawing } from './components/SteelLedgerTrussDrawing';
+export { PipeFittingsDrawing } from './components/PipeFittingsDrawing';
 export * from './calculators';
 
 

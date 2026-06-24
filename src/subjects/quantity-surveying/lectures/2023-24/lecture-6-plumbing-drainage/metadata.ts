@@ -4,7 +4,7 @@ export const metadata: Lecture = {
   id: 'lecture-6-plumbing-drainage',
   title: 'Estimation of Plumbing and Drainage System',
   description: 'Water supply pipelines, center-line measurements, fittings wastage multipliers, composite W.C. fixture packs, gravity flow slope gradients, subterranean trenches, and inspection chambers.',
-  slideNo: 23,
+  slideNo: 30,
   durationMins: 45,
   locked: false,
   tags: [
