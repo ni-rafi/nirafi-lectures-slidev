@@ -9,7 +9,8 @@ export {
   calculateCrankAdditionInternal,
   calculatePlateWeightInternal,
   calculateRafterLengthInternal,
-  calculatePurlinsCountInternal
+  calculatePurlinsCountInternal,
+  calculateEffectiveDepth
 } from './steel';
 export {
   calculatePipeLengthWithAllowanceInternal,

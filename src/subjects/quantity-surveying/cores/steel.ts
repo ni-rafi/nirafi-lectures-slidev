@@ -111,4 +111,21 @@ export function calculatePurlinsCountInternal(
   return Math.floor(Math.round(ratio * 100000) / 100000) + 1;
 }
 
+/**
+ * Calculates effective depth of a reinforced concrete section (in mm).
+ */
+export function calculateEffectiveDepth(
+  depthMm: number,
+  clearCoverMm: number,
+  stirrupDiaMm: number = 10,
+  barDiaMm: number = 16
+): number {
+  const h = depthMm < 0 ? 0 : depthMm;
+  const cc = clearCoverMm < 0 ? 0 : clearCoverMm;
+  const sd = stirrupDiaMm < 0 ? 0 : stirrupDiaMm;
+  const bd = barDiaMm < 0 ? 0 : barDiaMm;
+  const effDepth = h - cc - sd - bd / 2;
+  return Math.round(Math.max(0, effDepth) * 1000) / 1000;
+}
+
 

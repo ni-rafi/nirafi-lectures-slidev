@@ -14,5 +14,9 @@ export { DpcAreaSandbox } from './DpcAreaSandbox';
 export { MasonryHeightSandbox } from './MasonryHeightSandbox';
 export { ColumnVolumeSandbox } from './ColumnVolumeSandbox';
 export { BeamClearSpanSandbox } from './BeamClearSpanSandbox';
+export { ClearCoverSandbox } from './ClearCoverSandbox';
+export { StirrupCountingSandbox } from './StirrupCountingSandbox';
 export { ProgressIPCSandbox } from './ProgressIPCSandbox';
+export { HooksCranksSandbox } from './HooksCranksSandbox';
+export { TonnageSandbox } from './TonnageSandbox';
 
