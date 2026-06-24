@@ -7,7 +7,6 @@ import {
   SlideList, 
   SlideCallout, 
   ClickReveal,
-  ClickHighlight,
   InteractiveCard,
   ParameterSlider,
   CalculationOutput
@@ -16,6 +15,8 @@ import { DrainageSlopeDrawing } from '@/subjects/quantity-surveying/features/com
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { calculateInvertLevelDifferenceInternal, calculateSandCushionVolumeInternal } from '@/subjects/quantity-surveying/cores';
 import { QuizCardOrchestrator } from '@/features/quiz';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
+
 
 // ============================================================================
 // Slide 12: Section 3 Cover
@@ -84,51 +85,51 @@ export const Slide13: React.FC = () => (
 // ============================================================================
 // Slide 14: Invert Levels & Gradient Slope Calculations
 // ============================================================================
-export const Slide14: React.FC = () => (
-  <FullWidthLayout
-    title="3.2 Gravity Hydraulics: Gradient Fall & Cushioning"
-    bgVariant="default"
-  >
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
-      <div className="space-y-4 text-left">
-        <SlideParagraph title="The Mandatory Slope Rules">
-          Horizontal underground or under-floor drainage layouts require precise slope execution to maintain fluid velocity and prevent solid deposition blockages.
-        </SlideParagraph>
-        
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { 
-              title: "PWD Soil Pipe Gradient Standards", 
-              text: "Requires a systematic fall ratio between 1:40 to 1:60 depending on discharge metrics." 
-            },
-            { 
-              title: "Invert Level Differential Calculation", 
-              text: "Surveyors check the start depth vs. end depth to determine excavation trench thresholds." 
-            }
-          ]}
-        />
-      </div>
+export const Slide14: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
 
-      <ClickReveal at={2} preset="up">
-        <div className="h-full flex flex-col justify-center space-y-4 text-left">
-          <SlideCallout variant="warning" title="Subterranean Sand Cushioning Ledger">
-            <p className="text-sm mb-2">
-              Under-floor and external sub-grade pipes cannot rest on raw excavated soil profiles. Dutta and PWD manuals mandate an item entry for a compacted sand cushion base sheet layout:
-            </p>
-            <div className="text-3xl font-bold text-center text-amber-500 my-2 font-mono">
-              Vol = W × L × T
-            </div>
-            <p className="text-xs text-muted-foreground mt-3 border-t pt-2 leading-relaxed">
-              <strong>Field Parameter Example:</strong> For a 20-meter horizontal layout pipe run needing a 0.45m trench footprint width and a 75mm (<ClickHighlight at={3} variant="bold" className="text-amber-600">0.075m</ClickHighlight>) thick fine aggregate sand bed: <br/>
-              <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold text-sm">20m × 0.45m × 0.075m = 0.675 m³ (or 23.83 cft) Sand Volume.</span>
-            </p>
-          </SlideCallout>
+  return (
+    <FullWidthLayout
+      title="3.2 Gravity Hydraulics: Gradient Fall & Cushioning"
+      bgVariant="default"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+        <div className="space-y-4 text-left">
+          <SlideParagraph title="The Mandatory Slope Rules">
+            Horizontal underground or under-floor drainage layouts require precise slope execution to maintain fluid velocity and prevent solid deposition blockages.
+          </SlideParagraph>
+          
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { 
+                title: "PWD Soil Pipe Gradient Standards", 
+                text: "Requires a systematic fall ratio between 1:40 to 1:60 depending on discharge metrics." 
+              },
+              { 
+                title: "Invert Level Differential Calculation", 
+                text: "Surveyors check the start depth vs. end depth to determine excavation trench thresholds." 
+              }
+            ]}
+          />
         </div>
-      </ClickReveal>
-    </div>
-  </FullWidthLayout>
-);
+
+        <div className="w-full h-full flex items-center justify-center">
+          <DrainageSlopeDrawing
+            lengthM={20.0}
+            trenchWidthMm={450}
+            sandThicknessMm={75}
+            gradientRatio={50}
+            activeHighlight={
+              currentClick === 1 ? 'slope' :
+              currentClick >= 2 ? 'sand' : 'none'
+            }
+          />
+        </div>
+      </div>
+    </FullWidthLayout>
+  );
+};
 
 // ============================================================================
 // Slide 15: Drainage Slope Sandbox

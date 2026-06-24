@@ -14,6 +14,7 @@ import {
 } from '@/features/presentation/components/elements';
 import { SteelSectionsDrawing } from '@/subjects/quantity-surveying/features/components/SteelSectionsDrawing';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import { LectureCover } from '@/shared/layouts/LectureCover';
 import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 import { QuizCardOrchestrator } from '@/features/quiz';
@@ -40,56 +41,74 @@ export const Slide1B: React.FC = () => (
 // ============================================================================
 // Slide 2: Standard Steel Sections & Nomenclature
 // ============================================================================
-export const Slide2: React.FC = () => (
-  <TwoColumnLayout
-    title="1.1 Standard Structural Steel Sections"
-    bgVariant="default"
-    leftWidth="50%"
-    leftContent={
-      <div className="space-y-4">
-        <SlideParagraph title="Reading Steel Blueprints">
-          Unlike concrete, which is poured into custom geometric shapes on site, structural steel is pre-manufactured in standard, continuous shapes. You must decode the drawing abbreviations accurately.
-        </SlideParagraph>
-        
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { 
-              title: "ISMB / RSJ (I-Beams)", 
-              text: "Indian Standard Medium Weight Beam / Rolled Steel Joist. Used for main horizontal spans." 
-            },
-            { 
-              title: "ISA (Angles)", 
-              text: "Indian Standard Angle (Equal or Unequal). Heavily used in roof trusses, bracing, and cleats." 
-            },
-            { 
-              title: "ISMC (Channels)", 
-              text: "Indian Standard Medium Weight Channel. Typically used for roof purlins." 
-            }
-          ]}
-        />
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={4} preset="fade-in">
-        <div className="h-full flex flex-col justify-center">
-          <SlideCallout variant="info" title="Nomenclature Decoding Example">
-            <p className="mb-4">If a blueprint points to a roof truss tie and labels it:</p>
-            <div className="text-3xl font-bold text-center text-primary my-4 bg-muted/20 p-4 rounded-lg">
-              2 ISA 75 × 50 × 8
-            </div>
-            <ul className="text-sm text-muted-foreground space-y-2 pl-4 border-l-2 border-primary">
-              <li><strong>2</strong> = Two separate angle members placed back-to-back.</li>
-              <li><strong>ISA</strong> = Indian Standard Angle (Unequal legs).</li>
-              <li><strong>75 × 50</strong> = Leg lengths in mm.</li>
-              <li><strong>8</strong> = Thickness of the steel legs in mm.</li>
-            </ul>
-          </SlideCallout>
+export const Slide2: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
+  const sectionType = currentClick === 2 ? 'ISA' : currentClick === 3 ? 'ISMC' : currentClick >= 4 ? 'ISA' : 'ISMB';
+  const depth = currentClick === 2 ? 100 : currentClick === 3 ? 150 : currentClick >= 4 ? 75 : 200;
+  const width = currentClick === 2 ? 100 : currentClick === 3 ? 75 : currentClick >= 4 ? 50 : 100;
+  const flangeT = currentClick >= 4 ? 8 : 10;
+  const webT = currentClick === 2 ? 10 : currentClick === 3 ? 6.5 : currentClick >= 4 ? 8 : 6;
+
+  return (
+    <TwoColumnLayout
+      title="1.1 Standard Structural Steel Sections"
+      bgVariant="default"
+      leftWidth="50%"
+      leftContent={
+        <div className="space-y-4">
+          <SlideParagraph title="Reading Steel Blueprints">
+            Unlike concrete, which is poured into custom geometric shapes on site, structural steel is pre-manufactured in standard, continuous shapes. You must decode the drawing abbreviations accurately.
+          </SlideParagraph>
+          
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { 
+                title: "ISMB / RSJ (I-Beams)", 
+                text: "Indian Standard Medium Weight Beam / Rolled Steel Joist. Used for main horizontal spans." 
+              },
+              { 
+                title: "ISA (Angles)", 
+                text: "Indian Standard Angle (Equal or Unequal). Heavily used in roof trusses, bracing, and cleats." 
+              },
+              { 
+                title: "ISMC (Channels)", 
+                text: "Indian Standard Medium Weight Channel. Typically used for roof purlins." 
+              }
+            ]}
+          />
+
+          <ClickReveal at={4} preset="fade-in">
+            <SlideCallout variant="info" title="Nomenclature Decoding Example">
+              <p className="mb-2 text-xs">If a blueprint points to a roof truss tie and labels it:</p>
+              <div className="text-2xl font-bold text-center text-primary my-2 bg-muted/20 p-2.5 rounded-lg">
+                2 ISA 75 × 50 × 8
+              </div>
+              <ul className="text-[11px] text-muted-foreground space-y-1 pl-4 border-l-2 border-primary">
+                <li><strong>2</strong> = Two separate angle members placed back-to-back.</li>
+                <li><strong>ISA</strong> = Indian Standard Angle (Unequal legs).</li>
+                <li><strong>75 × 50</strong> = Leg lengths in mm.</li>
+                <li><strong>8</strong> = Thickness of the steel legs in mm.</li>
+              </ul>
+            </SlideCallout>
+          </ClickReveal>
         </div>
-      </ClickReveal>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <SteelSectionsDrawing
+            sectionType={sectionType}
+            depthMm={depth}
+            widthMm={width}
+            flangeThicknessMm={flangeT}
+            webThicknessMm={webT}
+          />
+        </div>
+      }
+    />
+  );
+};
 
 // ============================================================================
 // Slide 3: The Linear-to-Weight Rule

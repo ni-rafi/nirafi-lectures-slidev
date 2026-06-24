@@ -16,6 +16,7 @@ import { QuizCardOrchestrator } from '@/features/quiz';
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
 import { HookCrankDrawing } from '@/subjects/quantity-surveying/features/components/HookCrankDrawing';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import { 
   calculateHookAdditionInternal, 
   calculateCrankAdditionInternal 
@@ -35,49 +36,58 @@ export const Slide4: React.FC = () => (
 // ============================================================================
 // Slide 5: Hooks and Cranked Bars
 // ============================================================================
-export const Slide5: React.FC = () => (
-  <TwoColumnLayout
-    title="2.1 Mathematical Additions: Bends & Cranks"
-    bgVariant="default"
-    leftWidth="50%"
-    leftContent={
-      <div className="space-y-6">
-        <SlideParagraph variant="default" title="Standard Hooks">
-          Reinforcement bars rarely end in a straight cut. They are bent to anchor securely into the concrete.
-        </SlideParagraph>
-        
-        <ClickReveal at={1}>
-          <SlideCallout variant="info" title="Hook Length Addition">
-            <p className="text-xs">For a standard 180° semi-circular hook, the extra length added to the straight cut is:</p>
-            <div className="text-3xl font-black text-center text-primary my-2 font-mono">
-              + 9d <span className="text-sm font-normal text-muted-foreground">or</span> 10d
-            </div>
-            <p className="text-[10px] text-muted-foreground text-center">Where <strong>d</strong> = diameter of the bar</p>
-          </SlideCallout>
-        </ClickReveal>
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={2} preset="fade-in">
-        <div className="space-y-6 mt-4 md:mt-0">
-          <SlideParagraph variant="default" title="Cranked (Bent-Up) Bars">
-            Used heavily in slab reinforcement to handle negative bending moments at the support sections.
-          </SlideParagraph>
+export const Slide5: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+  const highlight = currentClick === 1 ? 'hook' : (currentClick === 2 || currentClick === 3) ? 'crank' : 'none';
 
-          <SlideCallout variant="warning" title="Crank Length Addition">
-            <p className="text-xs">For a standard 45° crank, the extra cut length required is:</p>
-            <div className="text-3xl font-black text-center text-amber-500 my-2 font-mono">
-              + 0.42 D
-            </div>
-            <p className="text-[10px] text-muted-foreground text-center">
-              Where <strong>D</strong> = effective depth (Total Slab Depth - Top Cover - Bottom Cover)
-            </p>
-          </SlideCallout>
+  return (
+    <TwoColumnLayout
+      title="2.1 Mathematical Additions: Bends & Cranks"
+      bgVariant="default"
+      leftWidth="50%"
+      leftContent={
+        <div className="space-y-6">
+          <SlideParagraph variant="default" title="Standard Hooks">
+            Reinforcement bars rarely end in a straight cut. They are bent to anchor securely into the concrete.
+          </SlideParagraph>
+          
+          <ClickReveal at={1}>
+            <SlideCallout variant="info" title="Hook Length Addition">
+              <p className="text-xs">For a standard 180° semi-circular hook, the extra length added to the straight cut is:</p>
+              <div className="text-3xl font-black text-center text-primary my-2 font-mono">
+                + 9d <span className="text-sm font-normal text-muted-foreground">or</span> 10d
+              </div>
+              <p className="text-[10px] text-muted-foreground text-center">Where <strong>d</strong> = diameter of the bar</p>
+            </SlideCallout>
+          </ClickReveal>
+
+          <ClickReveal at={2}>
+            <SlideParagraph variant="default" title="Cranked (Bent-Up) Bars">
+              Used heavily in slab reinforcement to handle negative bending moments at the support sections.
+            </SlideParagraph>
+          </ClickReveal>
+
+          <ClickReveal at={3}>
+            <SlideCallout variant="warning" title="Crank Length Addition">
+              <p className="text-xs">For a standard 45° crank, the extra cut length required is:</p>
+              <div className="text-3xl font-black text-center text-amber-500 my-2 font-mono">
+                + 0.42 D
+              </div>
+              <p className="text-[10px] text-muted-foreground text-center">
+                Where <strong>D</strong> = effective depth (Total Slab Depth - Top Cover - Bottom Cover)
+              </p>
+            </SlideCallout>
+          </ClickReveal>
         </div>
-      </ClickReveal>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="w-full h-full flex items-center justify-center">
+          <HookCrankDrawing diameterMm={16} effectiveDepthM={0.120} showAnnotation={true} activeHighlight={highlight} />
+        </div>
+      }
+    />
+  );
+};
 
 // ============================================================================
 // Slide 5B: Hooks & Cranks Sandbox

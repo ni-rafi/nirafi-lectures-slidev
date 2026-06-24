@@ -6,6 +6,7 @@ interface RoofTrussLayoutDrawingProps {
   riseM: number;
   purlinSpacingM: number;
   showAnnotation?: boolean;
+  activeHighlight?: 'none' | 'rafters' | 'ties' | 'webs' | 'purlins';
 }
 
 export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
@@ -13,6 +14,7 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
   riseM,
   purlinSpacingM,
   showAnnotation = true,
+  activeHighlight = 'none',
 }) => {
   const presentation = useContext(PresentationContext);
   const isBlog = presentation?.viewMode === 'blog';
@@ -74,6 +76,18 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
   const r2X = rightX - (rightX - cx) / 2; // mid point on right rafter
   const r2Y = cy - h / 2;
 
+  const isRaftersHighlighted = activeHighlight === 'rafters';
+  const isTiesHighlighted = activeHighlight === 'ties';
+  const isWebsHighlighted = activeHighlight === 'webs';
+  const isPurlinsHighlighted = activeHighlight === 'purlins';
+  const hasHighlightActive = activeHighlight !== 'none';
+
+  const raftersOpacity = isRaftersHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const tiesOpacity = isTiesHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const websOpacity = isWebsHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const purlinsOpacity = isPurlinsHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const restOpacity = hasHighlightActive ? 'opacity-15' : 'opacity-100';
+
   return (
     <div className={containerClasses}>
       <span className="text-xs uppercase tracking-wider font-extrabold text-primary mb-3">
@@ -86,11 +100,11 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
         className="overflow-visible select-none"
       >
         {/* Ground/Support lines */}
-        <line x1={leftX - 20} y1={cy} x2={rightX + 20} y2={cy} stroke="currentColor" strokeWidth="0.8" className="text-muted-foreground/30" />
+        <line x1={leftX - 20} y1={cy} x2={rightX + 20} y2={cy} stroke="currentColor" strokeWidth="0.8" className={`text-muted-foreground/30 transition-opacity duration-300 ${restOpacity}`} />
         
         {/* Support piers */}
-        <rect x={leftX - 8} y={cy} width="16" height="15" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground/40" />
-        <rect x={rightX - 8} y={cy} width="16" height="15" fill="none" stroke="currentColor" strokeWidth="1" className="text-muted-foreground/40" />
+        <rect x={leftX - 8} y={cy} width="16" height="15" fill="none" stroke="currentColor" strokeWidth="1" className={`text-muted-foreground/40 transition-opacity duration-300 ${restOpacity}`} />
+        <rect x={rightX - 8} y={cy} width="16" height="15" fill="none" stroke="currentColor" strokeWidth="1" className={`text-muted-foreground/40 transition-opacity duration-300 ${restOpacity}`} />
 
         {/* Bottom Chord (Tie Beam) */}
         <line
@@ -99,7 +113,8 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
           x2={rightX}
           y2={cy}
           stroke="var(--chart-1, #3b82f6)"
-          strokeWidth="3"
+          strokeWidth={isTiesHighlighted ? '4.5' : '3'}
+          className={`transition-all duration-300 ${tiesOpacity}`}
         />
 
         {/* Principal Rafters */}
@@ -109,7 +124,8 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
           x2={cx}
           y2={apexY}
           stroke="var(--chart-1, #3b82f6)"
-          strokeWidth="3"
+          strokeWidth={isRaftersHighlighted ? '4.5' : '3'}
+          className={`transition-all duration-300 ${raftersOpacity}`}
         />
         <line
           x1={rightX}
@@ -117,7 +133,8 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
           x2={cx}
           y2={apexY}
           stroke="var(--chart-1, #3b82f6)"
-          strokeWidth="3"
+          strokeWidth={isRaftersHighlighted ? '4.5' : '3'}
+          className={`transition-all duration-300 ${raftersOpacity}`}
         />
 
         {/* Web Members */}
@@ -127,15 +144,15 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
           y1={cy}
           x2={cx}
           y2={apexY}
-          stroke="currentColor"
-          strokeWidth="1.5"
-          className="text-muted-foreground/70"
+          stroke={isWebsHighlighted ? 'var(--chart-3)' : 'currentColor'}
+          strokeWidth={isWebsHighlighted ? '3' : '1.5'}
+          className={`text-muted-foreground/70 transition-all duration-300 ${websOpacity}`}
         />
         {/* Struts */}
-        <line x1={q1X} y1={cy} x2={r1X} y2={r1Y} stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/70" />
-        <line x1={q3X} y1={cy} x2={r2X} y2={r2Y} stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/70" />
-        <line x1={cx} y1={cy} x2={r1X} y2={r1Y} stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/70" />
-        <line x1={cx} y1={cy} x2={r2X} y2={r2Y} stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/70" />
+        <line x1={q1X} y1={cy} x2={r1X} y2={r1Y} stroke={isWebsHighlighted ? 'var(--chart-3)' : 'currentColor'} strokeWidth={isWebsHighlighted ? '3' : '1.5'} className={`text-muted-foreground/70 transition-all duration-300 ${websOpacity}`} />
+        <line x1={q3X} y1={cy} x2={r2X} y2={r2Y} stroke={isWebsHighlighted ? 'var(--chart-3)' : 'currentColor'} strokeWidth={isWebsHighlighted ? '3' : '1.5'} className={`text-muted-foreground/70 transition-all duration-300 ${websOpacity}`} />
+        <line x1={cx} y1={cy} x2={r1X} y2={r1Y} stroke={isWebsHighlighted ? 'var(--chart-3)' : 'currentColor'} strokeWidth={isWebsHighlighted ? '3' : '1.5'} className={`text-muted-foreground/70 transition-all duration-300 ${websOpacity}`} />
+        <line x1={cx} y1={cy} x2={r2X} y2={r2Y} stroke={isWebsHighlighted ? 'var(--chart-3)' : 'currentColor'} strokeWidth={isWebsHighlighted ? '3' : '1.5'} className={`text-muted-foreground/70 transition-all duration-300 ${websOpacity}`} />
 
         {/* Draw Purlins as small slanted boxes along the rafters */}
         {purlinsList.map((p, idx) => {
@@ -143,7 +160,7 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
           const isRight = p.x > cx;
           const rot = isRight ? -angleDeg : angleDeg;
           return (
-            <g key={idx} transform={`translate(${p.x}, ${p.y}) rotate(${rot})`}>
+            <g key={idx} transform={`translate(${p.x}, ${p.y}) rotate(${rot})`} className={`transition-opacity duration-300 ${purlinsOpacity}`}>
               <rect
                 x="-4"
                 y="-8"
@@ -151,7 +168,7 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
                 height="8"
                 fill="var(--chart-2, #eab308)"
                 stroke="currentColor"
-                strokeWidth="0.5"
+                strokeWidth={isPurlinsHighlighted ? '1.5' : '0.5'}
                 className="transition-all duration-300"
               />
             </g>
@@ -162,35 +179,45 @@ export const RoofTrussLayoutDrawing: React.FC<RoofTrussLayoutDrawingProps> = ({
         {showAnnotation && (
           <g className="font-mono text-[9px] fill-muted-foreground font-bold">
             {/* Span Indicator */}
-            <line x1={leftX} y1={cy + 25} x2={rightX} y2={cy + 25} stroke="currentColor" strokeWidth="0.5" />
-            <path d={`M ${leftX},${cy + 22} L ${leftX},${cy + 28} M ${rightX},${cy + 22} L ${rightX},${cy + 28}`} />
-            <text x={cx} y={cy + 36} textAnchor="middle" className="fill-foreground">
-              Span = {spanM.toFixed(2)}m
-            </text>
+            <g className={`transition-opacity duration-300 ${tiesOpacity}`}>
+              <line x1={leftX} y1={cy + 25} x2={rightX} y2={cy + 25} stroke="currentColor" strokeWidth="0.5" />
+              <path d={`M ${leftX},${cy + 22} L ${leftX},${cy + 28} M ${rightX},${cy + 22} L ${rightX},${cy + 28}`} />
+              <text x={cx} y={cy + 36} textAnchor="middle" className="fill-foreground">
+                Span = {spanM.toFixed(2)}m
+              </text>
+            </g>
 
             {/* Rise Indicator */}
-            <line x1={cx + w/2 + 25} y1={apexY} x2={cx + w/2 + 25} y2={cy} stroke="currentColor" strokeWidth="0.5" />
-            <path d={`M ${cx + w/2 + 22},${apexY} H ${cx + w/2 + 28} M ${cx + w/2 + 22},${cy} H ${cx + w/2 + 28}`} />
-            <text x={cx + w/2 + 32} y={cy - h/2 + 3} textAnchor="start" className="fill-foreground">
-              Rise = {riseM.toFixed(2)}m
-            </text>
+            <g className={`transition-opacity duration-300 ${restOpacity}`}>
+              <line x1={cx + w/2 + 25} y1={apexY} x2={cx + w/2 + 25} y2={cy} stroke="currentColor" strokeWidth="0.5" />
+              <path d={`M ${cx + w/2 + 22},${apexY} H ${cx + w/2 + 28} M ${cx + w/2 + 22},${cy} H ${cx + w/2 + 28}`} />
+              <text x={cx + w/2 + 32} y={cy - h/2 + 3} textAnchor="start" className="fill-foreground">
+                Rise = {riseM.toFixed(2)}m
+              </text>
+            </g>
 
             {/* Slope text */}
-            <text x={leftX + (cx - leftX)/2 - 15} y={cy - h/2 - 15} textAnchor="end" className="fill-chart-1 font-bold">
-              Rafter = {rafterLength.toFixed(3)}m
-            </text>
+            <g className={`transition-opacity duration-300 ${raftersOpacity}`}>
+              <text x={leftX + (cx - leftX)/2 - 15} y={cy - h/2 - 15} textAnchor="end" className="fill-chart-1 font-bold">
+                Rafter = {rafterLength.toFixed(3)}m
+              </text>
+            </g>
 
             {/* Pitch Angle */}
-            <path d={`M ${leftX + 25},${cy} A 25,25 0 0,0 ${leftX + 25 - 25 * (1 - Math.cos(angleRad))},${cy - 25 * Math.sin(angleRad)}`} fill="none" stroke="currentColor" strokeWidth="0.5" />
-            <text x={leftX + 32} y={cy - 6} textAnchor="start" className="text-[7.5px] fill-muted-foreground font-normal">
-              {angleDeg.toFixed(1)}°
-            </text>
+            <g className={`transition-opacity duration-300 ${restOpacity}`}>
+              <path d={`M ${leftX + 25},${cy} A 25,25 0 0,0 ${leftX + 25 - 25 * (1 - Math.cos(angleRad))},${cy - 25 * Math.sin(angleRad)}`} fill="none" stroke="currentColor" strokeWidth="0.5" />
+              <text x={leftX + 32} y={cy - 6} textAnchor="start" className="text-[7.5px] fill-muted-foreground font-normal">
+                {angleDeg.toFixed(1)}°
+              </text>
+            </g>
 
             {/* Purlin spacing text */}
             {purlinsList.length > 0 && (
-              <text x={cx} y={apexY - 20} textAnchor="middle" className="fill-chart-2 font-bold">
-                Purlin Spacing = {purlinSpacingM.toFixed(2)}m (Total = {numPurlinsPerSide * 2} Lines)
-              </text>
+              <g className={`transition-opacity duration-300 ${purlinsOpacity}`}>
+                <text x={cx} y={apexY - 20} textAnchor="middle" className="fill-chart-2 font-bold">
+                  Purlin Spacing = {purlinSpacingM.toFixed(2)}m (Total = {numPurlinsPerSide * 2} Lines)
+                </text>
+              </g>
             )}
           </g>
         )}

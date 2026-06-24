@@ -7,6 +7,7 @@ interface DrainageSlopeProps {
   sandThicknessMm: number;
   gradientRatio: number;
   showAnnotation?: boolean;
+  activeHighlight?: 'none' | 'slope' | 'sand';
 }
 
 export const DrainageSlopeDrawing: React.FC<DrainageSlopeProps> = ({
@@ -15,9 +16,14 @@ export const DrainageSlopeDrawing: React.FC<DrainageSlopeProps> = ({
   sandThicknessMm,
   gradientRatio,
   showAnnotation = true,
+  activeHighlight = 'none',
 }) => {
   const presentation = useContext(PresentationContext);
   const isBlog = presentation?.viewMode === 'blog';
+
+  const isSlopeActive = activeHighlight === 'none' || activeHighlight === 'slope';
+  const isSandActive = activeHighlight === 'none' || activeHighlight === 'sand';
+
 
   const containerClasses = isBlog
     ? 'bg-transparent border-none shadow-none p-0 flex flex-col items-center select-none w-full'
@@ -58,8 +64,10 @@ export const DrainageSlopeDrawing: React.FC<DrainageSlopeProps> = ({
         className="overflow-visible select-none"
       >
         {/* Ground Surface (soil hatch representation) */}
-        <line x1={startX - 30} y1={gY} x2={endX + 30} y2={gY} stroke="currentColor" strokeWidth="2" className="text-muted-foreground/60" />
-        <path d={`M ${startX - 20},${gY} l -5,5 M ${startX},${gY} l -5,5 M ${startX + 40},${gY} l -5,5 M ${endX},${gY} l -5,5`} stroke="currentColor" strokeWidth="0.5" className="text-muted-foreground/30" />
+        <g opacity={isSlopeActive ? "1" : "0.2"} className="transition-all duration-300">
+          <line x1={startX - 30} y1={gY} x2={endX + 30} y2={gY} stroke="currentColor" strokeWidth="2" className="text-muted-foreground/60" />
+          <path d={`M ${startX - 20},${gY} l -5,5 M ${startX},${gY} l -5,5 M ${startX + 40},${gY} l -5,5 M ${endX},${gY} l -5,5`} stroke="currentColor" strokeWidth="0.5" className="text-muted-foreground/30" />
+        </g>
 
         {/* Excavation Trench Boundary Outline */}
         <polygon
@@ -73,7 +81,8 @@ export const DrainageSlopeDrawing: React.FC<DrainageSlopeProps> = ({
           stroke="currentColor"
           strokeWidth="1.2"
           strokeDasharray="4,2"
-          className="text-muted-foreground/40"
+          opacity={isSandActive ? "1" : "0.2"}
+          className="text-muted-foreground/40 transition-all duration-300"
         />
 
         {/* Sand Cushion Base (Shaded polygon) */}
@@ -87,6 +96,7 @@ export const DrainageSlopeDrawing: React.FC<DrainageSlopeProps> = ({
           fill="var(--chart-2-opacity, rgba(234, 179, 8, 0.15))"
           stroke="var(--chart-2, #eab308)"
           strokeWidth="0.8"
+          opacity={isSandActive ? "1" : "0.15"}
           className="transition-all duration-300"
         />
 
@@ -99,6 +109,7 @@ export const DrainageSlopeDrawing: React.FC<DrainageSlopeProps> = ({
           stroke="var(--chart-1, #3b82f6)"
           strokeWidth="8"
           strokeLinecap="round"
+          opacity={isSlopeActive ? "1" : "0.15"}
           className="transition-all duration-300"
         />
         {/* Pipe inner bore line */}
@@ -110,61 +121,75 @@ export const DrainageSlopeDrawing: React.FC<DrainageSlopeProps> = ({
           stroke="var(--background, #fff)"
           strokeWidth="1"
           strokeDasharray="5,3"
+          opacity={isSlopeActive ? "1" : "0.15"}
+          className="transition-all duration-300"
         />
 
         {/* Fluid flow direction arrows */}
-        <g stroke="var(--chart-1)" strokeWidth="1" fill="none" className="text-primary/70">
+        <g stroke="var(--chart-1)" strokeWidth="1" fill="none" opacity={isSlopeActive ? "0.7" : "0.15"} className="text-primary/70 transition-all duration-300">
           <path d={`M ${startX + 50},${startDepth - 18} l 10,2 -8,-8 M ${startX + 50},${startDepth - 18} l -15, -4`} />
           <path d={`M ${endX - 50},${endDepth - 18} l 10,2 -8,-8 M ${endX - 50},${endDepth - 18} l -15, -4`} />
+          <text x={startX + 65} y={startDepth - 22} stroke="none" className="font-sans text-[8px] fill-chart-1 font-semibold">Fluid Flow</text>
         </g>
-        <text x={startX + 65} y={startDepth - 22} className="font-sans text-[8px] fill-chart-1 font-semibold">Fluid Flow</text>
 
         {/* Annotations & Calculations */}
         {showAnnotation && (
           <g className="font-mono text-[9px] fill-muted-foreground font-bold">
             {/* Start Invert Level */}
-            <line x1={startX - 15} y1={gY} x2={startX - 5} y2={gY} stroke="currentColor" strokeWidth="0.5" />
-            <line x1={startX - 15} y1={startDepth} x2={startX - 5} y2={startDepth} stroke="currentColor" strokeWidth="0.5" />
-            <line x1={startX - 10} y1={gY} x2={startX - 10} y2={startDepth} stroke="currentColor" strokeWidth="0.5" />
-            <text x={startX - 14} y={startDepth - 15} textAnchor="end" className="fill-foreground">
-              Start Depth = {(startDepth / verticalScale).toFixed(2)}m
-            </text>
+            <g opacity={isSlopeActive ? "1" : "0.15"} className="transition-all duration-300">
+              <line x1={startX - 15} y1={gY} x2={startX - 5} y2={gY} stroke="currentColor" strokeWidth="0.5" />
+              <line x1={startX - 15} y1={startDepth} x2={startX - 5} y2={startDepth} stroke="currentColor" strokeWidth="0.5" />
+              <line x1={startX - 10} y1={gY} x2={startX - 10} y2={startDepth} stroke="currentColor" strokeWidth="0.5" />
+              <text x={startX - 14} y={startDepth - 15} textAnchor="end" className="fill-foreground">
+                Start Depth = {(startDepth / verticalScale).toFixed(2)}m
+              </text>
+            </g>
 
             {/* End Invert Level */}
-            <line x1={endX + 5} y1={gY} x2={endX + 15} y2={gY} stroke="currentColor" strokeWidth="0.5" />
-            <line x1={endX + 5} y1={endDepth} x2={endX + 15} y2={endDepth} stroke="currentColor" strokeWidth="0.5" />
-            <line x1={endX + 10} y1={gY} x2={endX + 10} y2={endDepth} stroke="currentColor" strokeWidth="0.5" />
-            <text x={endX + 14} y={endDepth - 15} textAnchor="start" className="fill-foreground">
-              End Depth = {(endDepth / verticalScale).toFixed(2)}m
-            </text>
+            <g opacity={isSlopeActive ? "1" : "0.15"} className="transition-all duration-300">
+              <line x1={endX + 5} y1={gY} x2={endX + 15} y2={gY} stroke="currentColor" strokeWidth="0.5" />
+              <line x1={endX + 5} y1={endDepth} x2={endX + 15} y2={endDepth} stroke="currentColor" strokeWidth="0.5" />
+              <line x1={endX + 10} y1={gY} x2={endX + 10} y2={endDepth} stroke="currentColor" strokeWidth="0.5" />
+              <text x={endX + 14} y={endDepth - 15} textAnchor="start" className="fill-foreground">
+                End Depth = {(endDepth / verticalScale).toFixed(2)}m
+              </text>
+            </g>
 
             {/* Trench Length */}
-            <line x1={startX} y1={gY - 15} x2={endX} y2={gY - 15} stroke="currentColor" strokeWidth="0.5" />
-            <path d={`M ${startX},${gY - 18} V ${gY - 12} M ${endX},${gY - 18} V ${gY - 12}`} stroke="currentColor" strokeWidth="0.5" />
-            <text x={(startX + endX) / 2} y={gY - 20} textAnchor="middle" className="fill-foreground">
-              Trench Run = {lengthM.toFixed(2)}m
-            </text>
+            <g opacity={isSlopeActive ? "1" : "0.15"} className="transition-all duration-300">
+              <line x1={startX} y1={gY - 15} x2={endX} y2={gY - 15} stroke="currentColor" strokeWidth="0.5" />
+              <path d={`M ${startX},${gY - 18} V ${gY - 12} M ${endX},${gY - 18} V ${gY - 12}`} stroke="currentColor" strokeWidth="0.5" />
+              <text x={(startX + endX) / 2} y={gY - 20} textAnchor="middle" className="fill-foreground">
+                Trench Run = {lengthM.toFixed(2)}m
+              </text>
+            </g>
 
             {/* Sand Cushion Thickness */}
-            <path d={`M ${startX},${startDepth} H ${startX + 40}`} stroke="currentColor" strokeWidth="0.5" strokeDasharray="2,2" />
-            <text x={startX + 45} y={startDepth + sandPx / 2 + 3} textAnchor="start" className="fill-chart-2 text-[8px] font-bold">
-              Sand Bed = {sandThicknessMm}mm
-            </text>
+            <g opacity={isSandActive ? "1" : "0.15"} className="transition-all duration-300">
+              <path d={`M ${startX},${startDepth} H ${startX + 40}`} stroke="currentColor" strokeWidth="0.5" strokeDasharray="2,2" />
+              <text x={startX + 45} y={startDepth + sandPx / 2 + 3} textAnchor="start" className="fill-chart-2 text-[8px] font-bold">
+                Sand Bed = {sandThicknessMm}mm
+              </text>
+            </g>
 
             {/* Gradient ratio */}
-            <text x={(startX + endX) / 2} y={tbRightY + 25} textAnchor="middle" className="fill-chart-1 font-bold text-[8.5px]">
-              Slope Gradient = 1 : {gradientRatio} (Fall = {fallM.toFixed(3)}m)
-            </text>
+            <g opacity={isSlopeActive ? "1" : "0.15"} className="transition-all duration-300">
+              <text x={(startX + endX) / 2} y={tbRightY + 25} textAnchor="middle" className="fill-chart-1 font-bold text-[8.5px]">
+                Slope Gradient = 1 : {gradientRatio} (Fall = {fallM.toFixed(3)}m)
+              </text>
+            </g>
 
             {/* Volume box */}
-            <rect x="230" y="140" width="200" height="42" fill="var(--muted-foreground-opacity, rgba(120, 120, 120, 0.05))" stroke="currentColor" strokeWidth="0.5" rx="3" className="text-muted-foreground/30" />
-            <text x="240" y="152" className="fill-foreground text-[8px] font-bold">Sand Cushion Vol (PWD):</text>
-            <text x="240" y="164" className="fill-chart-2 text-[7.5px] font-mono font-bold">
-              Size: {lengthM.toFixed(2)}m × {(trenchWidthMm / 1000).toFixed(3)}m × {(sandThicknessMm / 1000).toFixed(3)}m
-            </text>
-            <text x="240" y="174" className="fill-foreground text-[8px] font-bold">
-              Volume = {(lengthM * (trenchWidthMm / 1000) * (sandThicknessMm / 1000)).toFixed(3)} m³
-            </text>
+            <g opacity={activeHighlight === 'none' || activeHighlight === 'sand' ? "1" : "0.15"} className="transition-all duration-300">
+              <rect x="230" y="140" width="200" height="42" fill="var(--muted-foreground-opacity, rgba(120, 120, 120, 0.05))" stroke="currentColor" strokeWidth="0.5" rx="3" className="text-muted-foreground/30" />
+              <text x="240" y="152" className="fill-foreground text-[8px] font-bold">Sand Cushion Vol (PWD):</text>
+              <text x="240" y="164" className="fill-chart-2 text-[7.5px] font-mono font-bold">
+                Size: {lengthM.toFixed(2)}m × {(trenchWidthMm / 1000).toFixed(3)}m × {(sandThicknessMm / 1000).toFixed(3)}m
+              </text>
+              <text x="240" y="174" className="fill-foreground text-[8px] font-bold">
+                Volume = {(lengthM * (trenchWidthMm / 1000) * (sandThicknessMm / 1000)).toFixed(3)} m³
+              </text>
+            </g>
           </g>
         )}
       </svg>

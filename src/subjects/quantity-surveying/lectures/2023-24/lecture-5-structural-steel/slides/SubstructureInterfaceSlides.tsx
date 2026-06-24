@@ -14,6 +14,7 @@ import {
 } from '@/features/presentation/components/elements';
 import { BasePlatePedestalDrawing } from '@/subjects/quantity-surveying/features/components/BasePlatePedestalDrawing';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import { calculatePlateWeightInternal } from '@/subjects/quantity-surveying/cores';
 import { QuizCardOrchestrator } from '@/features/quiz';
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
@@ -32,41 +33,68 @@ export const Slide4: React.FC = () => (
 // ============================================================================
 // Slide 5: Base Plate Calculations Theory
 // ============================================================================
-export const Slide5: React.FC = () => (
-  <TwoColumnLayout
-    title="2.1 Base Plates & The Density Constant"
-    bgVariant="default"
-    leftWidth="50%"
-    leftContent={
-      <div className="space-y-4">
-        <SlideParagraph title="Foundation Transition">
-          Steel columns cannot sit directly on raw concrete. They require thick, flat steel <strong>Base Plates</strong> to distribute the concentrated structural load over the wider surface of the concrete pedestal.
-        </SlideParagraph>
-        
-        <ClickReveal at={1}>
-          <SlideParagraph variant="plain">
-            Because these plates are cut from custom flat sheets, you <ClickHighlight at={2} variant="strike" className="text-red-500">cannot use standard linear Steel Tables</ClickHighlight>. You must calculate their volume and multiply by the <strong>Steel Density Constant</strong>.
+export const Slide5: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
+  const highlight = currentClick === 0 || currentClick >= 3 ? 'plate' : currentClick === 1 ? 'bolts' : 'pedestal';
+
+  return (
+    <TwoColumnLayout
+      title="2.1 Base Plates & The Density Constant"
+      bgVariant="default"
+      leftWidth="50%"
+      leftContent={
+        <div className="space-y-4">
+          <SlideParagraph title="Foundation Transition: Base Plates">
+            Steel columns cannot sit directly on raw concrete. They require thick, flat steel <strong>Base Plates</strong> to distribute the concentrated structural load over the wider surface of the concrete pedestal.
           </SlideParagraph>
-        </ClickReveal>
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={3} preset="fade-in">
-        <div className="h-full flex flex-col justify-center">
-           <SlideCallout variant="warning" title="The Plate Weight Formula">
-             <p className="mb-4 text-center text-sm text-muted-foreground">Volume (L × B × T) × Density</p>
-             <div className="text-3xl font-bold text-center text-amber-500 my-4 bg-muted/20 p-4 rounded-lg border border-amber-500/20 font-mono">
-               W = (L × B × T) × 7850
-             </div>
-             <p className="text-sm text-muted-foreground mt-4 text-center">
-               <em>Note: Always convert L, B, and T (thickness) to <strong>meters (m)</strong> before calculating.</em>
-             </p>
-           </SlideCallout>
+          
+          <ClickReveal at={1}>
+            <SlideParagraph title="Holding-Down (Anchor) Bolts">
+              Heavy bolts cast into the concrete pedestal to anchor the plate and prevent column uplift or lateral displacement.
+            </SlideParagraph>
+          </ClickReveal>
+
+          <ClickReveal at={2}>
+            <SlideParagraph title="Concrete Pedestal Support">
+              The reinforced concrete pedestal block receives the loads from the steel column base plate and transfers them safely to the substructure foundation.
+            </SlideParagraph>
+          </ClickReveal>
+
+          <ClickReveal at={3}>
+            <div className="space-y-4">
+              <SlideParagraph variant="plain">
+                Because these plates are cut from custom flat sheets, you <ClickHighlight at={4} variant="strike" className="text-red-500 font-bold">cannot use standard linear Steel Tables</ClickHighlight>. You must calculate their volume and multiply by the <strong>Steel Density Constant</strong>.
+              </SlideParagraph>
+              <SlideCallout variant="warning" title="The Plate Weight Formula">
+                <p className="mb-2 text-xs text-muted-foreground text-center">Volume (L × B × T) × Density</p>
+                <div className="text-2xl font-bold text-center text-amber-500 my-1 bg-muted/20 p-2.5 rounded-lg border border-amber-500/20 font-mono">
+                  W = (L × B × T) × 7850
+                </div>
+                <p className="text-[10px] text-muted-foreground text-center">
+                  <em>Note: Always convert L, B, and T (thickness) to <strong>meters (m)</strong> before calculating.</em>
+                </p>
+              </SlideCallout>
+            </div>
+          </ClickReveal>
         </div>
-      </ClickReveal>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <BasePlatePedestalDrawing
+            plateLengthMm={400}
+            plateWidthMm={400}
+            plateThicknessMm={20}
+            boltCount={4}
+            boltDiameterMm={24}
+            showAnnotation={currentClick >= 3}
+            activeHighlight={highlight}
+          />
+        </div>
+      }
+    />
+  );
+};
 
 // ============================================================================
 // Slide 5B: Base Plate Sandbox

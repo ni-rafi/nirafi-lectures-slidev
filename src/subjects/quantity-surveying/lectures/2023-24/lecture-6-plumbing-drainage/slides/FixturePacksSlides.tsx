@@ -13,6 +13,8 @@ import {
 import { FixturePackageDrawing } from '@/subjects/quantity-surveying/features/components/FixturePackageDrawing';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { QuizCardOrchestrator } from '@/features/quiz';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
+
 
 // ============================================================================
 // Slide 7: Section 2 Cover
@@ -28,55 +30,57 @@ export const Slide7: React.FC = () => (
 // ============================================================================
 // Slide 8: WC & Ablution Packs
 // ============================================================================
-export const Slide8: React.FC = () => (
-  <TwoColumnLayout
-    title="2.1 Water Closet (WC) Composite Bundles"
-    bgVariant="default"
-    leftWidth="52%"
-    leftContent={
-      <div className="space-y-4 text-left">
-        <SlideParagraph title="The PWD Composite Rule">
-          In real-world public infrastructure budgeting, a sanitary fixture entry is never recorded as an isolated object shell. PWD schedules group the primary asset alongside its full operating accessories.
-        </SlideParagraph>
-        
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { 
-              title: "Indian Type Pan Pack", 
-              text: "Includes the vitreous squatting pan, long twin footrests, explicit P/S traps, and connection to horizontal soil mains." 
-            },
-            { 
-              title: "European Commode Pack", 
-              text: "Encapsulates the pedestal pan, plastic flushing seat cover, matching floor mounting anchors, and wax seals." 
-            },
-            { 
-              title: "Flushing Control Arrays", 
-              text: "Bundles either a low-down plastic cistern (10L), porcelain cisterns, or high-pressure concealed flush valves." 
-            }
-          ]}
-        />
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={3} preset="fade-in">
-        <div className="h-full flex flex-col justify-center">
-          <SlideCallout variant="danger" title="Omission Risk Warning">
-            <p className="mb-2 text-sm text-left">
-              If a surveyor fails to verify the complement hardware descriptions, the estimate risks missing up to 40% of the true material sub-total cost. Every WC pack must also explicitly ledger:
-            </p>
-            <div className="text-xl font-mono text-center text-red-500 my-2 bg-muted/20 p-3 rounded-lg border border-destructive/20">
-              Stop Cocks + Push Shower + Bib Cocks
-            </div>
-            <p className="text-xs text-muted-foreground mt-2 text-center font-semibold">
-              PWD Unit Rate Standard: Estimated strictly by Numbers (Nos.)
-            </p>
-          </SlideCallout>
+export const Slide8: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
+  return (
+    <TwoColumnLayout
+      title="2.1 Water Closet (WC) Composite Bundles"
+      bgVariant="default"
+      leftWidth="52%"
+      leftContent={
+        <div className="space-y-4 text-left">
+          <SlideParagraph title="The PWD Composite Rule">
+            In real-world public infrastructure budgeting, a sanitary fixture entry is never recorded as an isolated object shell. PWD schedules group the primary asset alongside its full operating accessories.
+          </SlideParagraph>
+          
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { 
+                title: "Indian Type Pan Pack", 
+                text: "Includes the vitreous squatting pan, long twin footrests, explicit P/S traps, and connection to horizontal soil mains." 
+              },
+              { 
+                title: "European Commode Pack", 
+                text: "Encapsulates the pedestal pan, plastic flushing seat cover, matching floor mounting anchors, and wax seals." 
+              },
+              { 
+                title: "Flushing Control Arrays", 
+                text: "Bundles either a low-down plastic cistern (10L), porcelain cisterns, or high-pressure concealed flush valves." 
+              }
+            ]}
+          />
         </div>
-      </ClickReveal>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="w-full h-full flex items-center justify-center">
+          <FixturePackageDrawing
+            fixtureType={currentClick >= 2 ? 'European' : 'Indian'}
+            hasCistern={currentClick >= 3}
+            hasPushShower={currentClick >= 3}
+            hasLowBibcock={currentClick >= 3}
+            activeHighlight={
+              currentClick === 1 ? 'indian' :
+              currentClick === 2 ? 'european' :
+              currentClick >= 3 ? 'accessories' : 'none'
+            }
+          />
+        </div>
+      }
+    />
+  );
+};
 
 // ============================================================================
 // Slide 9: Wash Basins & Sinks

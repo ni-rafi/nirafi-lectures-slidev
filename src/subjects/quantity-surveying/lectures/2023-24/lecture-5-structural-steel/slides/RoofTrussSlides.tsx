@@ -14,6 +14,7 @@ import {
 } from '@/features/presentation/components/elements';
 import { RoofTrussLayoutDrawing } from '@/subjects/quantity-surveying/features/components/RoofTrussLayoutDrawing';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import { calculateRafterLengthInternal, calculatePurlinsCountInternal } from '@/subjects/quantity-surveying/cores';
 import { QuizCardOrchestrator } from '@/features/quiz';
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
@@ -32,53 +33,66 @@ export const Slide7: React.FC = () => (
 // ============================================================================
 // Slide 8: Truss Element Breakdown
 // ============================================================================
-export const Slide8: React.FC = () => (
-  <TwoColumnLayout
-    title="3.1 Pitched Roof Truss Take-Off Architecture"
-    bgVariant="default"
-    leftWidth="52%"
-    leftContent={
-      <div className="space-y-4">
-        <SlideParagraph title="Deconstructing Geometry">
-          A steel roof truss is a system of triangulated structural angle bars (typically back-to-back rolled angles). Surveyor take-offs must isolate each member based on structural profile types.
-        </SlideParagraph>
-        
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { 
-              title: "Principal Rafters (Top Chords)", 
-              text: "The sloped outer members supporting the primary roof load. Length calculated using the slope incline or Pythagoras theorem." 
-            },
-            { 
-              title: "Main Ties (Bottom Chords)", 
-              text: "The horizontal member spanning column to column, resisting outer wall separation." 
-            },
-            { 
-              title: "Struts & Slings (Web Members)", 
-              text: "Internal vertical/diagonal structural diagonals distributing internal vector forces." 
-            }
-          ]}
-        />
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={3} preset="fade-in">
-        <div className="h-full flex flex-col justify-center">
-          <SlideCallout variant="info" title="Pythagoras Calculation Reminder">
-            <p className="mb-2">If Truss Rise = <span className="text-primary font-bold">2.5m</span> and Half-Span = <span className="text-primary font-bold">6.0m</span>:</p>
-            <div className="text-2xl font-mono text-center text-secondary-foreground my-2 bg-muted/30 p-3 rounded-md">
-              Rafter Length = √(2.5² + 6.0²) = 6.500m
-            </div>
-            <p className="text-xs text-muted-foreground mt-2 border-t pt-2">
-              <strong>Surveyor Action:</strong> Total main rafter material list requirement per truss module layout is <span className="text-primary font-bold">6.500m × 2 sides = 13.000m</span> net line tracking.
-            </p>
-          </SlideCallout>
+export const Slide8: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+  const highlight = currentClick === 1 || currentClick >= 4 ? 'rafters' : currentClick === 2 ? 'ties' : currentClick === 3 ? 'webs' : 'none';
+
+  return (
+    <TwoColumnLayout
+      title="3.1 Pitched Roof Truss Take-Off Architecture"
+      bgVariant="default"
+      leftWidth="52%"
+      leftContent={
+        <div className="space-y-4">
+          <SlideParagraph title="Deconstructing Geometry">
+            A steel roof truss is a system of triangulated structural angle bars (typically back-to-back rolled angles). Surveyor take-offs must isolate each member based on structural profile types.
+          </SlideParagraph>
+          
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { 
+                title: "Principal Rafters (Top Chords)", 
+                text: "The sloped outer members supporting the primary roof load. Length calculated using the slope incline or Pythagoras theorem." 
+              },
+              { 
+                title: "Main Ties (Bottom Chords)", 
+                text: "The horizontal member spanning column to column, resisting outer wall separation." 
+              },
+              { 
+                title: "Struts & Slings (Web Members)", 
+                text: "Internal vertical/diagonal structural diagonals distributing internal vector forces." 
+              }
+            ]}
+          />
+
+          <ClickReveal at={4} preset="fade-in">
+            <SlideCallout variant="info" title="Pythagoras Calculation Reminder">
+              <p className="mb-2 text-xs">If Truss Rise = <span className="text-primary font-bold">2.5m</span> and Half-Span = <span className="text-primary font-bold">6.0m</span>:</p>
+              <div className="text-xl font-mono text-center text-secondary-foreground my-1 bg-muted/30 p-2 rounded-md">
+                Rafter Length = √(2.5² + 6.0²) = 6.500m
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2 border-t pt-1">
+                <strong>Surveyor Action:</strong> Total main rafter linear requirement is <span className="text-primary font-bold">6.500m × 2 sides = 13.000m</span>.
+              </p>
+            </SlideCallout>
+          </ClickReveal>
         </div>
-      </ClickReveal>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <RoofTrussLayoutDrawing
+            spanM={8.0}
+            riseM={2.0}
+            purlinSpacingM={1.2}
+            showAnnotation={currentClick >= 4}
+            activeHighlight={highlight}
+          />
+        </div>
+      }
+    />
+  );
+};
 
 // ============================================================================
 // Slide 8B: Roof Truss & Purlin Sandbox

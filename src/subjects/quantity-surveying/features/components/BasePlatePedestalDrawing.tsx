@@ -8,6 +8,7 @@ interface BasePlatePedestalDrawingProps {
   boltCount: number;
   boltDiameterMm: number;
   showAnnotation?: boolean;
+  activeHighlight?: 'none' | 'plate' | 'bolts' | 'pedestal';
 }
 
 export const BasePlatePedestalDrawing: React.FC<BasePlatePedestalDrawingProps> = ({
@@ -17,6 +18,7 @@ export const BasePlatePedestalDrawing: React.FC<BasePlatePedestalDrawingProps> =
   boltCount,
   boltDiameterMm,
   showAnnotation = true,
+  activeHighlight = 'none',
 }) => {
   const presentation = useContext(PresentationContext);
   const isBlog = presentation?.viewMode === 'blog';
@@ -58,6 +60,16 @@ export const BasePlatePedestalDrawing: React.FC<BasePlatePedestalDrawingProps> =
   const leftBoltX = cx - boltOffset;
   const rightBoltX = cx + boltOffset;
 
+  const isPlateHighlighted = activeHighlight === 'plate';
+  const isBoltsHighlighted = activeHighlight === 'bolts';
+  const isPedestalHighlighted = activeHighlight === 'pedestal';
+  const hasHighlightActive = activeHighlight !== 'none';
+
+  const plateOpacity = isPlateHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const boltsOpacity = isBoltsHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const pedestalOpacity = isPedestalHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const restOpacity = hasHighlightActive ? 'opacity-15' : 'opacity-100';
+
   return (
     <div className={containerClasses}>
       <span className="text-xs uppercase tracking-wider font-extrabold text-primary mb-3">
@@ -70,28 +82,30 @@ export const BasePlatePedestalDrawing: React.FC<BasePlatePedestalDrawingProps> =
         className="overflow-visible select-none"
       >
         {/* Concrete Pedestal */}
-        <rect
-          x={pedLeft}
-          y={pedTop}
-          width={pedWidth}
-          height={pedHeight}
-          fill="var(--muted-foreground-opacity, rgba(120, 120, 120, 0.1))"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeDasharray="4,2"
-          className="text-muted-foreground/50"
-        />
-        {/* Concrete texture/dots */}
-        <g fill="currentColor" className="text-muted-foreground/30">
-          <circle cx={pedLeft + 20} cy={pedTop + 20} r="1.5" />
-          <circle cx={pedLeft + pedWidth - 30} cy={pedTop + 40} r="1" />
-          <circle cx={cx - 50} cy={pedTop + 50} r="1.5" />
-          <circle cx={cx + 60} cy={pedTop + 30} r="1" />
-          <circle cx={pedLeft + 40} cy={pedTop + 60} r="1" />
+        <g className={`transition-opacity duration-300 ${pedestalOpacity}`}>
+          <rect
+            x={pedLeft}
+            y={pedTop}
+            width={pedWidth}
+            height={pedHeight}
+            fill="var(--muted-foreground-opacity, rgba(120, 120, 120, 0.1))"
+            stroke={isPedestalHighlighted ? 'var(--chart-3)' : 'currentColor'}
+            strokeWidth={isPedestalHighlighted ? '2.5' : '1.5'}
+            strokeDasharray={isPedestalHighlighted ? 'none' : '4,2'}
+            className="text-muted-foreground/50 transition-all duration-300"
+          />
+          {/* Concrete texture/dots */}
+          <g fill="currentColor" className="text-muted-foreground/30">
+            <circle cx={pedLeft + 20} cy={pedTop + 20} r="1.5" />
+            <circle cx={pedLeft + pedWidth - 30} cy={pedTop + 40} r="1" />
+            <circle cx={cx - 50} cy={pedTop + 50} r="1.5" />
+            <circle cx={cx + 60} cy={pedTop + 30} r="1" />
+            <circle cx={pedLeft + 40} cy={pedTop + 60} r="1" />
+          </g>
+          <text x={cx} y={pedTop + pedHeight - 15} textAnchor="middle" className="font-sans text-[10px] fill-muted-foreground font-bold">
+            Concrete Pedestal
+          </text>
         </g>
-        <text x={cx} y={pedTop + pedHeight - 15} textAnchor="middle" className="font-sans text-[10px] fill-muted-foreground font-bold">
-          Concrete Pedestal
-        </text>
 
         {/* Steel Base Plate */}
         <rect
@@ -101,44 +115,48 @@ export const BasePlatePedestalDrawing: React.FC<BasePlatePedestalDrawingProps> =
           height={pThick}
           fill="var(--chart-1-opacity, rgba(59, 130, 246, 0.1))"
           stroke="var(--chart-1, #3b82f6)"
-          strokeWidth="2"
-          className="transition-all duration-300"
+          strokeWidth={isPlateHighlighted ? '3.5' : '2'}
+          className={`transition-all duration-300 ${plateOpacity}`}
         />
 
         {/* Column (Resting on plate) */}
-        <path
-          d={`M ${colLeft},${colTop} h ${colWidth} v ${colHeight} h -${colWidth} Z`}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        {/* I-beam flanges indicator */}
-        <line x1={colLeft + 5} x2={colLeft + 5} y1={colTop} y2={plateTop} stroke="currentColor" strokeWidth="1" />
-        <line x1={cx - colWidth / 2} x2={cx + colWidth / 2} y1={plateTop - 1} y2={plateTop - 1} stroke="currentColor" strokeWidth="3" />
-        <text x={cx} y={colTop + 25} textAnchor="middle" className="font-mono text-[9px] fill-muted-foreground">
-          Steel Column
-        </text>
+        <g className={`transition-opacity duration-300 ${restOpacity}`}>
+          <path
+            d={`M ${colLeft},${colTop} h ${colWidth} v ${colHeight} h -${colWidth} Z`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+          {/* I-beam flanges indicator */}
+          <line x1={colLeft + 5} x2={colLeft + 5} y1={colTop} y2={plateTop} stroke="currentColor" strokeWidth="1" />
+          <line x1={cx - colWidth / 2} x2={cx + colWidth / 2} y1={plateTop - 1} y2={plateTop - 1} stroke="currentColor" strokeWidth="3" />
+          <text x={cx} y={colTop + 25} textAnchor="middle" className="font-mono text-[9px] fill-muted-foreground">
+            Steel Column
+          </text>
+        </g>
 
         {/* Anchor Bolts */}
         {/* Left Bolt */}
-        <g className="transition-all duration-300">
+        <g className={`transition-all duration-300 ${boltsOpacity}`}>
           {/* Embedded part (dashed/solid inside concrete) */}
           <line
             x1={leftBoltX}
             y1={pedTop}
             x2={leftBoltX}
             y2={pedTop + 50}
-            stroke="var(--chart-2, #eab308)"
+            stroke={isBoltsHighlighted ? 'var(--chart-2)' : 'currentColor'}
             strokeWidth={bDia}
             strokeDasharray="3,3"
+            className="transition-colors duration-300"
           />
           {/* Hook at the bottom */}
           <path
             d={`M ${leftBoltX},${pedTop + 50} c 0,10 -15,10 -15,0`}
             fill="none"
-            stroke="var(--chart-2, #eab308)"
+            stroke={isBoltsHighlighted ? 'var(--chart-2)' : 'currentColor'}
             strokeWidth={bDia}
             strokeDasharray="3,3"
+            className="transition-colors duration-300"
           />
           {/* Projected part above pedestal through plate */}
           <line
@@ -146,8 +164,9 @@ export const BasePlatePedestalDrawing: React.FC<BasePlatePedestalDrawingProps> =
             y1={plateTop}
             x2={leftBoltX}
             y2={plateTop - 15}
-            stroke="var(--chart-2, #eab308)"
+            stroke={isBoltsHighlighted ? 'var(--chart-2)' : 'currentColor'}
             strokeWidth={bDia}
+            className="transition-colors duration-300"
           />
           {/* Nut and Washer */}
           <rect
@@ -155,43 +174,48 @@ export const BasePlatePedestalDrawing: React.FC<BasePlatePedestalDrawingProps> =
             y={plateTop - 6}
             width={bDia * 2 + 4}
             height="5"
-            fill="var(--chart-2, #eab308)"
+            fill={isBoltsHighlighted ? 'var(--chart-2)' : 'currentColor'}
+            className="transition-colors duration-300"
             rx="1"
           />
         </g>
 
         {/* Right Bolt */}
-        <g className="transition-all duration-300">
+        <g className={`transition-all duration-300 ${boltsOpacity}`}>
           <line
             x1={rightBoltX}
             y1={pedTop}
             x2={rightBoltX}
             y2={pedTop + 50}
-            stroke="var(--chart-2, #eab308)"
+            stroke={isBoltsHighlighted ? 'var(--chart-2)' : 'currentColor'}
             strokeWidth={bDia}
             strokeDasharray="3,3"
+            className="transition-colors duration-300"
           />
           <path
             d={`M ${rightBoltX},${pedTop + 50} c 0,10 15,10 15,0`}
             fill="none"
-            stroke="var(--chart-2, #eab308)"
+            stroke={isBoltsHighlighted ? 'var(--chart-2)' : 'currentColor'}
             strokeWidth={bDia}
             strokeDasharray="3,3"
+            className="transition-colors duration-300"
           />
           <line
             x1={rightBoltX}
             y1={plateTop}
             x2={rightBoltX}
             y2={plateTop - 15}
-            stroke="var(--chart-2, #eab308)"
+            stroke={isBoltsHighlighted ? 'var(--chart-2)' : 'currentColor'}
             strokeWidth={bDia}
+            className="transition-colors duration-300"
           />
           <rect
             x={rightBoltX - bDia - 2}
             y={plateTop - 6}
             width={bDia * 2 + 4}
             height="5"
-            fill="var(--chart-2, #eab308)"
+            fill={isBoltsHighlighted ? 'var(--chart-2)' : 'currentColor'}
+            className="transition-colors duration-300"
             rx="1"
           />
         </g>
@@ -200,27 +224,33 @@ export const BasePlatePedestalDrawing: React.FC<BasePlatePedestalDrawingProps> =
         {showAnnotation && (
           <g className="font-mono text-[9.5px] fill-muted-foreground font-bold">
             {/* Plate length */}
-            <line x1={plateLeft} y1={plateTop - 10} x2={cx - 15} y2={plateTop - 10} stroke="currentColor" strokeWidth="0.5" />
-            <line x1={cx + 15} y1={plateTop - 10} x2={plateLeft + pLength} y2={plateTop - 10} stroke="currentColor" strokeWidth="0.5" />
-            <text x={cx} y={plateTop - 7} textAnchor="middle" className="fill-chart-1 font-bold">
-              L = {plateLengthMm} mm, B = {plateWidthMm} mm
-            </text>
+            <g className={`transition-opacity duration-300 ${plateOpacity}`}>
+              <line x1={plateLeft} y1={plateTop - 10} x2={cx - 15} y2={plateTop - 10} stroke="currentColor" strokeWidth="0.5" />
+              <line x1={cx + 15} y1={plateTop - 10} x2={plateLeft + pLength} y2={plateTop - 10} stroke="currentColor" strokeWidth="0.5" />
+              <text x={cx} y={plateTop - 7} textAnchor="middle" className="fill-chart-1 font-bold">
+                L = {plateLengthMm} mm, B = {plateWidthMm} mm
+              </text>
+            </g>
 
             {/* Plate Thickness */}
-            <path d={`M ${plateLeft - 15},${plateTop} H ${plateLeft - 2}`} stroke="currentColor" strokeWidth="0.5" />
-            <path d={`M ${plateLeft - 15},${pedTop} H ${plateLeft - 2}`} stroke="currentColor" strokeWidth="0.5" />
-            <line x1={plateLeft - 10} y1={plateTop} x2={plateLeft - 10} y2={pedTop} stroke="currentColor" strokeWidth="0.5" />
-            <text x={plateLeft - 18} y={plateTop + pThick/2 + 3} textAnchor="end" className="fill-chart-1 font-bold">
-              t = {plateThicknessMm} mm
-            </text>
+            <g className={`transition-opacity duration-300 ${plateOpacity}`}>
+              <path d={`M ${plateLeft - 15},${plateTop} H ${plateLeft - 2}`} stroke="currentColor" strokeWidth="0.5" />
+              <path d={`M ${plateLeft - 15},${pedTop} H ${plateLeft - 2}`} stroke="currentColor" strokeWidth="0.5" />
+              <line x1={plateLeft - 10} y1={plateTop} x2={plateLeft - 10} y2={pedTop} stroke="currentColor" strokeWidth="0.5" />
+              <text x={plateLeft - 18} y={plateTop + pThick/2 + 3} textAnchor="end" className="fill-chart-1 font-bold">
+                t = {plateThicknessMm} mm
+              </text>
+            </g>
 
             {/* Bolt label */}
-            <text x={rightBoltX + 15} y={plateTop - 15} textAnchor="start" className="fill-chart-2 font-bold">
-              {boltCount} Nos Anchor Bolts
-            </text>
-            <text x={rightBoltX + 15} y={plateTop - 5} textAnchor="start" className="fill-muted-foreground text-[8px]">
-              Dia (d) = {boltDiameterMm} mm
-            </text>
+            <g className={`transition-opacity duration-300 ${boltsOpacity}`}>
+              <text x={rightBoltX + 15} y={plateTop - 15} textAnchor="start" className="fill-chart-2 font-bold">
+                {boltCount} Nos Anchor Bolts
+              </text>
+              <text x={rightBoltX + 15} y={plateTop - 5} textAnchor="start" className="fill-muted-foreground text-[8px]">
+                Dia (d) = {boltDiameterMm} mm
+              </text>
+            </g>
           </g>
         )}
       </svg>

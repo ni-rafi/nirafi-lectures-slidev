@@ -17,6 +17,7 @@ import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedSta
 import { calculateStirrupsCountInternal } from '@/subjects/quantity-surveying/cores';
 import { QuizCardOrchestrator } from '@/features/quiz';
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 
 // ============================================================================
 // Slide 7: Section Title Deck
@@ -32,51 +33,63 @@ export const Slide7: React.FC = () => (
 // ============================================================================
 // Slide 8: Vertical & Horizontal Frame Detailing (Beams & Columns)
 // ============================================================================
-export const Slide8: React.FC = () => (
-  <TwoColumnLayout
-    title="3.1 Detailing Beams and Columns"
-    bgVariant="default"
-    leftWidth="45%"
-    leftContent={
-      <div className="space-y-4">
-        <SlideParagraph title="Longitudinal vs. Transverse">
-          Frame elements require tracking two distinct types of reinforcement steel.
-        </SlideParagraph>
-        
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { 
-              title: "Main Longitudinal Bars", 
-              text: "The primary thick bars carrying tension (beams) or compression (columns). Tracked by continuous linear length." 
-            },
-            { 
-              title: "Transverse Reinforcement", 
-              text: "Smaller bars wrapping around main steel to prevent buckling/shear. Known as 'Stirrups' in beams and 'Ties' in columns." 
-            }
-          ]}
-        />
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={1} preset="fade-in">
-        <div className="h-full flex flex-col justify-center">
-           <SlideCallout variant="warning" title="The Stirrup/Tie Counting Formula">
-             <p className="mb-4 text-xs leading-relaxed">
-               You do not measure stirrup length directly. First, you calculate the **Number of Stirrups** required across a specific span:
-             </p>
-             <div className="text-2xl font-black text-center text-amber-500 my-4 bg-muted/30 p-4 rounded-xl border border-amber-500/20 font-mono">
-               No. = ( <span className="text-primary">Clear Span</span> / <span className="text-foreground/80">Spacing</span> ) + 1
-             </div>
-             <p className="text-xs text-muted-foreground mt-4 text-center">
-               <em>Example: A 3000mm clear span with stirrups spaced at 150mm requires (3000/150) + 1 = 21 Stirrups.</em>
-             </p>
-           </SlideCallout>
+export const Slide8: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+  const highlight = currentClick === 1 ? 'longitudinal' : currentClick === 2 ? 'transverse' : 'none';
+
+  return (
+    <TwoColumnLayout
+      title="3.1 Detailing Beams and Columns"
+      bgVariant="default"
+      leftWidth="45%"
+      leftContent={
+        <div className="space-y-4">
+          <SlideParagraph title="Longitudinal vs. Transverse">
+            Frame elements require tracking two distinct types of reinforcement steel.
+          </SlideParagraph>
+          
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { 
+                title: "Main Longitudinal Bars", 
+                text: "The primary thick bars carrying tension (beams) or compression (columns). Tracked by continuous linear length." 
+              },
+              { 
+                title: "Transverse Reinforcement", 
+                text: "Smaller bars wrapping around main steel to prevent buckling/shear. Known as 'Stirrups' in beams and 'Ties' in columns." 
+              }
+            ]}
+          />
+
+          <ClickReveal at={3} preset="fade-in">
+            <SlideCallout variant="warning" title="The Stirrup/Tie Counting Formula">
+              <p className="mb-2 text-xs leading-relaxed">
+                You do not measure stirrup length directly. First, you calculate the **Number of Stirrups** required across a specific span:
+              </p>
+              <div className="text-xl font-black text-center text-amber-500 my-2 bg-muted/30 p-3 rounded-xl border border-amber-500/20 font-mono">
+                No. = ( <span className="text-primary">Clear Span</span> / <span className="text-foreground/80">Spacing</span> ) + 1
+              </div>
+              <p className="text-[10px] text-muted-foreground text-center">
+                <em>Example: (3000 / 150) + 1 = 21 Stirrups.</em>
+              </p>
+            </SlideCallout>
+          </ClickReveal>
         </div>
-      </ClickReveal>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <StirrupCountingDrawing
+            clearSpanM={3.0}
+            spacingM={0.150}
+            showAnnotation={currentClick >= 3}
+            activeHighlight={highlight}
+          />
+        </div>
+      }
+    />
+  );
+};
 
 // ============================================================================
 // Slide 8B: Stirrup Counting Sandbox

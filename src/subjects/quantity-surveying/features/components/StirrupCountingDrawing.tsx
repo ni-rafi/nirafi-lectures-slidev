@@ -5,12 +5,14 @@ interface StirrupCountingDrawingProps {
   clearSpanM: number;
   spacingM: number;
   showAnnotation?: boolean;
+  activeHighlight?: 'none' | 'longitudinal' | 'transverse';
 }
 
 export const StirrupCountingDrawing: React.FC<StirrupCountingDrawingProps> = ({
   clearSpanM,
   spacingM,
   showAnnotation = true,
+  activeHighlight = 'none',
 }) => {
   const presentation = useContext(PresentationContext);
   const isBlog = presentation?.viewMode === 'blog';
@@ -35,17 +37,22 @@ export const StirrupCountingDrawing: React.FC<StirrupCountingDrawingProps> = ({
   // Generate stirrup coordinates
   const drawnCount = Math.min(stirrupCount, 25); // cap visual lines to prevent lag/clutter
   const stirrupLines: number[] = [];
-
-  if (stirrupCount > 1) {
-    const spacingPx = beamWidth / (stirrupCount - 1);
+  if (drawnCount > 1) {
+    const spacingPx = beamWidth / (drawnCount - 1);
     for (let i = 0; i < drawnCount; i++) {
-      // Map index to visually even spaces, or map based on actual ratio
-      const index = drawnCount === stirrupCount ? i : Math.round((i / (drawnCount - 1)) * (stirrupCount - 1));
-      stirrupLines.push(beamX + index * spacingPx);
+      stirrupLines.push(beamX + i * spacingPx);
     }
-  } else if (stirrupCount === 1) {
-    stirrupLines.push(beamX);
+  } else if (drawnCount === 1) {
+    stirrupLines.push(beamX + beamWidth / 2);
   }
+
+  const isLongitudinalHighlighted = activeHighlight === 'longitudinal';
+  const isTransverseHighlighted = activeHighlight === 'transverse';
+  const hasHighlightActive = activeHighlight !== 'none';
+
+  const longitudinalOpacity = isLongitudinalHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const transverseOpacity = isTransverseHighlighted ? 'opacity-100' : hasHighlightActive ? 'opacity-15' : 'opacity-100';
+  const annotationOpacity = hasHighlightActive ? 'opacity-15' : 'opacity-100';
 
   return (
     <div className={containerClasses}>
@@ -59,10 +66,10 @@ export const StirrupCountingDrawing: React.FC<StirrupCountingDrawingProps> = ({
         className="overflow-visible select-none"
       >
         {/* Columns on Left and Right (Grey blocks) */}
-        <rect x="10" y="50" width="50" height="100" fill="currentColor" className="text-muted-foreground/20" rx="3" />
-        <rect x="340" y="50" width="50" height="100" fill="currentColor" className="text-muted-foreground/20" rx="3" />
-        <text x="35" y="105" textAnchor="middle" className="fill-muted-foreground font-mono text-[9px] font-bold">COLUMN</text>
-        <text x="365" y="105" textAnchor="middle" className="fill-muted-foreground font-mono text-[9px] font-bold">COLUMN</text>
+        <rect x="10" y="50" width="50" height="100" fill="currentColor" className={`text-muted-foreground/20 transition-opacity duration-300 ${annotationOpacity}`} rx="3" />
+        <rect x="340" y="50" width="50" height="100" fill="currentColor" className={`text-muted-foreground/20 transition-opacity duration-300 ${annotationOpacity}`} rx="3" />
+        <text x="35" y="105" textAnchor="middle" className={`fill-muted-foreground font-mono text-[9px] font-bold transition-opacity duration-300 ${annotationOpacity}`}>COLUMN</text>
+        <text x="365" y="105" textAnchor="middle" className={`fill-muted-foreground font-mono text-[9px] font-bold transition-opacity duration-300 ${annotationOpacity}`}>COLUMN</text>
 
         {/* Concrete Beam outline (Transparent/Bordered) */}
         <rect
@@ -73,18 +80,34 @@ export const StirrupCountingDrawing: React.FC<StirrupCountingDrawingProps> = ({
           fill="none"
           stroke="currentColor"
           strokeWidth="1.5"
-          className="text-foreground/75"
+          className={`text-foreground/75 transition-opacity duration-300 ${annotationOpacity}`}
         />
         {/* Main longitudinal top & bottom bars inside beam */}
-        <line x1={beamX - 10} y1={beamY + 6} x2={beamX + beamWidth + 10} y2={beamY + 6} stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground" />
-        <line x1={beamX - 10} y1={beamY + beamHeight - 6} x2={beamX + beamWidth + 10} y2={beamY + beamHeight - 6} stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground" />
+        <line
+          x1={beamX - 10}
+          y1={beamY + 6}
+          x2={beamX + beamWidth + 10}
+          y2={beamY + 6}
+          stroke={isLongitudinalHighlighted ? 'var(--chart-1)' : 'currentColor'}
+          strokeWidth={isLongitudinalHighlighted ? '3.5' : '1.5'}
+          className={`transition-all duration-300 text-muted-foreground ${longitudinalOpacity}`}
+        />
+        <line
+          x1={beamX - 10}
+          y1={beamY + beamHeight - 6}
+          x2={beamX + beamWidth + 10}
+          y2={beamY + beamHeight - 6}
+          stroke={isLongitudinalHighlighted ? 'var(--chart-1)' : 'currentColor'}
+          strokeWidth={isLongitudinalHighlighted ? '3.5' : '1.5'}
+          className={`transition-all duration-300 text-muted-foreground ${longitudinalOpacity}`}
+        />
 
         {/* Draw Stirrups */}
         {stirrupLines.map((x, idx) => {
           // Highlight the first (+1) stirrup in a separate color (primary) to show it's the start offset
           const isEndOffset = idx === 0;
           return (
-            <g key={idx}>
+            <g key={idx} className={`transition-opacity duration-300 ${transverseOpacity}`}>
               <line
                 x1={x}
                 y1={beamY + 2}
@@ -107,21 +130,23 @@ export const StirrupCountingDrawing: React.FC<StirrupCountingDrawingProps> = ({
         {showAnnotation && (
           <g className="font-mono text-[9px] fill-muted-foreground">
             {/* Clear Span line */}
-            <path d="M 60,135 L 60,150" stroke="currentColor" strokeWidth="0.5" />
-            <path d="M 340,135 L 340,150" stroke="currentColor" strokeWidth="0.5" />
-            <path d="M 60,145 L 340,145" stroke="currentColor" strokeWidth="0.5" />
-            <polygon points="60,145 65,142 65,148" fill="currentColor" />
-            <polygon points="340,145 335,142 335,148" fill="currentColor" />
-            <text x="200" y="141" textAnchor="middle" className="font-bold fill-foreground">
-              Clear Span (L): {span.toFixed(3)}m ({Math.round(span * 1000)}mm)
-            </text>
+            <g className={`transition-opacity duration-300 ${annotationOpacity}`}>
+              <path d="M 60,135 L 60,150" stroke="currentColor" strokeWidth="0.5" />
+              <path d="M 340,135 L 340,150" stroke="currentColor" strokeWidth="0.5" />
+              <path d="M 60,145 L 340,145" stroke="currentColor" strokeWidth="0.5" />
+              <polygon points="60,145 65,142 65,148" fill="currentColor" />
+              <polygon points="340,145 335,142 335,148" fill="currentColor" />
+              <text x="200" y="141" textAnchor="middle" className="font-bold fill-foreground">
+                Clear Span (L): {span.toFixed(3)}m ({Math.round(span * 1000)}mm)
+              </text>
+            </g>
 
             {/* Spacing dimension (between stirrup 1 and 2 if exists) */}
             {stirrupLines.length > 1 && (() => {
               const s0 = stirrupLines[0] ?? 0;
               const s1 = stirrupLines[1] ?? 0;
               return (
-                <g>
+                <g className={`transition-opacity duration-300 ${transverseOpacity}`}>
                   <path d={`M ${s0},75 L ${s0},60`} stroke="currentColor" strokeWidth="0.5" />
                   <path d={`M ${s1},75 L ${s1},60`} stroke="currentColor" strokeWidth="0.5" />
                   <path d={`M ${s0},65 L ${s1},65`} stroke="currentColor" strokeWidth="0.5" />
@@ -133,13 +158,15 @@ export const StirrupCountingDrawing: React.FC<StirrupCountingDrawingProps> = ({
             })()}
 
             {/* Formula & Total count display */}
-            <rect x="80" y="170" width="240" height="36" fill="var(--chart-2-opacity, rgba(var(--chart-2), 0.1))" stroke="var(--chart-2)" strokeWidth="0.5" rx="5" className="fill-muted/40" />
-            <text x="200" y="184" textAnchor="middle" className="fill-foreground font-bold">
-              Formula: ({Math.round(span * 1000)} / {Math.round(spacing * 1000)}) + 1
-            </text>
-            <text x="200" y="198" textAnchor="middle" className="fill-primary font-black text-xs font-mono">
-              Total Stirrups = {stirrupCount} Nos.
-            </text>
+            <g className={`transition-opacity duration-300 ${annotationOpacity}`}>
+              <rect x="80" y="170" width="240" height="36" fill="var(--chart-2-opacity, rgba(var(--chart-2), 0.1))" stroke="var(--chart-2)" strokeWidth="0.5" rx="5" className="fill-muted/40" />
+              <text x="200" y="184" textAnchor="middle" className="fill-foreground font-bold">
+                Formula: ({Math.round(span * 1000)} / {Math.round(spacing * 1000)}) + 1
+              </text>
+              <text x="200" y="198" textAnchor="middle" className="fill-primary font-black text-xs font-mono">
+                Total Stirrups = {stirrupCount} Nos.
+              </text>
+            </g>
           </g>
         )}
       </svg>

@@ -15,6 +15,8 @@ import { ManholeSectionDrawing } from '@/subjects/quantity-surveying/features/co
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { calculateManholeBrickworkVolumeInternal, calculateManholePlasterAreaInternal } from '@/subjects/quantity-surveying/cores';
 import { QuizCardOrchestrator } from '@/features/quiz';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
+
 
 // ============================================================================
 // Slide 17: Section 4 Cover
@@ -30,55 +32,57 @@ export const Slide17: React.FC = () => (
 // ============================================================================
 // Slide 18: Inspection Chambers & Manholes
 // ============================================================================
-export const Slide18: React.FC = () => (
-  <TwoColumnLayout
-    title="4.1 Inspection Chambers & Manholes"
-    bgVariant="default"
-    leftWidth="50%"
-    leftContent={
-      <div className="space-y-4 text-left">
-        <SlideParagraph title="The External Junctions">
-          Drainage networks terminate in a series of brick-masonry or precast inspection chambers (ICs). These provide the necessary maintenance access points to clear clogs and verify flow gradients.
-        </SlideParagraph>
-        
-        <SlideList
-          revealMode="each-click"
-          items={[
-            { 
-              title: "Volume Take-off", 
-              text: "Calculated as a masonry box structure. Includes: Earthwork for pit, brick masonry walls, concrete floor benching, and internal cement plastering." 
-            },
-            { 
-              title: "The Benching System", 
-              text: "The critical curved cement-concrete channel formed at the base to direct wastewater flow and prevent turbulence." 
-            },
-            { 
-              title: "Access Covers", 
-              text: "Heavy-duty cast iron or reinforced concrete pit covers (estimated by count/Nos.)." 
-            }
-          ]}
-        />
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={3} preset="fade-in">
-        <div className="h-full flex flex-col justify-center">
-          <SlideCallout variant="warning" title="Surveyor's Finishing Ledger">
-            <p className="mb-2 text-sm text-muted-foreground text-left">
-              Do not overlook the internal finish. PWD ledger items demand separate quantification for:
-            </p>
-            <div className="text-xl font-mono text-center text-primary my-2 bg-muted/20 p-3 rounded-lg border border-border">
-              Internal 1:3 Cement Plaster (m²)
-            </div>
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              * Required to make the brickwork impervious to sewer gas and fluid seepage.
-            </p>
-          </SlideCallout>
+export const Slide18: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
+  return (
+    <TwoColumnLayout
+      title="4.1 Inspection Chambers & Manholes"
+      bgVariant="default"
+      leftWidth="50%"
+      leftContent={
+        <div className="space-y-4 text-left">
+          <SlideParagraph title="The External Junctions">
+            Drainage networks terminate in a series of brick-masonry or precast inspection chambers (ICs). These provide the necessary maintenance access points to clear clogs and verify flow gradients.
+          </SlideParagraph>
+          
+          <SlideList
+            revealMode="each-click"
+            items={[
+              { 
+                title: "Volume Take-off", 
+                text: "Calculated as a masonry box structure. Includes: Earthwork for pit, brick masonry walls, concrete floor benching, and internal cement plastering." 
+              },
+              { 
+                title: "The Benching System", 
+                text: "The critical curved cement-concrete channel formed at the base to direct wastewater flow and prevent turbulence." 
+              },
+              { 
+                title: "Access Covers", 
+                text: "Heavy-duty cast iron or reinforced concrete pit covers (estimated by count/Nos.)." 
+              }
+            ]}
+          />
         </div>
-      </ClickReveal>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="w-full h-full flex items-center justify-center">
+          <ManholeSectionDrawing
+            lengthMm={800}
+            widthMm={800}
+            depthMm={1100}
+            wallThicknessMm={125}
+            activeHighlight={
+              currentClick === 1 ? 'masonry' :
+              currentClick === 2 ? 'benching' :
+              currentClick >= 3 ? 'plaster' : 'none'
+            }
+          />
+        </div>
+      }
+    />
+  );
+};
 
 // ============================================================================
 // Slide 19: Master Sewerage Link & Synthesis

@@ -14,6 +14,7 @@ import {
 } from '@/features/presentation/components/elements';
 import { GussetPlateBoundingDrawing } from '@/subjects/quantity-surveying/features/components/GussetPlateBoundingDrawing';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import { calculatePlateWeightInternal } from '@/subjects/quantity-surveying/cores';
 import { QuizCardOrchestrator } from '@/features/quiz';
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
@@ -32,40 +33,52 @@ export const Slide10: React.FC = () => (
 // ============================================================================
 // Slide 11: Gusset Plates Theory
 // ============================================================================
-export const Slide11: React.FC = () => (
-  <TwoColumnLayout
-    title="4.1 Irregular Members: The Gusset Envelope Rule"
-    bgVariant="default"
-    leftWidth="48%"
-    leftContent={
-      <div className="space-y-4">
-        <SlideParagraph title="The Bounding Rectangle Principle">
-          Gusset plates act as structural nodes anchoring truss profiles at intersection joints. These plates are rarely perfect rectangles; they feature sheared triangular, trapezoidal, or polygonal profiles.
-        </SlideParagraph>
-        
-        <ClickReveal at={1}>
-          <SlideCallout variant="danger" title="Standard Take-Off Law">
-            According to core surveying manuals, you <ClickHighlight at={2} variant="strike" className="text-red-500 font-bold">DO NOT calculate the net geometric surface area</ClickHighlight> of an irregular plate shape. Instead, you must measure the area of the <strong>smallest circumscribing rectangle</strong> from which that plate can be cut.
-          </SlideCallout>
-        </ClickReveal>
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={3} preset="up">
-        <div className="h-full flex flex-col justify-center">
-          <SlideCallout variant="warning" title="Wastage Rationale & Equation">
-            <p className="mb-4 text-sm text-muted-foreground text-left">
-              When raw steel sheets are sheared on a fabrication bench to form customized gusset profiles, the corner off-cuts are unrecoverable shop wastage. The project is billed for the gross rectangle.
-            </p>
-            <div className="p-4 bg-background border border-amber-500/20 rounded-xl text-center text-sm font-mono font-semibold text-amber-600 dark:text-amber-400">
-              Weight = (Max Width × Max Length × Thickness) × 7850 kg/m³
-            </div>
-          </SlideCallout>
+export const Slide11: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+  const highlight = currentClick === 0 ? 'gusset' : 'envelope';
+
+  return (
+    <TwoColumnLayout
+      title="4.1 Irregular Members: The Gusset Envelope Rule"
+      bgVariant="default"
+      leftWidth="48%"
+      leftContent={
+        <div className="space-y-4">
+          <SlideParagraph title="The Bounding Rectangle Principle">
+            Gusset plates act as structural nodes anchoring truss profiles at intersection joints. These plates are rarely perfect rectangles; they feature sheared triangular, trapezoidal, or polygonal profiles.
+          </SlideParagraph>
+          
+          <ClickReveal at={1}>
+            <SlideCallout variant="danger" title="Standard Take-Off Law">
+              According to core surveying manuals, you <ClickHighlight at={2} variant="strike" className="text-red-500 font-bold">DO NOT calculate the net geometric surface area</ClickHighlight> of an irregular plate shape. Instead, you must measure the area of the <strong>smallest circumscribing rectangle</strong> from which that plate can be cut.
+            </SlideCallout>
+          </ClickReveal>
+
+          <ClickReveal at={3} preset="fade-in">
+            <SlideCallout variant="warning" title="Wastage Rationale & Equation">
+              <p className="mb-2 text-xs text-muted-foreground text-left">
+                When raw steel sheets are sheared on a fabrication bench to form customized gusset profiles, the corner off-cuts are unrecoverable shop wastage. The project is billed for the gross rectangle.
+              </p>
+              <div className="p-3 bg-background border border-amber-500/20 rounded-xl text-center text-xs font-mono font-semibold text-amber-600 dark:text-amber-400">
+                Weight = (Max W × Max L × Thickness) × 7850 kg/m³
+              </div>
+            </SlideCallout>
+          </ClickReveal>
         </div>
-      </ClickReveal>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <GussetPlateBoundingDrawing
+            widthMm={300}
+            heightMm={300}
+            showAnnotation={currentClick >= 3}
+            activeHighlight={highlight}
+          />
+        </div>
+      }
+    />
+  );
+};
 
 // ============================================================================
 // Slide 11B: Gusset Bounding Box Sandbox

@@ -18,6 +18,8 @@ import { calculatePipeLengthWithAllowanceInternal } from '@/subjects/quantity-su
 import { LectureCover } from '@/shared/layouts/LectureCover';
 import { SlideProps } from '@/features/presentation/components/slides/SlideRenderer';
 import { QuizCardOrchestrator } from '@/features/quiz';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
+
 
 // ============================================================================
 // Slide 1: Main Lecture Cover
@@ -91,48 +93,52 @@ export const Slide3: React.FC = () => (
 // ============================================================================
 // Slide 4: Take-off Rules for Pipes
 // ============================================================================
-export const Slide4: React.FC = () => (
-  <TwoColumnLayout
-    title="1.2 Running Center-line Metrics"
-    bgVariant="default"
-    leftWidth="45%"
-    leftContent={
-      <div className="space-y-6">
-        <SlideParagraph title="The Linear Rule">
-          Plumbing pipe lines are quantified by total continuous net length. You measure along the running <ClickHighlight at={1} variant="bold" className="text-blue-500">Center-line of the pipe path</ClickHighlight>.
-        </SlideParagraph>
-        
-        <ClickReveal at={2}>
-          <SlideCallout variant="warning" title="The 3D Trajectory Trap">
-            <p className="text-sm text-left">
-              Do not skip vertical transitions! Plan views mask elevation jumps. You must cross-reference invert levels and add:
-            </p>
-            <ul className="list-disc pl-5 mt-2 text-xs space-y-1 text-muted-foreground text-left">
-              <li>Vertical structural drops inside wet wall chases</li>
-              <li>Risers inside vertical service column shafts</li>
-              <li>Overhead ceiling slab suspension drop networks</li>
-            </ul>
-          </SlideCallout>
-        </ClickReveal>
-      </div>
-    }
-    rightContent={
-      <ClickReveal at={3} preset="up">
-        <div className="h-full flex flex-col justify-center">
-           <SlideCallout variant="success" title="PWD Core Billing Matrix Unit">
-             <p className="mb-4 text-center text-sm text-muted-foreground">Standard Itemized Take-off Units:</p>
-             <div className="text-5xl font-bold text-center text-primary my-4 tracking-tight">
-               Meter <span className="text-xl text-muted-foreground font-normal">(or Rft)</span>
-             </div>
-             <p className="text-xs text-muted-foreground text-center mt-4 border-t pt-3">
-               <em>Rule: Linear pipe rates inside PWD frameworks automatically encapsulate simple joint preparation, tracking hangers, and pipeline pressure leak testing operations.</em>
-             </p>
-           </SlideCallout>
+export const Slide4: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+
+  return (
+    <TwoColumnLayout
+      title="1.2 Running Center-line Metrics"
+      bgVariant="default"
+      leftWidth="45%"
+      leftContent={
+        <div className="space-y-6">
+          <SlideParagraph title="The Linear Rule">
+            Plumbing pipe lines are quantified by total continuous net length. You measure along the running <ClickHighlight at={1} variant="bold" className="text-blue-500">Center-line of the pipe path</ClickHighlight>.
+          </SlideParagraph>
+          
+          <ClickReveal at={2}>
+            <SlideCallout variant="warning" title="The 3D Trajectory Trap">
+              <p className="text-sm text-left">
+                Do not skip vertical transitions! Plan views mask elevation jumps. You must cross-reference invert levels and add:
+              </p>
+              <ul className="list-disc pl-5 mt-2 text-xs space-y-1 text-muted-foreground text-left">
+                <li>Vertical structural drops inside wet wall chases</li>
+                <li>Risers inside vertical service column shafts</li>
+                <li>Overhead ceiling slab suspension drop networks</li>
+              </ul>
+            </SlideCallout>
+          </ClickReveal>
         </div>
-      </ClickReveal>
-    }
-  />
-);
+        }
+        rightContent={
+          <div className="w-full h-full flex items-center justify-center">
+            <WaterPipeNetworkDrawing
+              horizontalLengthM={5.0}
+              verticalRiseM={2.8}
+              verticalDropM={1.2}
+              pipeClass="PPR"
+              activeHighlight={
+                currentClick === 1 ? 'horizontal' :
+                currentClick === 2 ? 'vertical' :
+                currentClick >= 3 ? 'all' : 'none'
+              }
+            />
+          </div>
+        }
+      />
+    );
+};
 
 // ============================================================================
 // Slide 5: Pipe Network Sandbox

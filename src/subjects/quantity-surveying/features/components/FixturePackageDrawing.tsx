@@ -7,6 +7,7 @@ interface FixturePackageProps {
   hasPushShower: boolean;
   hasLowBibcock: boolean;
   showAnnotation?: boolean;
+  activeHighlight?: 'none' | 'indian' | 'european' | 'accessories';
 }
 
 export const FixturePackageDrawing: React.FC<FixturePackageProps> = ({
@@ -15,9 +16,15 @@ export const FixturePackageDrawing: React.FC<FixturePackageProps> = ({
   hasPushShower,
   hasLowBibcock,
   showAnnotation = true,
+  activeHighlight = 'none',
 }) => {
   const presentation = useContext(PresentationContext);
   const isBlog = presentation?.viewMode === 'blog';
+
+  const isIndianActive = activeHighlight === 'none' || activeHighlight === 'indian';
+  const isEuropeanActive = activeHighlight === 'none' || activeHighlight === 'european' || activeHighlight === 'accessories';
+  const isAccessoriesActive = activeHighlight === 'none' || activeHighlight === 'accessories';
+
 
   const containerClasses = isBlog
     ? 'bg-transparent border-none shadow-none p-0 flex flex-col items-center select-none w-full'
@@ -43,7 +50,7 @@ export const FixturePackageDrawing: React.FC<FixturePackageProps> = ({
 
         {/* Indian Squatting Pan Drawing */}
         {fixtureType === 'Indian' && (
-          <g className="transition-all duration-300">
+          <g opacity={isIndianActive ? "1" : "0.15"} className="transition-all duration-300">
             {/* Floor Slab Cutout representation */}
             <ellipse cx={cx} cy={cy + 10} rx="50" ry="25" fill="none" stroke="currentColor" strokeWidth="1.5" />
             <ellipse cx={cx} cy={cy + 10} rx="40" ry="18" fill="var(--muted-foreground-opacity, rgba(120, 120, 120, 0.1))" stroke="currentColor" strokeWidth="1" />
@@ -66,7 +73,7 @@ export const FixturePackageDrawing: React.FC<FixturePackageProps> = ({
 
         {/* European Pedestal Closet Drawing */}
         {fixtureType === 'European' && (
-          <g className="transition-all duration-300">
+          <g opacity={isEuropeanActive ? "1" : "0.15"} className="transition-all duration-300">
             {/* Commode Pedestal Front Profile */}
             <path
               d={`M ${cx - 25},${cy + 40} L ${cx - 20},${cy + 10} C ${cx - 35},${cy + 10} ${cx - 35},${cy - 20} ${cx - 25},${cy - 20} H ${cx + 25} C ${cx + 35},${cy - 20} ${cx + 35},${cy + 10} ${cx + 20},${cy + 10} L ${cx + 25},${cy + 40} Z`}
@@ -84,7 +91,7 @@ export const FixturePackageDrawing: React.FC<FixturePackageProps> = ({
 
         {/* Flushing Cistern Accessories */}
         {hasCistern && (
-          <g className="transition-all duration-300">
+          <g opacity={isAccessoriesActive ? "1" : "0.15"} className="transition-all duration-300">
             {/* Cistern Box on the wall (left side) */}
             <rect
               x="50"
@@ -121,7 +128,7 @@ export const FixturePackageDrawing: React.FC<FixturePackageProps> = ({
 
         {/* Push Shower */}
         {hasPushShower && (
-          <g transform={`translate(${cx + 70}, 80)`} className="transition-all duration-300 text-chart-2">
+          <g transform={`translate(${cx + 70}, 80)`} opacity={isAccessoriesActive ? "1" : "0.15"} className="transition-all duration-300 text-chart-2">
             {/* Spray Head */}
             <path d="M 0,0 C 5,-10 10,-5 10,5 L 5,15 h -5 Z" fill="none" stroke="currentColor" strokeWidth="1.2" />
             <line x1="5" y1="5" x2="15" y2="10" stroke="currentColor" strokeWidth="1" />
@@ -135,7 +142,7 @@ export const FixturePackageDrawing: React.FC<FixturePackageProps> = ({
 
         {/* Low-Level Bib-cock */}
         {hasLowBibcock && (
-          <g transform={`translate(${cx - 70}, 110)`} className="transition-all duration-300 text-chart-3">
+          <g transform={`translate(${cx - 70}, 110)`} opacity={isAccessoriesActive ? "1" : "0.15"} className="transition-all duration-300 text-chart-3">
             {/* Faucet body */}
             <path d="M -15,0 H 10 v 10 M 0,0 v 6" stroke="currentColor" strokeWidth="1.5" fill="none" />
             <rect x="5" y="-5" width="4" height="5" fill="currentColor" />
@@ -148,7 +155,7 @@ export const FixturePackageDrawing: React.FC<FixturePackageProps> = ({
 
         {/* Annotations & PWD Composite Billing Rules */}
         {showAnnotation && (
-          <g className="font-mono text-[9px] fill-muted-foreground font-bold">
+          <g opacity={activeHighlight === 'none' || activeHighlight === 'accessories' ? "1" : "0.15"} className="font-mono text-[9px] fill-muted-foreground font-bold transition-all duration-300">
             {/* PWD Pack components highlights */}
             <rect x="290" y="10" width="150" height="90" fill="var(--muted-foreground-opacity, rgba(120, 120, 120, 0.05))" stroke="currentColor" strokeWidth="0.5" rx="3" className="text-muted-foreground/30" />
             <text x="298" y="22" className="fill-foreground text-[8px] font-bold">Composite WC Pack:</text>
