@@ -3,18 +3,19 @@ import type { Lecture } from '@/config/lectures';
 export const metadata: Lecture = {
   id: 'lecture-5-structural-steel',
   title: 'Steel Structure & Roof Truss Estimation',
-  description: 'Structural steel components, roll profile nomenclature, linear weight calculations, column base plates, roof trusses, irregular gusset plates, fasteners, and painting perimeters.',
+  description: 'Steel profiles (Flat, Z, Tee) and PWD weight tables, columns and base plates, truss typologies (Pratt, Howe, Warren, Monitor), cladding sheet roofing (CGI) gauges, sagrods, wind bracings, and connections.',
   slideNo: 23,
-  durationMins: 45,
+  durationMins: 75,
   locked: false,
   tags: [
     'steel-sections',
+    'pwd-steel-tables',
     'base-plates',
-    'anchor-bolts',
     'roof-trusses',
+    'cgi-roofing',
+    'sagrods-bracings',
     'gusset-plates',
-    'purlins',
-    'painting-perimeters',
+    'painting'
   ],
   lectureNumber: 5,
 };

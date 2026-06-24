@@ -299,6 +299,154 @@ export function calculateRebarWeightPwdVsFormula(
   };
 }
 
+export const PWD_CGI_WEIGHTS: Record<number, number> = {
+  18: 10.60,
+  20: 8.50,
+  22: 6.80,
+  24: 5.40
+};
+
+export function calculateCgiRoofingInternal(
+  spanM: number,
+  riseM: number,
+  buildingLengthM: number,
+  sideOverhangM: number,
+  eavesOverhangM: number,
+  corrugationFactor: number,
+  bwgGauge: number
+): {
+  rafterSlopeM: number;
+  coveredAreaM2: number;
+  sheetWeightKg: number;
+  ridgingLengthM: number;
+} {
+  if (spanM <= 0 || riseM <= 0 || buildingLengthM <= 0) {
+    return { rafterSlopeM: 0, coveredAreaM2: 0, sheetWeightKg: 0, ridgingLengthM: 0 };
+  }
+  const rafterSlope = Math.sqrt(riseM * riseM + (spanM / 2) * (spanM / 2));
+  const slopeWithOverhang = rafterSlope + eavesOverhangM;
+  const netLength = buildingLengthM + 2 * sideOverhangM;
+  const coveredAreaRaw = 2 * slopeWithOverhang * netLength;
+  const coveredAreaM2 = coveredAreaRaw * corrugationFactor;
+  const unitWeight = PWD_CGI_WEIGHTS[bwgGauge] || 5.40;
+  const sheetWeightKg = coveredAreaM2 * unitWeight;
+  const ridgingLengthM = buildingLengthM;
+
+  return {
+    rafterSlopeM: Math.round(rafterSlope * 1000) / 1000,
+    coveredAreaM2: Math.round(coveredAreaM2 * 1000) / 1000,
+    sheetWeightKg: Math.round(sheetWeightKg * 1000) / 1000,
+    ridgingLengthM: Math.round(ridgingLengthM * 1000) / 1000
+  };
+}
+
+export const PWD_FLAT_WEIGHTS: Record<string, number> = {
+  '25x5': 0.981,
+  '40x6': 1.884,
+  '50x6': 2.355
+};
+
+export const PWD_Z_WEIGHTS: Record<string, number> = {
+  '20x20x3': 1.120,
+  '25x25x3': 1.450
+};
+
+export const PWD_TEE_WEIGHTS: Record<string, number> = {
+  '25x25x3': 1.120,
+  '40x40x5': 2.980,
+  '50x50x6': 4.440
+};
+
+export function calculatePwdSectionWeightInternal(
+  shape: 'flat' | 'z' | 'tee',
+  sizeKey: string,
+  lengthM: number
+): {
+  pwdWeightKg: number;
+  formulaWeightKg: number;
+  diffKg: number;
+} {
+  if (lengthM <= 0) {
+    return { pwdWeightKg: 0, formulaWeightKg: 0, diffKg: 0 };
+  }
+  let pwdUnitWeight = 0;
+  let crossSectionAreaM2 = 0;
+
+  if (shape === 'flat') {
+    pwdUnitWeight = PWD_FLAT_WEIGHTS[sizeKey] || 0;
+    const parts = sizeKey.split('x').map(Number);
+    const widthMm = parts[0] || 0;
+    const thicknessMm = parts[1] || 0;
+    crossSectionAreaM2 = (widthMm * thicknessMm) / 1000000;
+  } else if (shape === 'z') {
+    pwdUnitWeight = PWD_Z_WEIGHTS[sizeKey] || 0;
+    const parts = sizeKey.split('x').map(Number);
+    const w = parts[0] || 0;
+    const h = parts[1] || 0;
+    const t = parts[2] || 0;
+    crossSectionAreaM2 = ((w + h + w - 2 * t) * t) / 1000000;
+  } else if (shape === 'tee') {
+    pwdUnitWeight = PWD_TEE_WEIGHTS[sizeKey] || 0;
+    const parts = sizeKey.split('x').map(Number);
+    const w = parts[0] || 0;
+    const h = parts[1] || 0;
+    const t = parts[2] || 0;
+    crossSectionAreaM2 = (w * t + (h - t) * t) / 1000000;
+  }
+
+  const formulaUnitWeight = crossSectionAreaM2 * 7850;
+  const pwdWeightKg = pwdUnitWeight * lengthM;
+  const formulaWeightKg = formulaUnitWeight * lengthM;
+  const diffKg = formulaWeightKg - pwdWeightKg;
+
+  return {
+    pwdWeightKg: Math.round(pwdWeightKg * 1000) / 1000,
+    formulaWeightKg: Math.round(formulaWeightKg * 1000) / 1000,
+    diffKg: Math.round(diffKg * 1000) / 1000
+  };
+}
+
+export function calculateSecondaryFramingInternal(
+  rafterSlopeM: number,
+  bayLengthM: number,
+  numBays: number,
+  purlinSpacingM: number,
+  purlinCount: number,
+  sagrodDiaMm: number,
+  bracingWeightPerM: number,
+  strutWeightPerM: number
+): {
+  sagrodWeightKg: number;
+  bracingWeightKg: number;
+  strutWeightKg: number;
+  totalSecondaryWeightKg: number;
+} {
+  if (rafterSlopeM <= 0 || bayLengthM <= 0 || numBays <= 0 || purlinSpacingM <= 0 || purlinCount <= 1) {
+    return { sagrodWeightKg: 0, bracingWeightKg: 0, strutWeightKg: 0, totalSecondaryWeightKg: 0 };
+  }
+
+  const sagrodUnitWeight = (sagrodDiaMm * sagrodDiaMm) / 162;
+  const totalSagrodLength = (purlinCount - 1) * numBays * 2 * purlinSpacingM;
+  const sagrodWeightKg = totalSagrodLength * sagrodUnitWeight;
+
+  const diagonalLength = Math.sqrt(bayLengthM * bayLengthM + rafterSlopeM * rafterSlopeM);
+  const totalBracingLength = 16 * diagonalLength;
+  const bracingWeightKg = totalBracingLength * bracingWeightPerM;
+
+  const totalStrutLength = 3 * (bayLengthM * numBays);
+  const strutWeightKg = totalStrutLength * strutWeightPerM;
+
+  const totalSecondaryWeightKg = sagrodWeightKg + bracingWeightKg + strutWeightKg;
+
+  return {
+    sagrodWeightKg: Math.round(sagrodWeightKg * 1000) / 1000,
+    bracingWeightKg: Math.round(bracingWeightKg * 1000) / 1000,
+    strutWeightKg: Math.round(strutWeightKg * 1000) / 1000,
+    totalSecondaryWeightKg: Math.round(totalSecondaryWeightKg * 1000) / 1000
+  };
+}
+
+
 
 
 

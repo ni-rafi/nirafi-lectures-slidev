@@ -43,6 +43,9 @@ export { HookGeometryDrawing } from './components/HookGeometryDrawing';
 export { MechanicalCouplerDrawing } from './components/MechanicalCouplerDrawing';
 export { RebarBbsLedgerDrawing } from './components/RebarBbsLedgerDrawing';
 export { PwdWeightDiscrepancyDrawing } from './components/PwdWeightDiscrepancyDrawing';
+export { CgiRoofingDrawing } from './components/CgiRoofingDrawing';
+export { PwdSectionWeightDrawing } from './components/PwdSectionWeightDrawing';
+export { SecondaryFramingDrawing } from './components/SecondaryFramingDrawing';
 export * from './calculators';
 
 

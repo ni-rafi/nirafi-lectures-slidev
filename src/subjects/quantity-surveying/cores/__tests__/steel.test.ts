@@ -13,7 +13,10 @@ import {
   calculateSteelMacroBudget,
   calculateHookAdditionDetailed,
   calculateCouplerComparison,
-  calculateRebarWeightPwdVsFormula
+  calculateRebarWeightPwdVsFormula,
+  calculateCgiRoofingInternal,
+  calculatePwdSectionWeightInternal,
+  calculateSecondaryFramingInternal
 } from '../steel';
 
 describe('Steel Reinforcement Module', () => {
@@ -241,6 +244,73 @@ describe('Steel Reinforcement Module', () => {
       expect(result.weightFormulaKg).toBe(617.284);
       expect(result.weightPwdKg).toBe(616.000);
       expect(result.diffKg).toBe(1.284);
+    });
+  });
+
+  describe('CGI Sheet Roofing Calculations', () => {
+    test('should calculate correct roofing area and weights', () => {
+      // span = 10, rise = 2.5, buildingLength = 12, sideOverhang = 0.5, eavesOverhang = 0.3, corrugationFactor = 1.15, gauge = 22 (6.8 kg/m2)
+      // rafterSlope = sqrt(2.5^2 + 5^2) = sqrt(6.25 + 25) = sqrt(31.25) = 5.5901699m -> 5.59m
+      // coveredAreaM2 = 2 * (5.5901699 + 0.3) * (12 + 2 * 0.5) * 1.15 = 2 * 5.8901699 * 13 * 1.15 = 176.116m2
+      // sheetWeight = 176.116 * 6.8 = 1197.589kg
+      const result = calculateCgiRoofingInternal(10, 2.5, 12, 0.5, 0.3, 1.15, 22);
+      expect(result.rafterSlopeM).toBe(5.59);
+      expect(result.coveredAreaM2).toBe(176.116);
+      expect(result.sheetWeightKg).toBe(1197.589);
+      expect(result.ridgingLengthM).toBe(12);
+    });
+
+    test('should return 0 values for invalid inputs', () => {
+      const result = calculateCgiRoofingInternal(-10, 2.5, 12, 0.5, 0.3, 1.15, 22);
+      expect(result.coveredAreaM2).toBe(0);
+      expect(result.sheetWeightKg).toBe(0);
+    });
+  });
+
+  describe('PWD Section Weight Comparisons', () => {
+    test('should compare Flat bars PWD vs formula correctly', () => {
+      // flat shape, size 25x5 (width 25mm, thickness 5mm), length 10m
+      // PWD weight = 0.981 kg/m * 10m = 9.81 kg
+      // Formula area = 25*5/1e6 = 125e-6 m2 -> formula unit weight = 125e-6 * 7850 = 0.98125 kg/m * 10m = 9.813 kg
+      const result = calculatePwdSectionWeightInternal('flat', '25x5', 10);
+      expect(result.pwdWeightKg).toBe(9.81);
+      expect(result.formulaWeightKg).toBe(9.813);
+      expect(result.diffKg).toBe(0.002);
+    });
+
+    test('should compare Z-sections PWD vs formula correctly', () => {
+      // z shape, size 20x20x3 (w=20, h=20, t=3), length 10m
+      // PWD weight = 1.120 kg/m * 10m = 11.20 kg
+      // Area = (20 + 20 + 20 - 6) * 3 = 54 * 3 = 162 mm2 = 0.000162 m2 -> formula weight = 0.000162 * 7850 * 10 = 12.717 kg
+      const result = calculatePwdSectionWeightInternal('z', '20x20x3', 10);
+      expect(result.pwdWeightKg).toBe(11.20);
+      expect(result.formulaWeightKg).toBe(12.717);
+      expect(result.diffKg).toBe(1.517);
+    });
+
+    test('should compare Tee sections PWD vs formula correctly', () => {
+      // tee shape, size 25x25x3 (w=25, h=25, t=3), length 10m
+      // PWD weight = 1.120 kg/m * 10m = 11.20 kg
+      // Area = (25 * 3) + (25 - 3) * 3 = 75 + 66 = 141 mm2 = 0.000141 m2 -> formula weight = 0.000141 * 7850 * 10 = 11.069 kg
+      const result = calculatePwdSectionWeightInternal('tee', '25x25x3', 10);
+      expect(result.pwdWeightKg).toBe(11.20);
+      expect(result.formulaWeightKg).toBe(11.069);
+      expect(result.diffKg).toBe(-0.132);
+    });
+  });
+
+  describe('Secondary Framing calculations', () => {
+    test('should calculate correct sagrods, bracing and struts weights', () => {
+      // rafterSlope = 5.59m, bayLength = 6.0m, numBays = 4, spacing = 1.4m, purlins = 5
+      // sagrod: 10mm dia -> unit weight = 100/162 = 0.617 kg/m
+      // sagrod length = (5 - 1) * 4 * 2 * 1.4 = 44.8m -> sagrod weight = 44.8 * 0.617 = 27.654 kg
+      // bracing: diagonal = sqrt(36 + 31.248) = 8.20m -> total bracing length = 16 * 8.20 = 131.21m -> weight (e.g. 2.98 kg/m) = 391.006 kg
+      // struts: 3 lines * 24m = 72m -> weight (e.g. 2.98 kg/m) = 214.56 kg
+      const result = calculateSecondaryFramingInternal(5.59, 6.0, 4, 1.4, 5, 10, 2.98, 2.98);
+      expect(result.sagrodWeightKg).toBe(27.654);
+      expect(result.bracingWeightKg).toBe(391.0);
+      expect(result.strutWeightKg).toBe(214.560);
+      expect(result.totalSecondaryWeightKg).toBe(633.214);
     });
   });
 });

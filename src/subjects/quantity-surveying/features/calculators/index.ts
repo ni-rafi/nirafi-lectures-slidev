@@ -28,4 +28,7 @@ export { HookGeometrySandbox } from './HookGeometrySandbox';
 export { MechanicalCouplerSandbox } from './MechanicalCouplerSandbox';
 export { RebarBbsLedgerSandbox } from './RebarBbsLedgerSandbox';
 export { PwdWeightDiscrepancySandbox } from './PwdWeightDiscrepancySandbox';
+export { CgiRoofingSandbox } from './CgiRoofingSandbox';
+export { PwdSectionWeightSandbox } from './PwdSectionWeightSandbox';
+export { SecondaryFramingSandbox } from './SecondaryFramingSandbox';
 

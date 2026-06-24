@@ -8,7 +8,12 @@ import {
   SlideCallout
 } from '@/features/presentation/components/elements';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
-import { TrussTypologyDrawing } from '@/subjects/quantity-surveying/features';
+import {
+  TrussTypologyDrawing,
+  CgiRoofingSandbox,
+  PwdSectionWeightSandbox,
+  SecondaryFramingSandbox
+} from '@/subjects/quantity-surveying/features';
 
 // ============================================================================
 // Slide: Roof Truss Typologies
@@ -32,6 +37,10 @@ export const TrussTypologySlide: React.FC = () => {
     bowstring: {
       title: 'Bowstring Truss',
       desc: 'Features a curved top chord and straight bottom chord, shaped like an arch. Tension is carried primarily by the bottom tie. Used widely in industrial hangars and public garages to maximize clear headroom.'
+    },
+    monitor: {
+      title: 'Truss with Monitor',
+      desc: 'Features a base Pratt truss with a raised apex frame (monitor) designed for industrial ventilation. Popular in factories and warehouses to allow hot air to escape naturally from the building apex.'
     }
   };
 
@@ -180,4 +189,66 @@ export const SecondaryFramingSlide: React.FC = () => (
       </SlideCallout>
     </div>
   </FullWidthLayout>
+);
+
+// ============================================================================
+// Slide: Estimating Sheet Roofing (Corrugated Cladding)
+// ============================================================================
+export const CgiRoofingSlide: React.FC = () => (
+  <FullWidthLayout title="Estimating Sheet Roofing (Corrugated Cladding)" bgVariant="default">
+    <div className="flex flex-col gap-4 select-text">
+      <SlideParagraph variant="plain" className="text-xs md:text-sm text-muted-foreground select-none">
+        A steel frame estimate is incomplete without the actual roof covering, typically grouped under PWD SoR Chapter 10.
+      </SlideParagraph>
+
+      <SlideGrid cols={3} gap="md">
+        <InteractiveCard title="Measurement Standard" variant="default">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            • <strong>Surface Area Billing</strong>: Corrugated Galvanized Iron (CGI) sheets are measured in square area (m² or sft).
+            <br />• <strong>Corrugation Multiplier</strong>: To account for waves/folds, PWD mandates multiplying flat plan area by <strong>1.15</strong>.
+          </p>
+        </InteractiveCard>
+        <InteractiveCard title="Thickness Gauges" variant="default">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            • <strong>BWG / SWG</strong>: Sheets are designated by standard wire gauges.
+            <br />• <strong>PWD standard</strong>: Standard public works projects specify 22 BWG (0.80 mm) or 24 BWG (0.63 mm) cladding.
+          </p>
+        </InteractiveCard>
+        <InteractiveCard title="Accessories &amp; Ridging" variant="default">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            • <strong>Fixing Items</strong>: Rates include J-hooks, bolts, limpet washers, and putty.
+            <br />• <strong>Ridge Cap</strong>: Continuous plain sheet ridging along the apex is measured in <strong>running meters</strong>.
+          </p>
+        </InteractiveCard>
+      </SlideGrid>
+
+      <SlideCallout variant="info" title="Estimation Math Hint">
+        <p className="text-[11px] leading-relaxed text-muted-foreground select-text">
+          Always use the <strong>sloped rafter length</strong> (not horizontal half-span) when calculating cladding sheet area:
+          <br /><code>Total Area = 2 × (Rafter Slope + Eaves Overhang) × (Building Length + 2 × Side Overhang) × Corrugation Factor</code>
+        </p>
+      </SlideCallout>
+    </div>
+  </FullWidthLayout>
+);
+
+// ============================================================================
+// Slide: CGI Roofing Sandbox
+// ============================================================================
+export const CgiRoofingSandboxSlide: React.FC = () => (
+  <CgiRoofingSandbox />
+);
+
+// ============================================================================
+// Slide: PWD Section Weight Sandbox
+// ============================================================================
+export const PwdSectionWeightSlide: React.FC = () => (
+  <PwdSectionWeightSandbox />
+);
+
+// ============================================================================
+// Slide: Secondary Framing Sandbox
+// ============================================================================
+export const SecondaryFramingSandboxSlide: React.FC = () => (
+  <SecondaryFramingSandbox />
 );

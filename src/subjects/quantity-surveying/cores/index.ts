@@ -25,7 +25,14 @@ export {
   calculateSteelMacroBudget,
   calculateHookAdditionDetailed,
   calculateCouplerComparison,
-  calculateRebarWeightPwdVsFormula
+  calculateRebarWeightPwdVsFormula,
+  PWD_CGI_WEIGHTS,
+  calculateCgiRoofingInternal,
+  PWD_FLAT_WEIGHTS,
+  PWD_Z_WEIGHTS,
+  PWD_TEE_WEIGHTS,
+  calculatePwdSectionWeightInternal,
+  calculateSecondaryFramingInternal
 } from './steel';
 export {
   calculatePipeLengthWithAllowanceInternal,
