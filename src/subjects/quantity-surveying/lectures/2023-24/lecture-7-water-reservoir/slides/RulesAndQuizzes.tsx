@@ -12,6 +12,8 @@ import {
   SlideCallout,
   ClickReveal,
   ClickHighlight,
+  InteractiveCard,
+  SlideBadge,
 } from '@/features/presentation/components/elements';
 
 // Slide 13: Section Divider
@@ -127,5 +129,78 @@ export const Slide17: React.FC<SlideProps> = () => (
   <ThankYouLayout
     title="Thank You"
     subtitle="Let's proceed to the lab exercise for Water Reservoirs & Septic Tanks!"
+  />
+);
+
+// Slide: Quizzes Divider
+export const QuizzesDividerSlide: React.FC = () => (
+  <TopicDividerLayout
+    topicNumber="04"
+    title="Interactive Checkpoints"
+    description="Evaluating Take-off Math and Precision Rounding Rules"
+  />
+);
+
+// Slide: Submission Divider
+export const SubmissionDividerSlide: React.FC = () => (
+  <TopicDividerLayout
+    topicNumber="05"
+    title="Lab Submission Directives"
+    description="Individual Accountability, Precision Rounding, and Course Outcome Mapping"
+  />
+);
+
+// Slide: Submission Directives
+export const SubmissionDirectivesSlide: React.FC = () => (
+  <TwoColumnLayout
+    title="Lab Report 7: Submission Directives"
+    bgVariant="default"
+    leftWidth="50%"
+    leftContent={
+      <div className="flex flex-col gap-4">
+        <InteractiveCard title="Submission Rules">
+          <SlideList
+            revealMode="none"
+            variant="plain"
+            items={[
+              {
+                icon: "📝",
+                text: (
+                  <span>
+                    <strong>Individual Submissions:</strong> Although calculations are executed collaboratively in studio teams, the take-off report submission is strictly individual.
+                  </span>
+                ),
+              },
+              {
+                icon: "📏",
+                text: (
+                  <span>
+                    <strong>Precision Rounding:</strong> Maintain 4 decimal places during intermediate steps; round all final BoQ item quantities strictly to <strong>3 decimal places</strong>.
+                  </span>
+                ),
+              },
+            ]}
+          />
+        </InteractiveCard>
+      </div>
+    }
+    rightContent={
+      <div className="flex flex-col justify-center h-full select-text">
+        <InteractiveCard title="Course Outcome Alignment">
+          <div className="flex flex-col gap-2.5 text-left">
+            <SlideBadge variant="info" label="CO2 Mapped" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              This studio session directly maps to <strong>CO2 (Prepare Bill of Quantities)</strong>:
+            </p>
+            <div className="p-3 bg-muted rounded-xl border border-border/40 text-xs leading-relaxed text-foreground font-semibold">
+              "Prepare the bill of quantity for different work packages of a civil engineering project."
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed italic">
+              Your ability to interpret 2D elevations, coordinate load paths, and apply standard deduction rules is the core assessment metric.
+            </p>
+          </div>
+        </InteractiveCard>
+      </div>
+    }
   />
 );

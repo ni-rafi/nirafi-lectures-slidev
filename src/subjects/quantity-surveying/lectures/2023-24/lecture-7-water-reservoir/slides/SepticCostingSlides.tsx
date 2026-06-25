@@ -4,12 +4,14 @@ import {
   SlideParagraph,
   SlideCallout,
   InteractiveCard,
-  ParameterSlider,
-  CalculationOutput
+  ParameterInputCard,
+  CalculationOutput,
+  SlideList
 } from '@/features/presentation/components/elements';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import { calculateSepticTankCostInternal } from '@/subjects/quantity-surveying/cores';
 import { EcoStpPrefabDrawing, EcoStpPrefabSandbox } from '@/subjects/quantity-surveying/features';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 
 // ============================================================================
 // Slide 19: Bill of Quantities (BoQ) Assembly
@@ -86,58 +88,30 @@ export const Slide20: React.FC = () => {
       bgVariant="default"
       leftWidth="40%"
       leftContent={
-        <InteractiveCard title="Unit Rates (BDT)">
-          <div className="space-y-4">
-            <ParameterSlider
-              label="Earthwork Rate"
-              min={100}
-              max={300}
-              step={10}
-              value={excRate}
-              onChange={setExcRate}
-              unit=" /m³"
-            />
-            <ParameterSlider
-              label="CC Base (1:3:6) Rate"
-              min={3500}
-              max={5500}
-              step={100}
-              value={ccRate}
-              onChange={setCcRate}
-              unit=" /m³"
-            />
-            <ParameterSlider
-              label="Brickwork (1:4) Rate"
-              min={4500}
-              max={6500}
-              step={100}
-              value={brickRate}
-              onChange={setBrickRate}
-              unit=" /m³"
-            />
-            <ParameterSlider
-              label="Plastering (1:3) Rate"
-              min={150}
-              max={350}
-              step={10}
-              value={plasterRate}
-              onChange={setPlasterRate}
-              unit=" /m²"
-            />
-            <ParameterSlider
-              label="Precast RC Rate"
-              min={8000}
-              max={12000}
-              step={200}
-              value={rcRate}
-              onChange={setRcRate}
-              unit=" /m³"
-            />
-          </div>
-        </InteractiveCard>
+        <div className="space-y-3">
+          <InteractiveCard title="Unit Rates (BDT)">
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-1.5">
+                <ParameterInputCard label="Earthwork" min={100} max={300} value={excRate} onChange={setExcRate} unit="৳/m³" variant="compact" />
+                <ParameterInputCard label="CC Base" min={3500} max={5500} value={ccRate} onChange={setCcRate} unit="৳/m³" variant="compact" />
+                <ParameterInputCard label="Brickwork" min={4500} max={6500} value={brickRate} onChange={setBrickRate} unit="৳/m³" variant="compact" />
+                <ParameterInputCard label="Plastering" min={150} max={350} value={plasterRate} onChange={setPlasterRate} unit="৳/m²" variant="compact" />
+              </div>
+              <div className="pt-1.5 border-t border-border/30">
+                <ParameterInputCard label="Precast RC Rate" min={8000} max={12000} value={rcRate} onChange={setRcRate} unit="৳/m³" variant="compact" />
+              </div>
+            </div>
+          </InteractiveCard>
+
+          <SlideCallout variant="info" title="BoQ Billing Reminder" className="py-2">
+            <span className="text-[10px] leading-relaxed text-muted-foreground block text-center select-text">
+              Note: Heavy accessories (like 18" C.I. Manhole Covers and RCC Tee pipes) are counted and priced separately as independent Nos. items in the Sanitary Section.
+            </span>
+          </SlideCallout>
+        </div>
       }
       rightContent={
-        <div className="h-full flex flex-col justify-between space-y-4 select-text">
+        <div className="h-full flex flex-col justify-between select-text">
           <InteractiveCard title="Priced Bill of Quantities" className="flex-1">
             <div className="w-full overflow-x-auto select-text scrollbar-thin">
               <table className="w-full text-[10px] font-mono border-collapse text-left">
@@ -193,12 +167,6 @@ export const Slide20: React.FC = () => {
               />
             </div>
           </InteractiveCard>
-
-          <SlideCallout variant="info" title="BoQ Billing Reminder" className="py-2">
-            <p className="text-[10px] leading-relaxed text-muted-foreground text-center">
-              Note: Heavy accessories (like 18" C.I. Manhole Covers and RCC Tee pipes) are counted and priced separately as independent Nos. items in the Sanitary Section.
-            </p>
-          </SlideCallout>
         </div>
       }
     />
@@ -206,35 +174,52 @@ export const Slide20: React.FC = () => {
 };
 
 // Slide 21: Eco Sewage Treatment Plants & Prefab Tanks Concepts
-export const Slide21: React.FC = () => (
-  <TwoColumnLayout
-    title="3.5 Modern Eco STPs &amp; Prefabricated Storage"
-    bgVariant="default"
-    leftWidth="52%"
-    leftContent={
-      <div className="space-y-4 text-left select-text">
-        <SlideParagraph title="Modern Sanitary Upgrades">
-          Contemporary PWD standards incorporate prefabricated components and biochemical treatment assemblies to reduce construction timelines and subsoil pollution.
-        </SlideParagraph>
-        <div className="text-xs space-y-3 text-muted-foreground leading-relaxed">
-          <p>
-            • <strong>Non-Electric Eco Sewage Treatment Plant (STP)</strong>
-            <br />Modular plastic or RCC bio-reactors that digest waste anaerobically. Estimated as a lump-sum unit (Nos.) matching capacity, plus a startup charge for bacteria seeding and chamber connection pointing.
-          </p>
-          <p>
-            • <strong>Prefabricated Storage Tanks</strong>
-            <br />Schedules distinguish between heavy overhead food-grade plastic tanks (e.g. 1000L-5000L) and lower-cost ferro-cement alternative storage tanks (400-500 gallons), both billed by count.
-          </p>
+export const Slide21: React.FC = () => {
+  const { currentClick } = useClickStepsContext();
+  
+  const highlightMap: Record<number, 'none' | 'ecostp' | 'prefab'> = {
+    0: 'none',
+    1: 'ecostp',
+    2: 'prefab'
+  };
+  const activeHighlight = highlightMap[currentClick] || 'none';
+
+  return (
+    <TwoColumnLayout
+      title="3.5 Modern Eco STPs &amp; Prefabricated Storage"
+      bgVariant="default"
+      leftWidth="52%"
+      leftContent={
+        <div className="space-y-2.5 text-left select-text">
+          <SlideParagraph>
+            Contemporary PWD standards incorporate prefabricated components and biochemical treatment assemblies to reduce construction timelines and subsoil pollution.
+          </SlideParagraph>
+          <SlideList
+            revealMode="each-click"
+            variant="plain"
+            items={[
+              {
+                title: "Non-Electric Eco Sewage Treatment Plant (STP)",
+                text: "Modular plastic or RCC bio-reactors that digest waste anaerobically. Estimated as a lump-sum unit (Nos.) matching capacity, plus a startup charge for bacteria seeding and chamber connection pointing.",
+                revealAt: 1,
+              },
+              {
+                title: "Prefabricated Storage Tanks",
+                text: "Schedules distinguish between heavy overhead food-grade plastic tanks (e.g. 1000L-5000L) and lower-cost ferro-cement alternative storage tanks (400-500 gallons), both billed by count.",
+                revealAt: 2,
+              },
+            ]}
+          />
         </div>
-      </div>
-    }
-    rightContent={
-      <div className="h-full flex flex-col justify-center">
-        <EcoStpPrefabDrawing className="flex-1" />
-      </div>
-    }
-  />
-);
+      }
+      rightContent={
+        <div className="h-full flex flex-col justify-center">
+          <EcoStpPrefabDrawing activeHighlight={activeHighlight} className="flex-1" />
+        </div>
+      }
+    />
+  );
+};
 
 // Slide 22: Eco STP & Prefab Tanks Sandbox Slide
 export const Slide22: React.FC = () => {

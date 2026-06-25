@@ -20,6 +20,7 @@ import {
   SlideCallout,
   InteractiveCard,
   ParameterSlider,
+  ParameterInputCard,
   CalculationOutput,
   ClickReveal,
   ClickHighlight,
@@ -104,11 +105,13 @@ export const Slide4: React.FC = () => {
       leftWidth="45%"
       leftContent={
         <InteractiveCard title="Excavation Modeler">
-          <div className="space-y-4">
-            <ParameterSlider label="Base Length (L)" min={3} max={15} step={0.5} value={length} onChange={setLength} unit=" m" />
-            <ParameterSlider label="Base Width (B)" min={2} max={10} step={0.5} value={width} onChange={setWidth} unit=" m" />
-            <ParameterSlider label="Excavation Depth (H)" min={1.5} max={5} step={0.1} value={depth} onChange={setDepth} unit=" m" />
-            <ParameterSlider label="Clearance (c)" min={0.3} max={1} step={0.1} value={clearance} onChange={setClearance} unit=" m" />
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <ParameterInputCard label="Base Length (L)" min={3} max={15} value={length} onChange={setLength} unit="m" variant="compact" />
+              <ParameterInputCard label="Base Width (B)" min={2} max={10} value={width} onChange={setWidth} unit="m" variant="compact" />
+              <ParameterInputCard label="Excavation Depth (H)" min={1.5} max={5} value={depth} onChange={setDepth} unit="m" variant="compact" />
+              <ParameterInputCard label="Clearance (c)" min={0.3} max={1} value={clearance} onChange={setClearance} unit="m" variant="compact" />
+            </div>
             <CalculationOutput title="Total Excavation" value={`${totalExcVol.toFixed(3)}`} unit="m³" />
           </div>
         </InteractiveCard>
@@ -129,16 +132,30 @@ export const Slide5: React.FC = () => {
       bgVariant="default"
       leftWidth="50%"
       leftContent={
-        <div className="space-y-3">
-          <SlideParagraph title="Intersection Geometry">
-            A liquid-retaining structure is an integrated monolithic concrete box. To avoid double-counting materials, overlaps must be deducted.
+        <div className="space-y-2.5 text-left select-text">
+          <SlideParagraph>
+            A liquid-retaining structure is an integrated monolithic concrete box. To avoid double-counting materials, overlaps must be deducted:
           </SlideParagraph>
           <SlideList
             revealMode="each-click"
+            variant="plain"
+            className="space-y-1"
             items={[
-              { title: "Base Raft Slab", text: <span>Monolithic concrete slab at the bottom. Carries self-weight and fluid mass, known as the <ClickHighlight variant="paint" at={1}>Base Raft Slab</ClickHighlight>.</span> },
-              { title: "Vertical Walls & Shear Key", text: <span>Long walls out-to-out, short walls in-to-in. Includes the monolithic <ClickHighlight variant="paint" at={2}>trapezoidal shear key joint</ClickHighlight> to prevent seepage (m³).</span> },
-              { title: "Roof Cover Slab", text: <span>Top horizontal plate. Net area minus manhole access openings, known as <ClickHighlight variant="paint" at={3}>Roof Cover Slab</ClickHighlight>.</span> }
+              {
+                title: "Base Raft Slab",
+                revealAt: 1,
+                text: <span>Monolithic concrete slab at the bottom. Carries self-weight and fluid mass, known as the <ClickHighlight variant="paint" at={1}>Base Raft Slab</ClickHighlight>.</span>
+              },
+              {
+                title: "Vertical Walls & Shear Key",
+                revealAt: 2,
+                text: <span>Long walls out-to-out, short walls in-to-in. Includes the monolithic <ClickHighlight variant="paint" at={2}>trapezoidal shear key joint</ClickHighlight> to prevent seepage (m³).</span>
+              },
+              {
+                title: "Roof Cover Slab",
+                revealAt: 3,
+                text: <span>Top horizontal plate. Net area minus manhole access openings, known as <ClickHighlight variant="paint" at={3}>Roof Cover Slab</ClickHighlight>.</span>
+              }
             ]}
           />
         </div>
@@ -179,13 +196,15 @@ export const Slide6: React.FC = () => {
       leftWidth="45%"
       leftContent={
         <InteractiveCard title="RCC Shell Modeler">
-          <div className="space-y-4">
-            <ParameterSlider label="Inner Length" min={2} max={10} step={0.5} value={length} onChange={setLength} unit=" m" />
-            <ParameterSlider label="Inner Width" min={1.5} max={8} step={0.5} value={width} onChange={setWidth} unit=" m" />
-            <ParameterSlider label="Wall Thickness" min={0.2} max={0.4} step={0.05} value={wallThick} onChange={setWallThick} unit=" m" />
-            <ParameterSlider label="Wall Height" min={1.5} max={4.0} step={0.1} value={height} onChange={setHeight} unit=" m" />
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <ParameterInputCard label="Inner Length" min={2} max={10} value={length} onChange={setLength} unit="m" variant="compact" />
+              <ParameterInputCard label="Inner Width" min={1.5} max={8} value={width} onChange={setWidth} unit="m" variant="compact" />
+              <ParameterInputCard label="Wall Thickness" min={0.2} max={0.4} value={wallThick} onChange={setWallThick} unit="m" variant="compact" />
+              <ParameterInputCard label="Wall Height" min={1.5} max={4.0} value={height} onChange={setHeight} unit="m" variant="compact" />
+            </div>
             
-            <div className="border-t border-border/20 pt-2 flex items-center justify-between">
+            <div className="border-t border-border/20 pt-1.5 flex items-center justify-between">
               <span className="text-xs font-bold text-muted-foreground">Shear Key Joint:</span>
               <select
                 value={includeShearKey ? 'yes' : 'no'}

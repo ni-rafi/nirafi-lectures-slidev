@@ -18,16 +18,16 @@ export const EcoStpPrefabDrawing: React.FC<EcoStpPrefabProps> = ({
 
   const containerClasses = isBlog
     ? 'bg-transparent border-none shadow-none p-0 flex flex-col items-center select-none w-full'
-    : `relative border border-border/80 bg-muted/20 dark:bg-muted/5 rounded-xl p-6 flex flex-col items-center shadow-sm select-none w-full justify-center min-h-[220px] ${className}`;
+    : `relative border border-border/60 bg-muted/10 dark:bg-muted/5 rounded-xl p-1.5 flex flex-col items-center shadow-xs select-none w-full justify-center ${className}`;
 
   return (
     <div className={containerClasses}>
-      <span className="text-xs uppercase tracking-wider font-extrabold text-primary mb-3">
-        Eco STP & Prefabricated Storage System Details
+      <span className="text-[10px] uppercase tracking-wider font-extrabold text-primary mb-0.5">
+        Eco STP &amp; Prefabricated Storage System Details
       </span>
       <svg
         width="100%"
-        height="220"
+        height="180"
         viewBox="0 0 520 220"
         className="overflow-visible select-none text-foreground"
       >

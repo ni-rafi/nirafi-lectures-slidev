@@ -33,28 +33,31 @@ export const Slide13: React.FC = () => {
     <TwoColumnLayout
       title="2.5 Sanitary Junction: The Inspection Pit"
       bgVariant="default"
-      leftWidth="52%"
+      leftWidth="48%"
       leftContent={
-        <div className="space-y-4 text-left select-text">
-          <SlideParagraph title="Primary Inflow Junction">
-            The **Inspection Pit** is a vital transition node built immediately before the septic tank. It receives raw wastewater from building conduits, allowing access to clean blockages and check flow lines.
+        <div className="space-y-2.5 text-left select-text">
+          <SlideParagraph>
+            The **Inspection Pit** is a vital transition node built immediately before the septic tank. It receives raw wastewater from building conduits, allowing access to clean blockages and check flow lines:
           </SlideParagraph>
-
           <SlideList
             revealMode="each-click"
+            variant="plain"
             items={[
               {
                 title: "Earthwork Excavation",
-                text: "Quantified based on the outer masonry footprint plus clearance allowances (m³)."
+                text: "Quantified based on the outer masonry footprint plus clearance allowances (m³).",
+                revealAt: 1,
               },
               {
                 title: "CC Foundation Base (1:3:6)",
-                text: "Concrete leveling layer supporting the brick walls, measured volumetrically in m³."
+                text: "Concrete leveling layer supporting the brick walls, measured volumetrically in m³.",
+                revealAt: 2,
               },
               {
                 title: "1st Class Brickwork (1:4)",
-                text: "Masonry enclosure walls up to the ground level, calculated in m³."
-              }
+                text: "Enclosure walls built up to ground level, calculated in m³.",
+                revealAt: 3,
+              },
             ]}
           />
         </div>
@@ -138,16 +141,29 @@ export const Slide17: React.FC = () => {
       bgVariant="default"
       leftWidth="50%"
       leftContent={
-        <div className="space-y-3">
-          <SlideParagraph title="Structural Pit Components">
-            Beyond aggregate filling, a professional soak pit is framed by a brick masonry lining with a reinforced concrete ring foundation at the base.
+        <div className="space-y-2.5 text-left select-text">
+          <SlideParagraph>
+            Beyond aggregate filling, a professional soak pit is framed by a brick masonry lining with a reinforced concrete ring foundation at the base:
           </SlideParagraph>
           <SlideList
             revealMode="each-click"
+            variant="plain"
             items={[
-              { title: "Honeycomb Brickwork (25% Voids)", text: <span>Lining with seepage slots to allow effluent filtration, measured in <ClickHighlight variant="paint" at={1}>Cubic Meter (m³)</ClickHighlight> with 25% void ratio.</span> },
-              { title: "Solid Collar Brickwork", text: <span>Solid upper brick wall (neck) near ground surface to prevent soil collapses, measured in <ClickHighlight variant="paint" at={2}>Cubic Meter (m³)</ClickHighlight>.</span> },
-              { title: "R.C.C. Well Curb Foundation", text: <span>Reinforced concrete ring footing cast at base to support walls during excavation and sinking, measured in <ClickHighlight variant="paint" at={3}>Cubic Meter (m³)</ClickHighlight>.</span> }
+              {
+                title: "Honeycomb Brickwork (25% Voids)",
+                text: <span>Lining with seepage slots to allow effluent filtration, measured in <ClickHighlight variant="paint" at={1}>Cubic Meter (m³)</ClickHighlight> with 25% void ratio.</span>,
+                revealAt: 1,
+              },
+              {
+                title: "Solid Collar Brickwork",
+                text: <span>Solid upper brick wall (neck) near ground surface to prevent soil collapses, measured in <ClickHighlight variant="paint" at={2}>Cubic Meter (m³)</ClickHighlight>.</span>,
+                revealAt: 2,
+              },
+              {
+                title: "R.C.C. Well Curb Foundation",
+                text: <span>Reinforced concrete ring footing cast at base to support walls during excavation and sinking, measured in <ClickHighlight variant="paint" at={3}>Cubic Meter (m³)</ClickHighlight>.</span>,
+                revealAt: 3,
+              },
             ]}
           />
         </div>

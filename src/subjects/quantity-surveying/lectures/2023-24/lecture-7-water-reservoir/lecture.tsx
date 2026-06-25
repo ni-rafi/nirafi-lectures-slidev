@@ -34,7 +34,10 @@ import {
   Slide14 as RulesSlide14,
   Slide15 as RulesSlide15,
   Slide16 as RulesSlide16,
-  Slide17 as RulesSlide17
+  Slide17 as RulesSlide17,
+  QuizzesDividerSlide,
+  SubmissionDividerSlide,
+  SubmissionDirectivesSlide
 } from './slides/RulesAndQuizzes';
 import {
   Slide19 as CostingSlide19,
@@ -70,9 +73,12 @@ export const slides: Record<number, React.ComponentType<SlideProps>> = {
   24: CostingSlide20,
   25: CostingSlide21,
   26: CostingSlide22,
-  27: RulesSlide15,
-  28: RulesSlide16,
-  29: RulesSlide17,
+  27: QuizzesDividerSlide,
+  28: RulesSlide15,
+  29: RulesSlide16,
+  30: SubmissionDividerSlide,
+  31: SubmissionDirectivesSlide,
+  32: RulesSlide17,
 };
 
 export const slideMetadata: Record<
@@ -105,7 +111,10 @@ export const slideMetadata: Record<
   24: { title: 'Septic Tank Costing Ledger', type: 'Live Sandbox', section: 'PWD Measurement' },
   25: { title: 'Modern Eco STPs & Prefabricated Storage', type: 'Concept Details', section: 'PWD Measurement' },
   26: { title: 'Eco STP & Prefab Tanks Sandbox', type: 'Live Sandbox', section: 'PWD Measurement' },
-  27: { title: 'Excavation Parameterized Checkpoint', type: 'Concept Details', section: 'Quizzes', quizId: 'qs_2023_lec7_q1' },
-  28: { title: 'Soak Pit Loose Aggregate Checkpoint', type: 'Concept Details', section: 'Quizzes', quizId: 'qs_2023_lec7_q2' },
-  29: { title: 'Conclusion', type: 'Thank You Slide', section: 'Conclusion' },
+  27: { title: 'Interactive Checkpoints Divider', type: 'Cover Slide', section: 'Quizzes' },
+  28: { title: 'Excavation Parameterized Checkpoint', type: 'Concept Details', section: 'Quizzes', quizId: 'qs_2023_lec7_q1' },
+  29: { title: 'Soak Pit Loose Aggregate Checkpoint', type: 'Concept Details', section: 'Quizzes', quizId: 'qs_2023_lec7_q2' },
+  30: { title: 'Submission Divider', type: 'Cover Slide', section: 'Submission' },
+  31: { title: 'Lab Report 7 Submission Directives', type: 'Concept Details', section: 'Submission' },
+  32: { title: 'Conclusion', type: 'Thank You Slide', section: 'Conclusion' },
 };

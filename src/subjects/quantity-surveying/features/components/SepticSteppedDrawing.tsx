@@ -20,18 +20,18 @@ export const SepticSteppedDrawing: React.FC<SepticSteppedProps> = ({
 
   const containerClasses = isBlog
     ? 'bg-transparent border-none shadow-none p-0 flex flex-col items-center select-none w-full'
-    : `relative border border-border/80 bg-muted/20 dark:bg-muted/5 rounded-xl p-6 flex flex-col items-center shadow-sm select-none w-full justify-center min-h-[220px] ${className}`;
+    : `relative border border-border/60 bg-muted/10 dark:bg-muted/5 rounded-xl p-1.5 flex flex-col items-center shadow-xs select-none w-full justify-center ${className}`;
 
   const defaultStroke = 'currentColor';
 
   return (
     <div className={containerClasses}>
-      <span className="text-xs uppercase tracking-wider font-extrabold text-primary mb-3">
-        Septic Tank Stepped Wall & Plaster Cross-Section
+      <span className="text-[10px] uppercase tracking-wider font-extrabold text-primary mb-0.5">
+        Septic Tank Stepped Wall &amp; Plaster Cross-Section
       </span>
       <svg
         width="100%"
-        height="180"
+        height="150"
         viewBox="0 0 450 180"
         className="overflow-visible select-none text-foreground"
       >

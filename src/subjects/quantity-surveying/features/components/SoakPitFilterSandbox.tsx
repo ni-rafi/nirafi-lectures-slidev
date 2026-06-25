@@ -2,7 +2,7 @@ import React from 'react';
 import { useUrlSyncedState } from '@/features/presentation/hooks/useUrlSyncedState';
 import {
   InteractiveCard,
-  ParameterSlider,
+  ParameterInputCard,
   CalculationOutput
 } from '@/features/presentation/components/elements';
 import { CircleDot } from 'lucide-react';
@@ -34,8 +34,8 @@ export const SoakPitFilterSandbox: React.FC<SoakPitFilterSandboxProps> = ({
   };
 
   const renderSvg = () => (
-    <div className={`flex flex-col justify-between bg-muted/20 p-4 border border-border/40 rounded-xl w-full ${hideControls ? className : 'h-full'}`}>
-      <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground mb-2 block text-center">
+    <div className={`flex flex-col justify-between bg-muted/20 p-1.5 border border-border/40 rounded-xl w-full ${hideControls ? className : 'h-full'}`}>
+      <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground mb-0.5 block text-center">
         Subsoil Filtration Section
       </span>
 
@@ -94,7 +94,7 @@ export const SoakPitFilterSandbox: React.FC<SoakPitFilterSandboxProps> = ({
         )}
       </div>
 
-      <span className="text-[9px] text-muted-foreground text-center mt-2 leading-relaxed">
+      <span className="text-[9px] text-muted-foreground text-center mt-1 leading-relaxed">
         Loose Aggregate = Net Volume ({netVolume.toFixed(2)} m³) × {containerFactor} = {looseVolume.toFixed(2)} m³.
       </span>
     </div>
@@ -109,25 +109,27 @@ export const SoakPitFilterSandbox: React.FC<SoakPitFilterSandboxProps> = ({
       <div className="md:col-span-6 flex flex-col justify-between space-y-4">
         <InteractiveCard title="Soak Pit Dimension Parameters">
           <div className="space-y-3 mb-4">
-            <ParameterSlider
-              label="Pit Inner Diameter (D)"
-              min={1.0}
-              max={3.5}
-              step={0.1}
-              value={diameter}
-              onChange={setDiameter}
-              unit=" m"
-            />
-            <ParameterSlider
-              label="Pit Total Depth (H)"
-              min={1.5}
-              max={5.0}
-              step={0.1}
-              value={depth}
-              onChange={setDepth}
-              unit=" m"
-            />
-            <div className="flex justify-between items-center bg-muted/40 p-2 rounded-xl border border-border/40 text-xs">
+            <div className="grid grid-cols-2 gap-1.5">
+              <ParameterInputCard
+                label="Pit Diameter"
+                min={1.0}
+                max={3.5}
+                value={diameter}
+                onChange={setDiameter}
+                unit="m"
+                variant="compact"
+              />
+              <ParameterInputCard
+                label="Pit Depth"
+                min={1.5}
+                max={5.0}
+                value={depth}
+                onChange={setDepth}
+                unit="m"
+                variant="compact"
+              />
+            </div>
+            <div className="flex justify-between items-center bg-muted/40 p-1.5 rounded-xl border border-border/40 text-[10px]">
               <span className="font-mono text-muted-foreground">Compaction Multiplier</span>
               <select
                 value={containerFactor}
@@ -138,7 +140,7 @@ export const SoakPitFilterSandbox: React.FC<SoakPitFilterSandboxProps> = ({
                 <option value={1.40}>High Loose Pack (+40%)</option>
               </select>
             </div>
-            <div className="flex justify-between items-center bg-muted/40 p-2 rounded-xl border border-border/40 text-xs">
+            <div className="flex justify-between items-center bg-muted/40 p-1.5 rounded-xl border border-border/40 text-[10px]">
               <span className="font-mono text-muted-foreground">Design Void Ratio</span>
               <select
                 value={voidRatio}

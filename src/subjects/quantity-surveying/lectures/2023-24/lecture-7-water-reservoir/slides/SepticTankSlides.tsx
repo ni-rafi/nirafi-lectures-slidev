@@ -1,6 +1,7 @@
 import React from 'react';
 import { TopicDividerLayout } from '@/shared/layouts/TopicDividerLayout';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
+import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import {
   SepticTankRevealDrawing,
@@ -32,20 +33,34 @@ export const Slide10: React.FC = () => {
 
   return (
     <TwoColumnLayout
-      title="2.1 Septic Tank Anatomy & Take-offs"
+      title="2.1 Septic Tank Anatomy &amp; Take-offs"
       bgVariant="default"
       leftWidth="50%"
       leftContent={
-        <div className="space-y-3">
-          <SlideParagraph title="Deconstructing Sanitary Masonry">
-            A traditional septic tank represents a mixed structural design—combining concrete basework with brickwork containment shells.
+        <div className="space-y-2.5 text-left select-text">
+          <SlideParagraph>
+            A traditional septic tank represents a mixed structural design—combining concrete basework with brickwork containment shells:
           </SlideParagraph>
           <SlideList
             revealMode="each-click"
+            variant="plain"
+            className="space-y-1"
             items={[
-              { title: "Base Slab (RCC)", text: <span>Monolithic concrete foundation slab acting as an impervious horizontal water barrier, measured in <ClickHighlight variant="paint" at={1}>Cubic Meter (m³)</ClickHighlight>.</span> },
-              { title: "Baffle / Partition Wall", text: <span>Internal brick or concrete partitions separating chambers, billed in <ClickHighlight variant="paint" at={2}>Square Meter (m²)</ClickHighlight> or m³.</span> },
-              { title: "Enclosure Brickwork", text: <span>Heavy outer brick walls. Requires external <ClickHighlight variant="paint" at={3}>bitumen damp-proof coat</ClickHighlight> to block subsoil dampness (m³).</span> }
+              {
+                title: "Base Slab (RCC)",
+                revealAt: 1,
+                text: <span>Monolithic concrete foundation slab acting as an impervious horizontal water barrier, measured in <ClickHighlight variant="paint" at={1}>Cubic Meter (m³)</ClickHighlight>.</span>
+              },
+              {
+                title: "Baffle / Partition Wall",
+                revealAt: 2,
+                text: <span>Internal brick or concrete partitions separating chambers, billed in <ClickHighlight variant="paint" at={2}>Square Meter (m²)</ClickHighlight> or m³.</span>
+              },
+              {
+                title: "Enclosure Brickwork",
+                revealAt: 3,
+                text: <span>Heavy outer brick walls. Requires external <ClickHighlight variant="paint" at={3}>bitumen damp-proof coat</ClickHighlight> to block subsoil dampness (m³).</span>
+              }
             ]}
           />
         </div>
@@ -54,9 +69,9 @@ export const Slide10: React.FC = () => {
         <div className="h-full flex flex-col justify-between space-y-2">
           <SepticTankRevealDrawing activeStep={activeStep} className="flex-1" />
           <ClickReveal at={4} preset="up">
-            <SlideCallout variant="info" title="Flow Appurtenances (Nos.)" className="py-2">
+            <SlideCallout variant="info" title="Septic Tank Structural Anatomy" className="py-2">
               <p className="text-[10px] text-muted-foreground leading-normal">
-                Mechanical fittings like Inlet/Outlet sanitary <ClickHighlight variant="paint" at={4}>tee joints</ClickHighlight>, ventilation pipelines, and access covers are classified separately and billed by count.
+                Inlet/Outlet Tees and vent pipelines are structural appurtenances, counted in <ClickHighlight variant="paint" at={4}>Numbers (Nos.)</ClickHighlight>.
               </p>
             </SlideCallout>
           </ClickReveal>
@@ -75,17 +90,35 @@ export const Slide11: React.FC = () => {
       bgVariant="default"
       leftWidth="50%"
       leftContent={
-        <div className="space-y-3">
-          <SlideParagraph title="Passive Subsoil Percolation">
-            Effluent overflow discharges into a Soak Pit packed with open-graded filtering khoa (broken brick bats) or stones.
+        <div className="space-y-2.5 text-left select-text">
+          <SlideParagraph>
+            Effluent overflow discharges into a Soak Pit packed with open-graded filtering khoa (broken brick bats) or stones:
           </SlideParagraph>
           <SlideList
             revealMode="each-click"
+            variant="plain"
+            className="space-y-1"
             items={[
-              { title: "Cylindrical Excavation", text: <span>The pit is dug as a cylinder of diameter D and depth H, billed in <ClickHighlight variant="paint" at={1}>Cubic Meter (m³)</ClickHighlight>.</span> },
-              { title: "Bottom Filter Layer", text: <span>Bottom 40% of pit packed with <ClickHighlight variant="paint" at={2}>coarse brick bats</ClickHighlight> to allow rapid subsoil dispersion.</span> },
-              { title: "Intermediate Filter", text: <span>Middle 35% of depth filled with <ClickHighlight variant="paint" at={3}>medium brick khoa</ClickHighlight> for filtration.</span> },
-              { title: "Top Sand Cap", text: <span>Top 25% capped with <ClickHighlight variant="paint" at={4}>coarse sand</ClickHighlight> to trap remaining suspended solids.</span> }
+              {
+                title: "Cylindrical Excavation",
+                revealAt: 1,
+                text: <span>The pit is dug as a cylinder of diameter D and depth H, billed in <ClickHighlight variant="paint" at={1}>Cubic Meter (m³)</ClickHighlight>.</span>
+              },
+              {
+                title: "Bottom Filter Layer",
+                revealAt: 2,
+                text: <span>Bottom 40% of pit packed with <ClickHighlight variant="paint" at={2}>coarse brick bats</ClickHighlight> to allow rapid subsoil dispersion.</span>
+              },
+              {
+                title: "Intermediate Filter",
+                revealAt: 3,
+                text: <span>Middle 35% of depth filled with <ClickHighlight variant="paint" at={3}>medium brick khoa</ClickHighlight> for filtration.</span>
+              },
+              {
+                title: "Top Sand Cap",
+                revealAt: 4,
+                text: <span>Top 25% capped with <ClickHighlight variant="paint" at={4}>coarse sand</ClickHighlight> to trap remaining suspended solids.</span>
+              }
             ]}
           />
         </div>
@@ -110,17 +143,9 @@ export const Slide11: React.FC = () => {
 // Slide 12: Soak Pit Volume Sandbox
 export const Slide12: React.FC = () => {
   return (
-    <TwoColumnLayout
-      title="2.2 Soak Pit Volume Sandbox"
-      bgVariant="default"
-      leftWidth="100%"
-      leftContent={
-        <div className="w-full">
-          <SoakPitFilterSandbox />
-        </div>
-      }
-      rightContent={null}
-    />
+    <FullWidthLayout title="2.2 Soak Pit Volume Sandbox" bgVariant="default">
+      <SoakPitFilterSandbox />
+    </FullWidthLayout>
   );
 };
 
@@ -135,17 +160,35 @@ export const Slide13: React.FC = () => {
       bgVariant="default"
       leftWidth="50%"
       leftContent={
-        <div className="space-y-3">
-          <SlideParagraph title="Stepped Wall &amp; Plaster Mechanics">
-            Septic tank walls are stepped to withstand lateral soil and internal water pressures, requiring precise stepped brickwork and plastering take-offs.
+        <div className="space-y-2.5 text-left select-text">
+          <SlideParagraph>
+            Septic tank walls are stepped to withstand lateral soil and internal water pressures, requiring precise stepped brickwork and plastering take-offs:
           </SlideParagraph>
           <SlideList
             revealMode="each-click"
+            variant="plain"
+            className="space-y-1"
             items={[
-              { title: "Base Wall Step (Step 1)", text: <span>Thicker base masonry (e.g., 375mm) built up to lateral soil stress boundaries, measured in <ClickHighlight variant="paint" at={1}>Cubic Meter (m³)</ClickHighlight>.</span> },
-              { title: "Upper Wall Step (Step 2)", text: <span>Narrower upper masonry (e.g., 250mm) extending to the top cover level (m³).</span> },
-              { title: "Floor Plaster (Thick)", text: <span>Heavy-duty 18-20mm damp-proof cement plaster at the tank floor, measured in <ClickHighlight variant="paint" at={3}>Square Meter (m²)</ClickHighlight>.</span> },
-              { title: "Wall Plaster (12mm)", text: <span>Standard 12mm thick protective plaster lining on internal partition and vertical enclosure walls (m²).</span> }
+              {
+                title: "Base Wall Step (Step 1)",
+                revealAt: 1,
+                text: <span>Thicker base masonry built up to lateral soil stress boundaries, measured in <ClickHighlight variant="paint" at={1}>Cubic Meter (m³)</ClickHighlight>.</span>
+              },
+              {
+                title: "Upper Wall Step (Step 2)",
+                revealAt: 2,
+                text: <span>Narrower upper masonry extending to the top cover level, measured in <ClickHighlight variant="paint" at={2}>Cubic Meter (m³)</ClickHighlight>.</span>
+              },
+              {
+                title: "Floor Plaster (Thick)",
+                revealAt: 3,
+                text: <span>Heavy-duty 18-20mm damp-proof cement plaster at the tank floor, measured in <ClickHighlight variant="paint" at={3}>Square Meter (m²)</ClickHighlight>.</span>
+              },
+              {
+                title: "Wall Plaster (12mm)",
+                revealAt: 4,
+                text: <span>Standard 12mm thick protective plaster lining on internal partition and vertical enclosure walls, measured in <ClickHighlight variant="paint" at={4}>Square Meter (m²)</ClickHighlight>.</span>
+              }
             ]}
           />
         </div>

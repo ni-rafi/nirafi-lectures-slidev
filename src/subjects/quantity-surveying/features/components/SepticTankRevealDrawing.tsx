@@ -16,12 +16,12 @@ export const SepticTankRevealDrawing: React.FC<SepticTankRevealDrawingProps> = (
   const isFittings = activeStep === 3;
 
   return (
-    <div className={`w-full flex flex-col justify-between bg-muted/20 p-4 border border-border/40 rounded-xl ${className}`}>
-      <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground mb-2 block text-center">
+    <div className={`w-full flex flex-col justify-between bg-muted/10 p-1.5 border border-border/60 rounded-xl ${className}`}>
+      <span className="text-[9px] uppercase font-mono tracking-wider text-muted-foreground mb-0.5 block text-center">
         Septic Tank Structural Anatomy
       </span>
 
-      <div className="h-44 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
+      <div className="h-40 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
         <svg viewBox="0 30 300 150" className="w-full h-full select-none overflow-visible">
           {/* Natural Ground Line */}
           <line x1="10" y1="50" x2="290" y2="50" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" className="text-muted-foreground/40" />
@@ -114,7 +114,7 @@ export const SepticTankRevealDrawing: React.FC<SepticTankRevealDrawingProps> = (
         )}
       </div>
 
-      <span className="text-[9px] text-muted-foreground text-center mt-2 leading-relaxed h-8">
+      <span className="text-[9px] text-muted-foreground text-center mt-1 leading-relaxed h-7">
         {isBase && 'Foundation Base Slab is measured in cubic meters (m³), acting as the primary horizontal seal.'}
         {isBaffle && 'Baffle wall partitions slow down effluent flows. Measured based on wall thickness.'}
         {isExternal && 'External brickwork enclosure. Requires outer damp-proof bitumen coating.'}

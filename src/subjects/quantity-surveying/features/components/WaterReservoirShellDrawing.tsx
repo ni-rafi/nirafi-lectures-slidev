@@ -22,12 +22,12 @@ export const WaterReservoirShellDrawing: React.FC<WaterReservoirShellDrawingProp
   };
 
   return (
-    <div className={`w-full flex flex-col justify-between bg-muted/20 p-4 border border-border/40 rounded-xl ${className}`}>
-      <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground mb-2 block text-center">
+    <div className={`w-full flex flex-col justify-between bg-muted/10 p-1.5 border border-border/60 rounded-xl ${className}`}>
+      <span className="text-[9px] uppercase font-mono tracking-wider text-muted-foreground mb-0.5 block text-center">
         Reservoir Section Visualizer
       </span>
 
-      <div className="h-44 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
+      <div className="h-40 bg-background rounded-lg border border-border/20 relative flex items-center justify-center overflow-hidden">
         <svg viewBox="0 25 300 155" className="w-full h-full select-none overflow-visible">
           {/* Ground Level Line */}
           <line
@@ -192,7 +192,7 @@ export const WaterReservoirShellDrawing: React.FC<WaterReservoirShellDrawingProp
         )}
       </div>
 
-      <span className="text-[9px] text-muted-foreground text-center mt-2 leading-relaxed h-8">
+      <span className="text-[9px] text-muted-foreground text-center mt-1 leading-relaxed h-7">
         {isExc && (isStepActive(2) ? 'Amber lines show excavation trench. working clearance (c) is added on each side.' : 'Net reservoir base profile. clearance space c is needed for forms.')}
         {isShell && (isStepActive(2) ? 'Monolithic concrete shell complete: Raft, vertical walls, and roof slab.' : isStepActive(1) ? 'Concrete retaining walls. short walls must deduct overlap corners.' : 'Concrete raft footing base slab.')}
         {isWater && (isStepActive(2) ? 'Green line shows internal plaster coating. Applied for hydraulic sealing.' : isStepActive(1) ? 'Water storage requires Pudlo admixture to seal micro-pores.' : 'Impermeability finishes prevent seepage.')}

@@ -1,4 +1,9 @@
 import { parameterResolver } from '@/features/quiz/utils/parameterResolver';
+import {
+  calculateReservoirExcavation,
+  calculateSoakPitNetVolume,
+  calculateSoakPitLooseVolume
+} from '../../cores';
 
 export const QUIZ_METADATA = [
   { id: 'qs_2023_lec1_quiz1', header: 'Lec 1 Checkpoint' },
@@ -125,7 +130,7 @@ export const QUIZ_ANSWERS: Record<
        const digits = reg.replace(/\D/g, '');
        if (digits.length < 1) return '((6.50 + 2 × 0.50) × (4.50 + 2 × 0.50) × (2.0 + [last digit] × 0.1)) m³';
        const h = 2.0 + parameterResolver.getLastDigit(reg) * 0.1;
-       const vol = 7.50 * 5.50 * h;
+       const vol = calculateReservoirExcavation(6.50, 4.50, h, 0.50);
        return vol.toFixed(3);
      },
    },
@@ -137,7 +142,8 @@ export const QUIZ_ANSWERS: Record<
        const digits = reg.replace(/\D/g, '');
        if (digits.length < 1) return '(3.14159265 × 1.0² × (2.5 + [last digit] × 0.1) × 1.33) m³';
        const h = 2.5 + parameterResolver.getLastDigit(reg) * 0.1;
-       const vol = Math.PI * 1.0 * 1.0 * h * 1.33;
+       const netVol = calculateSoakPitNetVolume(2.0, h);
+       const vol = calculateSoakPitLooseVolume(netVol, 1.33);
        return vol.toFixed(3);
      },
    },
