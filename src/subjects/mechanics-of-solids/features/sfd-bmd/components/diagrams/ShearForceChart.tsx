@@ -98,7 +98,9 @@ export const ShearForceChart: React.FC<ShearForceChartProps> = ({
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
-    const clientX = e.clientX - rect.left;
+    // Scale screen-space offset to viewBox-space coordinates before converting to meters.
+    // The SVG is responsive (w-full) so rect.width differs from the viewBox width.
+    const clientX = (e.clientX - rect.left) * (width / rect.width);
     const xMeter = Math.max(0, Math.min(length, toMeterX(clientX)));
     setHoverX(parseFloat(xMeter.toFixed(2)));
   };
