@@ -50,13 +50,25 @@ export class SFDBmdService implements ISFDBmdService {
     // 1. Calculate DOI & Stability
     const doiResult = calculateDOI(beam);
 
-    if (doiResult.isUnstable || doiResult.isIndeterminate) {
+    if (doiResult.isUnstable) {
       return {
         success: false,
         doiResult,
         reactions: [],
         intervals: [],
         criticalPoints: [],
+        error: "The structure is statically unstable. Please adjust supports or internal hinges to ensure a stable configuration.",
+      };
+    }
+
+    if (doiResult.isIndeterminate) {
+      return {
+        success: false,
+        doiResult,
+        reactions: [],
+        intervals: [],
+        criticalPoints: [],
+        error: "The structure is statically indeterminate. Diagrams and detailed equations are only solved for statically determinate structures ($\\text{DOI} = 0$).",
       };
     }
 
@@ -69,6 +81,7 @@ export class SFDBmdService implements ISFDBmdService {
         reactions: [],
         intervals: [],
         criticalPoints: [],
+        error: "Failed to solve support reactions. The structure is statically determinate ($\\text{DOI} = 0$), but the support/hinge arrangement is geometrically unstable or contains an unrestrained segment (singular system).",
       };
     }
 

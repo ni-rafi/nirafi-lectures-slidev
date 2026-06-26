@@ -120,5 +120,6 @@ export interface ISolverOutput {
   criticalPoints: ICriticalPoint[];
   reactionEquations?: IReactionEquationDetails;
   graphicalStepsData?: IGraphicalStepData[];
+  error?: string;
 }
 

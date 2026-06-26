@@ -105,7 +105,7 @@ const SFDBMDSolverInternal: React.FC = () => {
               <div>
                 <p className="font-semibold">Solving Halted</p>
                 <div className="mt-1 text-muted-foreground text-destructive">
-                  <MathTextRenderer text="Diagrams and detailed equations are only solved for statically determinate structures ($\text{DOI} = 0$). Please adjust supports or internal hinges to resolve." />
+                  <MathTextRenderer text={solverResult.error || "Diagrams and detailed equations are only solved for statically determinate structures ($\text{DOI} = 0$). Please adjust supports or internal hinges to resolve."} />
                 </div>
               </div>
             </div>

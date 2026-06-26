@@ -169,4 +169,54 @@ describe('SFDBmdService Solver Tests', () => {
     expect(bmdSegs[0]!.startX).toBe(0);
     expect(bmdSegs[0]!.endX).toBe(6);
   });
+
+  test('Flat three-hinged arch (Hinge + Hinge + Internal Hinge) is detected as unstable mechanism', () => {
+    // 8m beam, Hinge at 0, Hinge at 8, Internal Hinge at 4 (r=4, c=1, DOI=0)
+    // Vertically: r_vert = 2, eq_vert = 3. Since r_vert < eq_vert, it is unstable.
+    const beam: IBeam = {
+      length: 8,
+      supports: [
+        { id: 's1', type: 'hinge', position: 0 },
+        { id: 's2', type: 'hinge', position: 8 },
+      ],
+      releases: [
+        { id: 'r1', type: 'hinge', position: 4 },
+      ],
+      loads: [
+        { id: 'l1', type: 'point', position: 2, magnitude: 10 },
+      ],
+    };
+
+    const result = solver.solve(beam);
+    expect(result.success).toBe(false);
+    expect(result.doiResult.isUnstable).toBe(true);
+    expect(result.doiResult.isDeterminate).toBe(false);
+    expect(result.error).toContain('statically unstable');
+  });
+
+  test('Stable Gerber beam (Hinge + Roller + Roller + Internal Hinge) solves successfully', () => {
+    // 8m beam, Hinge at 0, Roller at 4, Roller at 8, Internal Hinge at 6 (r=4, c=1, DOI=0)
+    // Vertically: r_vert = 3, eq_vert = 3. Stable!
+    const beam: IBeam = {
+      length: 8,
+      supports: [
+        { id: 's1', type: 'hinge', position: 0 },
+        { id: 's2', type: 'roller', position: 4 },
+        { id: 's3', type: 'roller', position: 8 },
+      ],
+      releases: [
+        { id: 'r1', type: 'hinge', position: 6 },
+      ],
+      loads: [
+        { id: 'l1', type: 'point', position: 2, magnitude: 12 },
+        { id: 'l2', type: 'udl', startPosition: 6, endPosition: 8, magnitude: 4 },
+      ],
+    };
+
+    const result = solver.solve(beam);
+    expect(result.success).toBe(true);
+    expect(result.doiResult.doi).toBe(0);
+    expect(result.doiResult.isDeterminate).toBe(true);
+    expect(result.doiResult.isUnstable).toBe(false);
+  });
 });

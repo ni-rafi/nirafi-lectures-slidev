@@ -51,6 +51,23 @@ export function calculateDOI(beam: IBeam): IDOIResult {
     steps.push(`**Unstable support configuration:** No support provides horizontal restraint (requires at least one Hinge or Fixed support to prevent rigid-body translation).`);
   }
 
+  // Check for vertical/rotational stability (mechanism detection)
+  let rVert = 0;
+  beam.supports.forEach(s => {
+    if (s.type === 'roller' || s.type === 'hinge') {
+      rVert += 1;
+    } else if (s.type === 'fixed') {
+      rVert += 2;
+    }
+  });
+  const eqVert = 2 + c;
+  if (rVert < eqVert && beam.supports.length > 0) {
+    isUnstable = true;
+    isDeterminate = false;
+    isIndeterminate = false;
+    steps.push(`**Unstable support/release configuration:** The structure is vertically unstable (a mechanism). It has only ${rVert} vertical/rotational reaction components to satisfy ${eqVert} equations of equilibrium and condition (e.g. flat three-hinged arch).`);
+  }
+
   // Check if there are no supports at all
   if (beam.supports.length === 0) {
     isUnstable = true;
