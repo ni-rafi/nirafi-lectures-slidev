@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { twMerge } from 'tailwind-merge';
 import { PresentationContext } from '../../context/PresentationContext';
 
 export type SlideTwoColumnsRatio = '1:1' | '2:1' | '1:2';
@@ -65,8 +66,8 @@ export const SlideTwoColumns: React.FC<SlideTwoColumnsProps> = ({
 
   // Under blog mode, ensure columns stack nicely
   const containerClass = isBlog
-    ? `grid grid-cols-1 gap-6 my-6 ${className}`
-    : `grid ${gridLayoutClass} ${alignMap[align]} ${gapMap[gap]} w-full h-full my-4 ${className}`;
+    ? twMerge('grid grid-cols-1 gap-6 my-6', className)
+    : twMerge(`grid ${gridLayoutClass} ${alignMap[align]} ${gapMap[gap]} w-full h-full my-4`, className);
 
   return (
     <div className={containerClass}>

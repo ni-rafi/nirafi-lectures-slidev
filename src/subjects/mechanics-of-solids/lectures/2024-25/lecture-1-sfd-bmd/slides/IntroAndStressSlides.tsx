@@ -12,7 +12,8 @@ import {
   SlideBullet,
   ClickSyncedTabs,
   ClickHighlight,
-  ClickReveal
+  SlideParagraph,
+  type ClickSyncedTabItem
 } from '@/features/presentation/components/elements';
 import { BookOpen, Layers, Bookmark, Info } from 'lucide-react';
 import { SFDBmdService } from '@/subjects/mechanics-of-solids/cores/sfd-bmd/sfdBmdService';
@@ -63,7 +64,7 @@ export const Slide2: React.FC = () => {
               <Layers className="h-4.5 w-4.5" />
               <span>Learning Roadmap</span>
             </div>
-            <p className="text-xs text-muted-foreground">Active sessional targets for this session.</p>
+            <SlideParagraph variant="plain" className="text-xs text-muted-foreground">Active sessional targets for this session.</SlideParagraph>
           </div>
           <div className="flex-1">
             <HighlightableList
@@ -86,7 +87,7 @@ export const Slide2: React.FC = () => {
               <BookOpen className="h-4.5 w-4.5" />
               <span>Recommended Books</span>
             </div>
-            <p className="text-xs text-muted-foreground">Prescribed readings & reference homework bases.</p>
+            <SlideParagraph variant="plain" className="text-xs text-muted-foreground">Prescribed readings & reference homework bases.</SlideParagraph>
           </div>
           <div className="flex-1 bg-slate-50/50 dark:bg-muted/5 p-4 rounded-xl border border-border/50">
             <ReferenceBooksList references={references} />
@@ -102,12 +103,6 @@ export const Slide2: React.FC = () => {
  */
 export const Slide3: React.FC = () => {
   const { currentClick } = useClickStepsContext();
-
-  const steps = [
-    { title: 'Isolate the Free Body', desc: 'Replace physical pin/roller supports at endpoints with vertical reaction forces $R_A$ and $R_B$.' },
-    { title: 'Sum Vertical Forces', desc: 'Verify equilibrium: $\\Sigma F_y = 0 \\implies R_A + R_B - 20\\text{ kN} = 0$.' },
-    { title: 'Sum Rotational Moments', desc: 'Moment balance at A: $\\Sigma M_A = 0 \\implies R_B \\times 8\\text{m} - 20\\text{ kN} \\times 4\\text{m} = 0$.' }
-  ];
 
   // Solve the beam reactions dynamically using SFDBmdService
   const beam: IBeam = {
@@ -127,81 +122,115 @@ export const Slide3: React.FC = () => {
   const reactionA = solvedBeam.reactions.find(r => r.supportId === 'A' && r.type === 'R_y')?.value ?? 0;
   const reactionB = solvedBeam.reactions.find(r => r.supportId === 'B' && r.type === 'R_y')?.value ?? 0;
 
-  const showReactions = currentClick >= 1;
-  const reactionsSolved = currentClick >= 3;
-
-  return (
-    <TwoColumnLayout
-      title="Prerequisite: Static Equilibrium"
-      leftWidth="55%"
-      leftContent={
-        <div className="bg-slate-50 dark:bg-slate-900/40 rounded-xl p-5 text-foreground flex flex-col justify-between h-full min-h-[300px] border border-border/80 shadow-xs">
-          <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground uppercase">
-            <span>Beam Reaction Workspace</span>
+  const items: ClickSyncedTabItem[] = [
+    {
+      title: '1. Isolate the Free Body',
+      badge: 'FBD',
+      badgeColor: 'border-indigo-500/20 text-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10',
+      tintClass: 'border-l-[3px] border-l-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/[0.08]',
+      description: (
+        <span>
+          Replace physical pin/roller supports at endpoints with vertical reaction forces{' '}
+          <ClickHighlight variant="paint" at={1}>
+            <LatexFormula math="R_A" /> and <LatexFormula math="R_B" />
+          </ClickHighlight>.
+        </span>
+      ),
+      rightContent: (
+        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left">
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Beam Reaction Workspace</span>
+          <div className="flex-1 flex items-center justify-center">
+            <StaticEquilibriumDrawing
+              length={beam.length}
+              loadMagnitude={beam.loads[0]?.magnitude ?? 20}
+              showReactions={currentClick >= 1}
+              resolvedReactions={false}
+            />
           </div>
-
-          <StaticEquilibriumDrawing
-            length={beam.length}
-            loadMagnitude={beam.loads[0]?.magnitude ?? 20}
-            showReactions={showReactions}
-            resolvedReactions={reactionsSolved}
-            reactionAValue={reactionA}
-            reactionBValue={reactionB}
-          />
-
-          <div className="bg-slate-100 dark:bg-slate-950 p-2.5 rounded-lg border border-border/60 text-[10px] text-muted-foreground flex justify-between">
+          <div className="bg-slate-100 dark:bg-slate-950/40 p-2.5 rounded-lg border border-border/50 text-[10px] text-muted-foreground flex justify-between mt-2">
             <span>Symmetric Beam (DOI = 0)</span>
             <span className="font-mono text-indigo-500 dark:text-indigo-400">Length = 8.0m</span>
           </div>
         </div>
-      }
-      rightContent={
-        <div className="flex flex-col justify-between h-full gap-4 text-left">
-          <div className="space-y-2">
-            <div className="flex items-center gap-1 text-muted-foreground text-xs uppercase font-bold">
-              <Bookmark className="h-4 w-4 text-indigo-500" />
-              <span>Static Verification Step List</span>
-            </div>
-            <div className="space-y-2">
-              {steps.map((step, idx) => {
-                const stepNum = idx + 1;
-                const isRevealed = currentClick >= stepNum;
-                return (
-                  <div key={idx} className={`p-3 rounded-xl border transition-all duration-350 ${isRevealed ? 'bg-indigo-50/50 border-indigo-200 dark:bg-indigo-950/10' : 'bg-slate-50 border-border/60 opacity-60'}`}>
-                    {/* Register this click step with the provider */}
-                    <ClickHighlight at={stepNum} className="hidden">{' '}</ClickHighlight>
-                    <div className="flex items-center gap-2">
-                      <input type="checkbox" checked={isRevealed} readOnly className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5" />
-                      <h4 className={`text-xs font-bold ${isRevealed ? 'text-primary' : 'text-foreground'}`}>{step.title}</h4>
-                    </div>
-                    {isRevealed && (
-                      <p className="text-[10px] text-muted-foreground mt-1 ml-5 leading-normal animate-in fade-in slide-in-from-top-1 duration-200" dangerouslySetInnerHTML={{ __html: step.desc }} />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+      )
+    },
+    {
+      title: '2. Sum Vertical Forces',
+      badge: 'ΣFy = 0',
+      badgeColor: 'border-amber-500/20 text-amber-500 bg-amber-500/5 dark:bg-amber-500/10',
+      tintClass: 'border-l-[3px] border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/[0.08]',
+      description: (
+        <span>
+          Verify vertical equilibrium constraint:
+          <div className="mt-1 select-none">
+            <ClickHighlight variant="paint" at={2}>
+              <LatexFormula math="\Sigma F_y = 0 \implies R_A + R_B - 20\text{ kN} = 0" />
+            </ClickHighlight>
           </div>
-          <div className="pt-3 border-t border-border/40">
-            {currentClick < 3 ? (
-              <div className="text-[10px] text-muted-foreground italic text-center p-2">
-                Press [Next] or Space to advance statics calculations...
-              </div>
-            ) : (
-              <ClickReveal at={3} preset="none">
-                <div className="bg-emerald-50/50 dark:bg-emerald-950/10 border border-emerald-200/60 p-3 rounded-xl text-[10px] text-emerald-800 dark:text-emerald-400 flex flex-col gap-1">
-                  <span className="font-bold text-xs text-emerald-900 dark:text-emerald-300">Equilibrium Satisfied!</span>
-                  <div className="flex items-center gap-1 flex-wrap">
-                    <span>Reaction values resolved symmetrically:</span>
-                    <LatexFormula math={`R_A = R_B = ${reactionA}\\text{ kN}`} />
-                  </div>
-                  <p className="mt-0.5">Ready to execute cut sections.</p>
-                </div>
-              </ClickReveal>
-            )}
+        </span>
+      ),
+      rightContent: (
+        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left">
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Beam Reaction Workspace</span>
+          <div className="flex-1 flex items-center justify-center">
+            <StaticEquilibriumDrawing
+              length={beam.length}
+              loadMagnitude={beam.loads[0]?.magnitude ?? 20}
+              showReactions={true}
+              resolvedReactions={false}
+            />
+          </div>
+          <div className="bg-slate-100 dark:bg-slate-950/40 p-2.5 rounded-lg border border-border/50 text-[10px] text-muted-foreground flex justify-between mt-2">
+            <span>Symmetric Beam (DOI = 0)</span>
+            <span className="font-mono text-indigo-500 dark:text-indigo-400">Length = 8.0m</span>
           </div>
         </div>
-      }
+      )
+    },
+    {
+      title: '3. Sum Rotational Moments',
+      badge: 'ΣMA = 0',
+      badgeColor: 'border-emerald-500/20 text-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10',
+      tintClass: 'border-l-[3px] border-l-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/[0.08]',
+      description: (
+        <span>
+          Moment balance at A resolves the unknown reactions:
+          <div className="mt-1 select-none">
+            <ClickHighlight variant="paint" at={3}>
+              <LatexFormula math="\Sigma M_A = 0 \implies R_B \times 8\text{m} - 20\text{ kN} \times 4\text{m} = 0" />
+            </ClickHighlight>
+          </div>
+        </span>
+      ),
+      rightContent: (
+        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left">
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Beam Reaction Workspace</span>
+          <div className="flex-1 flex items-center justify-center">
+            <StaticEquilibriumDrawing
+              length={beam.length}
+              loadMagnitude={beam.loads[0]?.magnitude ?? 20}
+              showReactions={true}
+              resolvedReactions={true}
+              reactionAValue={reactionA}
+              reactionBValue={reactionB}
+            />
+          </div>
+          <div className="bg-emerald-500/10 dark:bg-emerald-950/15 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-bold shadow-xs p-2.5 rounded-lg text-[10px] text-center font-mono flex justify-between mt-2 animate-in fade-in zoom-in-95 duration-250">
+            <span>Resolved Reactions:</span>
+            <LatexFormula math={`R_A = R_B = ${reactionA}\\text{ kN}`} />
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <ClickSyncedTabs
+      title="Prerequisite: Static Equilibrium"
+      leftTitle="Static Verification Step List"
+      items={items}
+      leftWidth="45%"
+      clickToTabMap={[0, 0, 1, 2]}
     />
   );
 };
@@ -234,7 +263,7 @@ export const Slide5: React.FC = () => {
       <div>
         <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-1">Stress Signatures</span>
         <h2 className="text-xl font-bold tracking-tight text-foreground">The Anatomy of Internal Forces</h2>
-        <p className="text-xs text-muted-foreground">Action vectors produced within a beam subject to external loading.</p>
+        <SlideParagraph variant="plain" className="text-xs text-muted-foreground">Action vectors produced within a beam subject to external loading.</SlideParagraph>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-auto">
         {forceProfiles.map((f, i) => (
@@ -245,7 +274,7 @@ export const Slide5: React.FC = () => {
                 <span className="text-[8px] font-semibold border rounded-full px-2 py-0.5 uppercase tracking-wide opacity-80">Profile</span>
               </div>
               <h4 className="text-xs font-bold text-foreground mb-1">{f.name}</h4>
-              <p className="text-[10px] text-muted-foreground leading-normal">{f.desc}</p>
+              <SlideParagraph variant="plain" className="text-[10px] text-muted-foreground leading-normal">{f.desc}</SlideParagraph>
             </div>
             <div className="mt-3 pt-2 border-t border-border/50 font-mono text-[9px] text-muted-foreground flex justify-between">
               <span>Formula:</span>
@@ -271,13 +300,14 @@ export const Slide6: React.FC = () => {
       title: 'Structural Wood Flexion',
       description: 'Loaded simply-supported beam showing linear deformation profiles.',
       badge: 'Simply Supported',
-      badgeColor: 'border-blue-500/30 text-blue-500 bg-blue-50/10',
+      badgeColor: 'border-blue-500/20 text-blue-500 bg-blue-500/5 dark:bg-blue-500/10',
+      tintClass: 'border-l-[3px] border-l-blue-500 bg-blue-500/5 dark:bg-blue-500/[0.08]',
       rightContent: (
         <div className="w-full flex flex-col gap-3 text-left">
           <h4 className="text-xs font-bold text-foreground">Deflection & Fiber Strains</h4>
-          <p className="text-[10px] text-muted-foreground leading-normal">
+          <SlideParagraph variant="plain" className="text-[10px] text-muted-foreground leading-normal">
             When downward loads flex a simple beam span, the element deflects into a concave curve.
-          </p>
+          </SlideParagraph>
           <div className="flex flex-col gap-2 p-3 bg-background rounded-lg border border-border/50">
             <SlideBullet icon={<span className="text-rose-500 font-bold font-mono">1</span>}>
               <strong>Top Fibers:</strong> Experience shortening or <strong>Compression</strong>.
@@ -293,13 +323,14 @@ export const Slide6: React.FC = () => {
       title: 'Natural Foliage Cantilever',
       description: 'Palm trees bending away from high-velocity wind vectors.',
       badge: 'Fixed End',
-      badgeColor: 'border-amber-500/30 text-amber-500 bg-amber-50/10',
+      badgeColor: 'border-amber-500/20 text-amber-500 bg-amber-500/5 dark:bg-amber-500/10',
+      tintClass: 'border-l-[3px] border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/[0.08]',
       rightContent: (
         <div className="w-full flex flex-col gap-3 text-left">
           <h4 className="text-xs font-bold text-foreground">Fixed Interaction Moment</h4>
-          <p className="text-[10px] text-muted-foreground leading-normal">
+          <SlideParagraph variant="plain" className="text-[10px] text-muted-foreground leading-normal">
             A palm tree trunk acts as a cantilever beam, fixed at the ground. Wind load bends it away from the vertical.
-          </p>
+          </SlideParagraph>
           <div className="flex flex-col gap-2 p-3 bg-background rounded-lg border border-border/50">
             <SlideBullet icon={<span className="text-indigo-500 font-bold font-mono">3</span>}>
               <strong>Free Tip:</strong> Translates and rotates with maximum curvature profiles.

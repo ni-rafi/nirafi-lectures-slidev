@@ -18,7 +18,7 @@ export const StaticEquilibriumDrawing: React.FC<StaticEquilibriumDrawingProps> =
   reactionBValue = 'R_B',
 }) => {
   return (
-    <div className="w-full flex flex-col items-center py-6 select-none bg-slate-50/50 dark:bg-slate-950/30 rounded-xl border border-border/60 p-4">
+    <div className="w-full flex flex-col items-center py-4 select-none">
       <svg className="w-full max-w-[320px] h-36 overflow-visible" viewBox="0 0 320 140">
         {/* Load Force Arrow (Point Load at center) */}
         <g className="transition-all duration-350">

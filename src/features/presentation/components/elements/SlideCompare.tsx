@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { PresentationContext } from '../../context/PresentationContext';
+import { SlideTwoColumns } from './SlideTwoColumns';
 
 export type SlideCompareHighlight = 'left' | 'right' | 'none';
 
@@ -46,29 +47,34 @@ export const SlideCompare: React.FC<SlideCompareProps> = ({
       : `bg-muted/40 dark:bg-muted/10 border-border/40 ${highlight !== 'none' ? 'opacity-50' : ''}`
   }`;
 
-  const containerClass = `w-full flex ${
-    isBlog ? 'flex-col md:flex-row gap-6 my-6' : 'flex-row gap-5 my-4 items-stretch'
-  } ${className}`;
-
   return (
-    <div className={containerClass}>
-      <div className={leftClasses}>
-        <h4 className="text-xs md:text-sm font-extrabold uppercase tracking-wider text-primary mb-3 select-none">
-          {leftTitle}
-        </h4>
-        <div className="text-xs md:text-sm text-foreground/90 leading-relaxed flex-1 select-text">
-          {leftContent}
+    <SlideTwoColumns
+      left={
+        <div className="flex flex-col flex-1">
+          <h4 className="text-xs md:text-sm font-extrabold uppercase tracking-wider text-primary mb-3 select-none">
+            {leftTitle}
+          </h4>
+          <div className="text-xs md:text-sm text-foreground/90 leading-relaxed flex-1 select-text">
+            {leftContent}
+          </div>
         </div>
-      </div>
-      <div className={rightClasses}>
-        <h4 className="text-xs md:text-sm font-extrabold uppercase tracking-wider text-primary mb-3 select-none">
-          {rightTitle}
-        </h4>
-        <div className="text-xs md:text-sm text-foreground/90 leading-relaxed flex-1 select-text">
-          {rightContent}
+      }
+      right={
+        <div className="flex flex-col flex-1">
+          <h4 className="text-xs md:text-sm font-extrabold uppercase tracking-wider text-primary mb-3 select-none">
+            {rightTitle}
+          </h4>
+          <div className="text-xs md:text-sm text-foreground/90 leading-relaxed flex-1 select-text">
+            {rightContent}
+          </div>
         </div>
-      </div>
-    </div>
+      }
+      align="stretch"
+      gap="md"
+      className={className}
+      leftClassName={leftClasses}
+      rightClassName={rightClasses}
+    />
   );
 };
 

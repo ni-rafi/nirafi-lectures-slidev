@@ -5,12 +5,19 @@ import { ClickHighlight } from './ClickHighlight';
 import { TwoColumnLayout } from '../../../../shared/layouts/TwoColumnLayout';
 import { PresentationContext } from '../../context/PresentationContext';
 import LayoutHeader from '../../../../shared/layouts/components/LayoutHeader';
+import { SlideBadge, type SlideBadgeVariant } from './SlideBadge';
 
 export interface ClickSyncedTabItem {
   title: string;
   description: React.ReactNode;
   badge?: string;
+  badgeVariant?: SlideBadgeVariant;
   badgeColor?: string;
+  /** Tailwind classes applied to the tab card in its *inactive* state only.
+   *  Use to add a colored left-border accent + subtle background tint.
+   *  e.g. 'border-l-[3px] border-l-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/[0.08]'
+   */
+  tintClass?: string;
   rightContent: React.ReactNode;
 }
 
@@ -23,6 +30,34 @@ interface ClickSyncedTabsProps {
   bgVariant?: 'default' | 'calculation' | 'gallery';
   clickToTabMap?: number[];
 }
+
+/** Automatic per-tab color palette — cycles by index when the slide omits tintClass / badgeColor. */
+const AUTO_COLORS = [
+  {
+    tintClass: 'border-l-[3px] border-l-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/[0.08]',
+    badgeColor: 'border-indigo-500/20 text-indigo-500 bg-indigo-500/5 dark:bg-indigo-500/10',
+  },
+  {
+    tintClass: 'border-l-[3px] border-l-amber-500 bg-amber-500/5 dark:bg-amber-500/[0.08]',
+    badgeColor: 'border-amber-500/20 text-amber-500 bg-amber-500/5 dark:bg-amber-500/10',
+  },
+  {
+    tintClass: 'border-l-[3px] border-l-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/[0.08]',
+    badgeColor: 'border-emerald-500/20 text-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10',
+  },
+  {
+    tintClass: 'border-l-[3px] border-l-rose-500 bg-rose-500/5 dark:bg-rose-500/[0.08]',
+    badgeColor: 'border-rose-500/20 text-rose-500 bg-rose-500/5 dark:bg-rose-500/10',
+  },
+  {
+    tintClass: 'border-l-[3px] border-l-cyan-500 bg-cyan-500/5 dark:bg-cyan-500/[0.08]',
+    badgeColor: 'border-cyan-500/20 text-cyan-500 bg-cyan-500/5 dark:bg-cyan-500/10',
+  },
+  {
+    tintClass: 'border-l-[3px] border-l-violet-500 bg-violet-500/5 dark:bg-violet-500/[0.08]',
+    badgeColor: 'border-violet-500/20 text-violet-500 bg-violet-500/5 dark:bg-violet-500/10',
+  },
+];
 
 export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
   title,
@@ -94,14 +129,17 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
         <div className="flex flex-col gap-3">
           {items.map((item, idx) => {
             const isExpanded = activeIndex === idx;
+            const auto = AUTO_COLORS[idx % AUTO_COLORS.length]!;
+            const resolvedTintClass = item.tintClass ?? auto.tintClass;
+            const resolvedBadgeColor = item.badgeColor ?? auto.badgeColor;
             return (
               <div
                 key={idx}
                 onClick={() => handleItemClick(idx)}
-                className={`p-3.5 rounded-xl border transition-all duration-350 cursor-pointer ${
+                className={`p-3.5 rounded-lg border transition-all duration-300 cursor-pointer ${
                   isExpanded
-                    ? 'bg-primary/5 border-primary shadow-xs'
-                    : 'bg-card border-border/60 hover:bg-muted/10 opacity-70 hover:opacity-95'
+                    ? 'bg-accent text-accent-foreground border-primary shadow-sm'
+                    : `${resolvedTintClass} text-card-foreground hover:bg-accent/40 opacity-80 hover:opacity-100`
                 }`}
               >
                 {/* Register click highlights implicitly in the presentation click-steps */}
@@ -119,9 +157,11 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
                   </h4>
                   <div className="flex items-center gap-2">
                     {item.badge && (
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${item.badgeColor || 'border-border/60 text-muted-foreground bg-muted/30'}`}>
-                        {item.badge}
-                      </span>
+                      <SlideBadge
+                        label={item.badge}
+                        variant={item.badgeVariant || 'default'}
+                        className={resolvedBadgeColor}
+                      />
                     )}
                     <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-200 ${isExpanded ? 'rotate-180 text-primary' : ''}`} />
                   </div>
@@ -130,7 +170,7 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
                   {item.description}
                 </p>
                 {isExpanded && item.rightContent && (
-                  <div className="mt-3 border border-border/60 rounded-xl p-4 bg-muted/20 flex items-center justify-center min-h-[160px] animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div className="mt-3 border border-border/50 rounded-lg p-4 bg-muted/30 flex items-center justify-center min-h-[160px] animate-in fade-in slide-in-from-top-1 duration-200">
                     <div className="w-full flex justify-center">
                       {item.rightContent}
                     </div>
@@ -159,14 +199,17 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
           <div className="flex flex-col gap-2">
             {items.map((item, idx) => {
               const isActive = activeIndex === idx;
+              const auto = AUTO_COLORS[idx % AUTO_COLORS.length]!;
+              const resolvedTintClass = item.tintClass ?? auto.tintClass;
+              const resolvedBadgeColor = item.badgeColor ?? auto.badgeColor;
               return (
                 <div
                   key={idx}
                   onClick={() => handleItemClick(idx)}
-                  className={`p-2.5 rounded-xl border transition-all duration-350 cursor-pointer ${
+                  className={`p-2.5 rounded-lg border transition-all duration-300 cursor-pointer ${
                     isActive
-                      ? 'bg-primary/5 border-primary shadow-sm translate-x-1'
-                      : 'bg-card border-border/60 hover:bg-muted/10 opacity-70 hover:opacity-95'
+                      ? 'bg-accent text-accent-foreground border-primary shadow-sm translate-x-1'
+                      : `${resolvedTintClass} text-card-foreground hover:bg-accent/40 opacity-80 hover:opacity-100`
                   }`}
                 >
                   {/* Register click highlights implicitly in the presentation click-steps */}
@@ -183,9 +226,11 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
                       {item.title}
                     </h4>
                     {item.badge && (
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${item.badgeColor || 'border-border/60 text-muted-foreground bg-muted/30'}`}>
-                        {item.badge}
-                      </span>
+                      <SlideBadge
+                        label={item.badge}
+                        variant={item.badgeVariant || 'default'}
+                        className={resolvedBadgeColor}
+                      />
                     )}
                   </div>
                   <p className="text-[11px] text-muted-foreground leading-normal">
@@ -204,7 +249,7 @@ export const ClickSyncedTabs: React.FC<ClickSyncedTabsProps> = ({
               {rightTitle}
             </span>
           )}
-          <div className="flex-1 flex items-center justify-center border border-border/60 rounded-xl p-4 bg-muted/20 min-h-[220px]">
+          <div className="flex-1 flex items-center justify-center border border-border/50 rounded-lg p-4 bg-muted/30 min-h-[220px]">
             {items[activeIndex ?? 0]?.rightContent || null}
           </div>
         </div>
