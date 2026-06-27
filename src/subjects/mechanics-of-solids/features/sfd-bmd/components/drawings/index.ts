@@ -4,3 +4,8 @@ export * from './BendingMomentConventionDrawing';
 export * from './BeamLoadingSandboxDrawing';
 export * from './DiagramCoincidenceDrawing';
 export * from './VirtualCutDrawing';
+export * from './SectionIsolationDrawing';
+export * from './BeamBendingDrawing';
+export * from './CantileverBendingDrawing';
+export * from './BeamShearDrawing';
+export * from './CantileverShearDrawing';
