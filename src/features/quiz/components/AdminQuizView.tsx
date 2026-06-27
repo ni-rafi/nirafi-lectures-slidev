@@ -143,12 +143,9 @@ export const AdminQuizView: React.FC<AdminQuizViewProps> = ({
     const base = isMultiQuestion ? `Admin Question ${activeTabIndex + 1} Preview` : `Admin Preview`;
     if (!hasDynamicParams) return `${base}:`;
 
-    // Check if the resolved question or answer still contains unresolved placeholders
     const isUnresolved =
-      curQuestionText.includes('[last digit]') ||
-      curQuestionText.includes('[last 2 digits]') ||
-      curCorrectAnswer.includes('[last digit]') ||
-      curCorrectAnswer.includes('[last 2 digits]');
+      (typeof curQuestionText === 'string' && (curQuestionText.includes('[last digit]') || curQuestionText.includes('[last 2 digits]'))) ||
+      (typeof curCorrectAnswer === 'string' && (curCorrectAnswer.includes('[last digit]') || curCorrectAnswer.includes('[last 2 digits]')));
 
     if (activeRegNo && !isUnresolved) {
       return `${base} (Evaluating Reg No: ${activeRegNo}):`;

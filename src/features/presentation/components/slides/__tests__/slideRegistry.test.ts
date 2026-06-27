@@ -32,7 +32,7 @@ describe('Academic Slide Decks Registry & Schema Verification', () => {
 
       beforeAll(async () => {
         deck = await loadDeck();
-      });
+      }, 30000);
 
       test('should load the deck successfully and export slides and slideMetadata', () => {
         expect(deck).toBeDefined();

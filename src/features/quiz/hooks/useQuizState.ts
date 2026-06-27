@@ -22,7 +22,9 @@ export interface SubQuestionDefinition {
 export const useQuizState = (
   quizId: string,
   quizType: 'numeric-input' | 'multiple-choice',
-  questions?: SubQuestionDefinition[]
+  questions?: SubQuestionDefinition[],
+  defaultDuration = 300,
+  defaultBuffer = 20
 ) => {
   const firebaseService = useFirebase();
   const { userProfile, uid } = useUserContext();
@@ -46,8 +48,8 @@ export const useQuizState = (
   const [isLagging, setIsLagging] = useState(false);
   const [lagTimeLeft, setLagTimeLeft] = useState(0);
   const [adminView, setAdminView] = useState<'chart' | 'details'>('chart');
-  const [durationInput, setDurationInput] = useState(300);
-  const [bufferInput, setBufferInput] = useState(20);
+  const [durationInput, setDurationInput] = useState(defaultDuration);
+  const [bufferInput, setBufferInput] = useState(defaultBuffer);
   const [allSubmissionsMap, setAllSubmissionsMap] = useState<Record<string, QuizSubmission[]>>({});
 
   const subjectId = 'quantity-surveying';

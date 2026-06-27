@@ -10,10 +10,12 @@ export type QuizType = 'numeric-input' | 'multiple-choice';
 
 interface QuizCardOrchestratorProps {
   quizId: string;
-  questionText: string | ((reg: string) => string) | { formula: string; resolve: (reg: string) => string };
+  questionText: React.ReactNode | ((reg: string) => React.ReactNode) | { formula: string; resolve: (reg: string) => React.ReactNode };
   quizType?: QuizType;
   options?: string[] | ((reg: string) => string[]) | { formula: string; resolve: (reg: string) => string[] }; // Required for multiple choice
   questions?: SubQuestionDefinition[];
+  defaultDuration?: number;
+  defaultBuffer?: number;
 }
 
 export const QuizCardOrchestrator: React.FC<QuizCardOrchestratorProps> = ({
@@ -22,13 +24,15 @@ export const QuizCardOrchestrator: React.FC<QuizCardOrchestratorProps> = ({
   quizType = 'numeric-input',
   options = [],
   questions,
+  defaultDuration = 300,
+  defaultBuffer = 20,
 }) => {
   const { userProfile } = useUserContext();
 
   const normalizedQuestions = questions || [
     {
       idSuffix: '',
-      questionText,
+      questionText: questionText as any, // Cast temporarily to conform to SubQuestionDefinition
       quizType,
       options,
     },
@@ -59,7 +63,7 @@ export const QuizCardOrchestrator: React.FC<QuizCardOrchestratorProps> = ({
     isRevealedMap,
     handleAdminReveal,
     correctAnswers,
-  } = useQuizState(quizId, quizType, normalizedQuestions);
+  } = useQuizState(quizId, quizType, normalizedQuestions, defaultDuration, defaultBuffer);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
