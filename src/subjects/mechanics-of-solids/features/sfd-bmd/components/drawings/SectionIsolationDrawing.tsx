@@ -68,7 +68,7 @@ export const SectionIsolationDrawing: React.FC<SectionIsolationDrawingProps> = (
             textAnchor="middle"
             className="text-[10px] font-bold font-mono fill-rose-500 uppercase tracking-wider"
           >
-            Virtual Cut Plane
+            Virtual Cut/Section Plane
           </text>
         </g>
 
@@ -266,7 +266,7 @@ export const SectionIsolationDrawing: React.FC<SectionIsolationDrawingProps> = (
         {/* 1. Virtual Cut Text Panel (Top-Left) */}
         <foreignObject x="10" y="10" width="220" height="75" className={`transition-all duration-300 ${getPanelClass(1)}`}>
           <div className="bg-background/95 dark:bg-slate-900/95 border border-indigo-500/25 p-2 rounded-lg shadow-xs select-text">
-            <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wide block mb-0.5">01. Virtual Cut</span>
+            <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wide block mb-0.5">Virtual Cut/Section</span>
             <p className="text-[9.5px] text-muted-foreground leading-snug">
               Identify section coordinate x where you want to analyze internal actions.
             </p>
@@ -276,7 +276,7 @@ export const SectionIsolationDrawing: React.FC<SectionIsolationDrawingProps> = (
         {/* 2. Separation Text Panel (Bottom-Left) */}
         <foreignObject x="10" y="170" width="220" height="75" className={`transition-all duration-300 ${getPanelClass(2)}`}>
           <div className="bg-background/95 dark:bg-slate-900/95 border border-indigo-500/25 p-2 rounded-lg shadow-xs select-text">
-            <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wide block mb-0.5">02. Separation</span>
+            <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wide block mb-0.5">Separation</span>
             <p className="text-[9.5px] text-muted-foreground leading-snug">
               Separate left & right segments to isolate their Free Body Diagrams.
             </p>
@@ -287,7 +287,7 @@ export const SectionIsolationDrawing: React.FC<SectionIsolationDrawingProps> = (
         <foreignObject x="290" y="5" width="220" height="85" className={`transition-all duration-300 ${getPanelClass(3)}`}>
           <div className="bg-background/95 dark:bg-slate-900/95 border border-blue-500/25 p-2 rounded-lg shadow-xs select-text">
             <div className="flex justify-between items-center mb-0.5">
-              <span className="text-[9px] font-bold text-blue-500 uppercase tracking-wide block">03. Axial Force (P)</span>
+              <span className="text-[9px] font-bold text-blue-500 uppercase tracking-wide block">01. Axial Force (P)</span>
               <span className="text-[9.5px] font-black text-blue-500">σ = P/A</span>
             </div>
             <p className="text-[9.5px] text-muted-foreground leading-snug">
@@ -300,7 +300,7 @@ export const SectionIsolationDrawing: React.FC<SectionIsolationDrawingProps> = (
         <foreignObject x="570" y="10" width="220" height="95" className={`transition-all duration-300 ${getPanelClass(4)}`}>
           <div className="bg-background/95 dark:bg-slate-900/95 border border-rose-500/25 p-2 rounded-lg shadow-xs select-text">
             <div className="flex justify-between items-center mb-0.5">
-              <span className="text-[9px] font-bold text-rose-500 uppercase tracking-wide block">04. Shear Force (V)</span>
+              <span className="text-[9px] font-bold text-rose-500 uppercase tracking-wide block">02. Shear Force (V)</span>
               <span className="text-[9.5px] font-black text-rose-500">τ = VQ/Ib</span>
             </div>
             <p className="text-[9.5px] text-muted-foreground leading-snug">
@@ -313,7 +313,7 @@ export const SectionIsolationDrawing: React.FC<SectionIsolationDrawingProps> = (
         <foreignObject x="570" y="170" width="220" height="95" className={`transition-all duration-300 ${getPanelClass(5)}`}>
           <div className="bg-background/95 dark:bg-slate-900/95 border border-indigo-500/25 p-2 rounded-lg shadow-xs select-text">
             <div className="flex justify-between items-center mb-0.5">
-              <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wide block">05. Bending Moment</span>
+              <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wide block">03. Bending Moment</span>
               <span className="text-[9.5px] font-black text-indigo-500">σ = My/I</span>
             </div>
             <p className="text-[9.5px] text-muted-foreground leading-snug">
@@ -326,7 +326,7 @@ export const SectionIsolationDrawing: React.FC<SectionIsolationDrawingProps> = (
         <foreignObject x="290" y="170" width="220" height="75" className={`transition-all duration-300 ${getPanelClass(6)}`}>
           <div className="bg-background/95 dark:bg-slate-900/95 border border-amber-500/25 p-2 rounded-lg shadow-xs select-text">
             <div className="flex justify-between items-center mb-0.5">
-              <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wide block">06. Torque (T)</span>
+              <span className="text-[9px] font-bold text-amber-500 uppercase tracking-wide block">04. Torque (T)</span>
               <span className="text-[9.5px] font-black text-amber-500">τ = Tr/J</span>
             </div>
             <p className="text-[9.5px] text-muted-foreground leading-snug">

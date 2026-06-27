@@ -1,6 +1,7 @@
 import React from 'react';
 import { FullWidthLayout } from '@/shared/layouts/FullWidthLayout';
-import { SlideParagraph, ClickReveal, SlideBullet } from '@/features/presentation/components/elements';
+import { SlideParagraph, ClickReveal, SlideBullet, ClickHighlight } from '@/features/presentation/components/elements';
+import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
 import { PiecewiseIntervalDiagram } from './drawings/PiecewiseIntervalDiagram';
 
 export const PiecewiseIntervalPartition: React.FC = () => {
@@ -33,7 +34,7 @@ export const PiecewiseIntervalPartition: React.FC = () => {
             <div className="bg-indigo-500/[0.015] border border-indigo-500/10 p-3 rounded-xl h-full flex flex-col justify-start">
               <SlideBullet icon={<span className="text-indigo-500 font-bold font-mono">1</span>}>
                 <span className="text-[10.5px] text-foreground leading-relaxed block">
-                  <strong>Locate Discontinuities:</strong> Point loads or moments divide the total span into local domains.
+                  <strong>Locate Discontinuities:</strong> Point loads or moments divide the total span into <ClickHighlight at={1} variant="paint">local domains</ClickHighlight>.
                 </span>
               </SlideBullet>
             </div>
@@ -42,7 +43,7 @@ export const PiecewiseIntervalPartition: React.FC = () => {
             <div className="bg-emerald-500/[0.015] border border-emerald-500/10 p-3 rounded-xl h-full flex flex-col justify-start">
               <SlideBullet icon={<span className="text-emerald-500 font-bold font-mono">2</span>}>
                 <span className="text-[10.5px] text-foreground leading-relaxed block">
-                  <strong>Define Intervals:</strong> Write down inequalities (e.g. Zone 1: 0 &le; x &lt; 5, Zone 2: 5 &le; x &lt; 10, Zone 3: 10 &le; x &le; 16).
+                  <strong>Define Intervals:</strong> Write down inequalities (e.g. Zone 1: <ClickHighlight at={2} variant="paint">0 &le; x &lt; 5</ClickHighlight>, Zone 2: <ClickHighlight at={2} variant="paint">5 &le; x &lt; 10</ClickHighlight>, Zone 3: <ClickHighlight at={2} variant="paint">10 &le; x &le; 16</ClickHighlight>).
                 </span>
               </SlideBullet>
             </div>
@@ -51,7 +52,7 @@ export const PiecewiseIntervalPartition: React.FC = () => {
             <div className="bg-rose-500/[0.015] border border-rose-500/10 p-3 rounded-xl h-full flex flex-col justify-start">
               <SlideBullet icon={<span className="text-rose-500 font-bold font-mono">3</span>}>
                 <span className="text-[10.5px] text-foreground leading-relaxed block">
-                  <strong>Perform Unique Cuts:</strong> Each interval requires its own independent virtual slice to derive local V(x) and M(x).
+                  <strong>Perform Unique Sections:</strong> Each interval requires its own independent virtual <ClickHighlight at={3} variant="paint">section</ClickHighlight> to derive local V(x) and M(x).
                 </span>
               </SlideBullet>
             </div>
@@ -62,5 +63,3 @@ export const PiecewiseIntervalPartition: React.FC = () => {
   );
 };
 
-// Help helper context for steps
-import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';

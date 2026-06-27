@@ -2,10 +2,12 @@ import React from 'react';
 
 interface CantileverBendingDrawingProps {
   activeStep?: number; // 0: straight, 1: curved deflection, 2: arrows + reactions
+  descriptionCard?: React.ReactNode;
 }
 
 export const CantileverBendingDrawing: React.FC<CantileverBendingDrawingProps> = ({
   activeStep = 0,
+  descriptionCard,
 }) => {
   const isCurved = activeStep >= 1;
   const showStress = activeStep >= 1;
@@ -24,8 +26,14 @@ export const CantileverBendingDrawing: React.FC<CantileverBendingDrawingProps> =
   };
 
   return (
-    <div className="w-full flex justify-center py-2 select-none animate-in fade-in duration-300">
-      <svg className="w-full max-w-[850px] h-[280px] overflow-visible" viewBox="0 0 850 280">
+    <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-4 py-0.5 select-none animate-in fade-in duration-300">
+      {descriptionCard && (
+        <div className="w-full lg:w-[220px] bg-background/95 dark:bg-slate-900/95 border border-border/50 p-3 rounded-lg shadow-sm shrink-0">
+          {descriptionCard}
+        </div>
+      )}
+      <div className="flex-1 w-full max-w-[640px] overflow-visible">
+        <svg className="w-full h-auto overflow-visible" viewBox="200 15 610 245">
         <defs>
           <pattern id="grid-pattern-cant" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" className="stroke-slate-200/40 dark:stroke-slate-800/40" strokeWidth="0.5" />
@@ -43,7 +51,7 @@ export const CantileverBendingDrawing: React.FC<CantileverBendingDrawingProps> =
           </linearGradient>
         </defs>
 
-        <rect width="850" height="280" fill="url(#grid-pattern-cant)" className="opacity-60" />
+        <rect x="200" y="15" width="610" height="245" fill="url(#grid-pattern-cant)" className="opacity-60" />
 
         {/* ==================== 3D FIXED LEFT WALL BASE (Rendered behind the beam) ==================== */}
         <g>
@@ -162,12 +170,13 @@ export const CantileverBendingDrawing: React.FC<CantileverBendingDrawingProps> =
         </g>
 
         {/* Dynamic bottom caption */}
-        <text x="510" y="248" textAnchor="middle" className="text-[11.5px] fill-muted-foreground font-medium transition-all duration-300">
+        <text x="510" y="240" textAnchor="middle" className="text-[11.5px] fill-muted-foreground font-medium transition-all duration-300">
           {activeStep === 0 && "Step 0: Straight, undeflected cantilever beam."}
           {activeStep === 1 && "Step 1: Lateral Tip Load P bends the beam down, creating top tension and bottom compression."}
           {activeStep >= 2 && "Step 2: Internal fiber stresses (compression/tension vectors) and neutral axis exposed."}
         </text>
       </svg>
+      </div>
     </div>
   );
 };

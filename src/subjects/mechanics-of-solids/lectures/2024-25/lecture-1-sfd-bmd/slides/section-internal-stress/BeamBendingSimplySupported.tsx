@@ -12,19 +12,21 @@ export const BeamBendingSimplySupported: React.FC = () => {
     <FullWidthLayout
       title={<span>Bending Mechanics - Simply Supported Flexion</span>}
     >
-      <div className="w-full h-full flex flex-col justify-between gap-4 p-4 text-left select-text">
-        {/* Top: Full-Width 3D Drawing with Absolute Floating Description */}
-        <div className="flex-1 flex items-center justify-center bg-muted/20 dark:bg-muted/5 border border-border/40 rounded-xl relative min-h-[220px]">
-          {/* Floating Overview Card */}
-          <div className="absolute top-4 left-4 w-[210px] h-[calc(100%-32px)] flex flex-col justify-center bg-background/95 dark:bg-slate-900/95 border border-border/50 p-4 rounded-lg shadow-sm z-20 animate-in fade-in slide-in-from-left-4 duration-300">
-            <span className="text-[9px] font-bold text-blue-500 uppercase tracking-widest block mb-0.5">Structural Flexion</span>
-            <h4 className="text-xs font-bold text-foreground mb-1">Simply Supported Flexion</h4>
-            <SlideParagraph variant="plain" className="text-[10px] text-muted-foreground leading-relaxed mt-1">
-              When loaded from above, the beam bends downwards (sagging), deforming fibers into a concave shape and creating distinct stress zones.
-            </SlideParagraph>
-          </div>
-
-          <BeamBendingDrawing activeStep={step} />
+      <div className="w-full h-full flex flex-col justify-between gap-2 p-2 px-3 text-left select-text">
+        {/* Top: Full-Width 3D Drawing with Integrated Description */}
+        <div className="flex-1 flex items-center justify-center bg-muted/20 dark:bg-muted/5 border border-border/40 rounded-xl p-2 py-3 min-h-[180px]">
+          <BeamBendingDrawing 
+            activeStep={step} 
+            descriptionCard={
+              <>
+                <span className="text-[9px] font-bold text-blue-500 uppercase tracking-widest block mb-0.5">Structural Flexion</span>
+                <h4 className="text-xs font-bold text-foreground mb-1">Simply Supported Flexion</h4>
+                <SlideParagraph variant="plain" className="text-[10px] text-muted-foreground leading-relaxed mt-1">
+                  When loaded from above, the beam bends downwards (sagging), deforming fibers into a concave shape and creating distinct stress zones.
+                </SlideParagraph>
+              </>
+            }
+          />
           
           {/* Register clicks implicitly in the presentation click-steps */}
           <ClickReveal at={1} preset="none"><div className="hidden" /></ClickReveal>

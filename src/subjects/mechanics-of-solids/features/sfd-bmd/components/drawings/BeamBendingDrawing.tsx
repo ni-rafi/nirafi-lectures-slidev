@@ -2,10 +2,12 @@ import React from 'react';
 
 interface BeamBendingDrawingProps {
   activeStep?: number; // 0: straight, 1: curved, 2: arrows + neutral axis
+  descriptionCard?: React.ReactNode;
 }
 
 export const BeamBendingDrawing: React.FC<BeamBendingDrawingProps> = ({
   activeStep = 0,
+  descriptionCard,
 }) => {
   const isCurved = activeStep >= 1;
   const showStress = activeStep >= 1;
@@ -24,8 +26,14 @@ export const BeamBendingDrawing: React.FC<BeamBendingDrawingProps> = ({
   };
 
   return (
-    <div className="w-full flex justify-center py-2 select-none animate-in fade-in duration-300">
-      <svg className="w-full max-w-[850px] h-[280px] overflow-visible" viewBox="0 0 850 280">
+    <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-4 py-0.5 select-none animate-in fade-in duration-300">
+      {descriptionCard && (
+        <div className="w-full lg:w-[220px] bg-background/95 dark:bg-slate-900/95 border border-border/50 p-3 rounded-lg shadow-sm shrink-0">
+          {descriptionCard}
+        </div>
+      )}
+      <div className="flex-1 w-full max-w-[650px] overflow-visible">
+        <svg className="w-full h-auto overflow-visible" viewBox="210 15 620 245">
         <defs>
           <pattern id="grid-pattern-bend" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" className="stroke-slate-200/40 dark:stroke-slate-800/40" strokeWidth="0.5" />
@@ -43,7 +51,7 @@ export const BeamBendingDrawing: React.FC<BeamBendingDrawingProps> = ({
           </linearGradient>
         </defs>
 
-        <rect width="850" height="280" fill="url(#grid-pattern-bend)" className="opacity-60" />
+        <rect x="210" y="15" width="620" height="245" fill="url(#grid-pattern-bend)" className="opacity-60" />
 
         {/* ==================== 3D SUPPORT SHAPES (Rendered behind the beam) ==================== */}
         {/* Left Support: Hinge shape */}
@@ -130,7 +138,7 @@ export const BeamBendingDrawing: React.FC<BeamBendingDrawingProps> = ({
         {/* Neutral Axis (NA) */}
         <g className={`transition-opacity duration-500 ${showArrows ? 'opacity-100' : 'opacity-0'}`}>
           <path d={`M 250,140 Q 500,${140 + dy} 750,140`} fill="none" className="stroke-indigo-500/80" strokeWidth="1.5" strokeDasharray="4 4" />
-          <text x="500" y={178 + dy} textAnchor="middle" className="text-[10px] font-bold font-mono fill-indigo-500">Neutral Axis (Zero Stress)</text>
+          <text x="500" y={168 + dy} textAnchor="middle" className="text-[10px] font-bold font-mono fill-indigo-500">Neutral Axis (Zero Stress)</text>
         </g>
 
         {/* Compression Stress Vectors (pointing inward to the center) */}
@@ -197,12 +205,13 @@ export const BeamBendingDrawing: React.FC<BeamBendingDrawingProps> = ({
         </g>
 
         {/* Dynamic bottom caption */}
-        <text x="500" y="248" textAnchor="middle" className="text-[11.5px] fill-muted-foreground font-medium transition-all duration-300">
+        <text x="500" y="240" textAnchor="middle" className="text-[11.5px] fill-muted-foreground font-medium transition-all duration-300">
           {activeStep === 0 && "Step 0: Straight, undeflected beam member."}
           {activeStep === 1 && "Step 1: Applied Load P bends the span downwards, compressing the top and stretching the bottom."}
           {activeStep >= 2 && "Step 2: Internal fiber stresses (compression/tension vectors) and neutral axis exposed."}
         </text>
       </svg>
+      </div>
     </div>
   );
 };

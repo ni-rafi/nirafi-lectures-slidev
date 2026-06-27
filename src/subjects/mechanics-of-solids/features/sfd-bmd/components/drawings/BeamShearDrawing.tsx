@@ -2,10 +2,12 @@ import React from 'react';
 
 interface BeamShearDrawingProps {
   activeStep?: number; // 0: aligned, 1: shear slip, 2: shear stress vectors exposed
+  descriptionCard?: React.ReactNode;
 }
 
 export const BeamShearDrawing: React.FC<BeamShearDrawingProps> = ({
   activeStep = 0,
+  descriptionCard,
 }) => {
   const isSheared = activeStep >= 1;
   const showStress = activeStep >= 2;
@@ -17,15 +19,21 @@ export const BeamShearDrawing: React.FC<BeamShearDrawingProps> = ({
   const transitionClass = "transition-all duration-700 ease-in-out";
 
   return (
-    <div className="w-full flex justify-center py-2 select-none animate-in fade-in duration-300">
-      <svg className="w-full max-w-[850px] h-[280px] overflow-visible" viewBox="0 0 850 280">
+    <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-4 py-0.5 select-none animate-in fade-in duration-300">
+      {descriptionCard && (
+        <div className="w-full lg:w-[220px] bg-background/95 dark:bg-slate-900/95 border border-border/50 p-3 rounded-lg shadow-sm shrink-0">
+          {descriptionCard}
+        </div>
+      )}
+      <div className="flex-1 w-full max-w-[650px] overflow-visible">
+        <svg className="w-full h-auto overflow-visible" viewBox="210 15 620 245">
         <defs>
           <pattern id="grid-pattern-shear-bend" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" className="stroke-slate-200/40 dark:stroke-slate-800/40" strokeWidth="0.5" />
           </pattern>
         </defs>
 
-        <rect width="850" height="280" fill="url(#grid-pattern-shear-bend)" className="opacity-60" />
+        <rect x="210" y="15" width="620" height="245" fill="url(#grid-pattern-shear-bend)" className="opacity-60" />
 
         {/* ==================== 3D SUPPORT SHAPES (Rendered behind the beam) ==================== */}
         {/* Left Support Hinge (Stays fixed at Y=150) */}
@@ -141,12 +149,13 @@ export const BeamShearDrawing: React.FC<BeamShearDrawingProps> = ({
         </g>
 
         {/* Dynamic bottom caption */}
-        <text x="500" y="248" textAnchor="middle" className="text-[11.5px] fill-muted-foreground font-medium transition-all duration-300">
+        <text x="500" y="240" textAnchor="middle" className="text-[11.5px] fill-muted-foreground font-medium transition-all duration-300">
           {activeStep === 0 && "Step 0: Straight beam showing transverse slice plane at the center."}
           {activeStep === 1 && "Step 1: Shear force P induces vertical relative sliding (slip) of adjacent slices."}
           {activeStep >= 2 && "Step 2: Internal shear stress vectors (V_int) and strain distortion (gamma) exposed."}
         </text>
       </svg>
+      </div>
     </div>
   );
 };

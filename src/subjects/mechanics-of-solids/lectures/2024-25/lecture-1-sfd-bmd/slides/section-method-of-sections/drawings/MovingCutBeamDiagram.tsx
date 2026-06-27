@@ -22,7 +22,7 @@ export const MovingCutBeamDiagram: React.FC<MovingCutBeamDiagramProps> = ({
     <div className="w-full max-w-[500px] mx-auto py-2">
       <svg viewBox="0 0 400 170" className="w-full h-auto overflow-visible select-none">
         {/* Support line */}
-        <line x1="20" y1="110" x2="380" y2="110" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
+        <line x1="20" y1="102" x2="380" y2="102" stroke="#94a3b8" strokeWidth="1" strokeDasharray="3 3" />
 
         {/* 2D Isolated segment / beam */}
         <rect x="50" y="70" width="300" height="15" rx="2" className="fill-slate-200 dark:fill-slate-700 stroke-slate-400 dark:stroke-slate-600" strokeWidth="1.5" />
@@ -31,6 +31,13 @@ export const MovingCutBeamDiagram: React.FC<MovingCutBeamDiagramProps> = ({
         <polygon points="50,85 42,102 58,102" className="fill-slate-400 dark:fill-slate-500 stroke-slate-500" strokeWidth="1.2" />
         <line x1="35" y1="102" x2="65" y2="102" stroke="#64748b" strokeWidth="1.5" />
         <text x="50" y="115" textAnchor="middle" className="text-[10px] font-black fill-slate-500 font-mono">A (x=0)</text>
+
+        {/* Support B Roller at x=350 */}
+        <polygon points="350,85 342,97 358,97" className="fill-slate-400 dark:fill-slate-500 stroke-slate-500" strokeWidth="1.2" />
+        <circle cx="346" cy="100" r="2.5" className="fill-slate-400 dark:fill-slate-500 stroke-slate-500" strokeWidth="1" />
+        <circle cx="354" cy="100" r="2.5" className="fill-slate-400 dark:fill-slate-500 stroke-slate-500" strokeWidth="1" />
+        <line x1="335" y1="102" x2="365" y2="102" stroke="#64748b" strokeWidth="1.5" />
+        <text x="350" y="115" textAnchor="middle" className="text-[10px] font-black fill-slate-500 font-mono">B</text>
 
         {/* Point Load P at 40% */}
         <g>
@@ -41,20 +48,29 @@ export const MovingCutBeamDiagram: React.FC<MovingCutBeamDiagramProps> = ({
 
         {/* Red Cut Line at variable cutPixel */}
         <g className="transition-all duration-300 ease-in-out">
-          <line x1={cutPixel} y1="20" x2={cutPixel} y2="110" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 3" />
+          <line x1={cutPixel} y1="20" x2={cutPixel} y2="102" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 3" />
           <rect x={cutPixel - 15} y="45" width="30" height="12" rx="2" className="fill-red-500 stroke-red-600" strokeWidth="1" />
           <text x={cutPixel} y="54" textAnchor="middle" className="text-[8px] font-black fill-white font-mono">Cut</text>
         </g>
 
         {/* Dimension indicator: x (from Support A to Cut Plane) */}
         <g className="stroke-slate-400 dark:stroke-slate-500" strokeWidth="0.8">
-          <line x1="50" y1="125" x2="50" y2="135" />
-          <line x1={cutPixel} y1="125" x2={cutPixel} y2="135" />
-          <path d={`M 55,130 L ${cutPixel - 5},130`} fill="none" />
-          <path d="M 58,127 L 50,130 L 58,133" fill="none" />
-          <path d={`M ${cutPixel - 8},127 L ${cutPixel},130 L ${cutPixel - 8},133`} fill="none" />
+          <line x1="50" y1="125" x2="50" y2={showMomentArm ? "155" : "135"} />
+          <line x1={cutPixel} y1="125" x2={cutPixel} y2={showMomentArm ? "155" : "135"} />
+          
+          {/* Dimension arrow for x */}
+          <path d={`M 55,${showMomentArm ? 150 : 130} L ${cutPixel - 5},${showMomentArm ? 150 : 130}`} fill="none" />
+          <path d={`M 58,${showMomentArm ? 147 : 127} L 50,${showMomentArm ? 150 : 130} L 58,${showMomentArm ? 153 : 133}`} fill="none" />
+          <path d={`M ${cutPixel - 8},${showMomentArm ? 147 : 127} L ${cutPixel},${showMomentArm ? 150 : 130} L ${cutPixel - 8},${showMomentArm ? 153 : 133}`} fill="none" />
         </g>
-        <text x={(50 + cutPixel) / 2} y="141" textAnchor="middle" className="text-[9px] font-mono font-bold fill-indigo-600 dark:fill-indigo-400">x (variable coordinate)</text>
+        <text 
+          x={(50 + cutPixel) / 2} 
+          y={showMomentArm ? "161" : "141"} 
+          textAnchor="middle" 
+          className="text-[9px] font-mono font-bold fill-indigo-600 dark:fill-indigo-400"
+        >
+          x (variable coordinate)
+        </text>
 
         {/* Moment Arm Principle annotations */}
         {showMomentArm && (
@@ -62,11 +78,11 @@ export const MovingCutBeamDiagram: React.FC<MovingCutBeamDiagramProps> = ({
             {/* Dimension load position: d */}
             <g className="stroke-slate-400 dark:stroke-slate-500" strokeWidth="0.8">
               <line x1={loadPixel} y1="125" x2={loadPixel} y2="135" />
-              <path d={`M 55,130 L ${loadPixel - 5},130`} fill="none" className="stroke-slate-400" />
+              <path d={`M 55,130 L ${loadPixel - 5},130`} fill="none" />
+              <path d="M 58,127 L 50,130 L 58,133" fill="none" />
+              <path d={`M ${loadPixel - 8},127 L ${loadPixel},130 L ${loadPixel - 8},133`} fill="none" />
             </g>
-            {/* We draw a label for d */}
-            <rect x="95" y="122" width="30" height="15" className="fill-slate-100 dark:fill-slate-800" />
-            <text x="110" y="132" textAnchor="middle" className="text-[9px] font-mono fill-slate-500 font-bold">d</text>
+            <text x={(50 + loadPixel) / 2} y="141" textAnchor="middle" className="text-[9px] font-mono fill-slate-500 font-bold">d</text>
 
             {/* Dimension from load P to Cut: x - d */}
             <g className="stroke-slate-400 dark:stroke-slate-500" strokeWidth="0.8">

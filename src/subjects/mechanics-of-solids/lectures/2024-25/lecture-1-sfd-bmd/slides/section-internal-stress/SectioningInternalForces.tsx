@@ -14,7 +14,7 @@ export const SectioningInternalForces: React.FC = () => {
     >
       <div className="w-full flex flex-col h-full min-h-[400px] gap-2 pt-3 pb-0 px-4 text-left select-text">
         <div>
-          <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-0.5">Continuous Beam cut</span>
+          <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest block mb-0.5">Continuous Beam cut/section</span>
           <h2 className="text-lg font-bold text-foreground">Exposing Internal Action Vectors</h2>
           <SlideParagraph variant="plain" className="text-[11px] text-muted-foreground leading-normal">
             Take a virtual slice through the beam to expose the internal forces holding both sides in equilibrium.

@@ -30,7 +30,7 @@ export const PiecewiseIntervalDiagram: React.FC<PiecewiseIntervalDiagramProps> =
         <g className="animate-in fade-in duration-300">
           <path d="M 150,30 L 150,72" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" />
           <path d="M 145,65 L 150,72 L 155,65" fill="none" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          <text x="150" y="24" textAnchor="middle" className="text-[10px] font-black fill-red-500 font-mono">P = 20 kN</text>
+          <text x="150" y="40" textAnchor="middle" className="text-[10px] font-black fill-red-500 font-mono">P = 20 kN</text>
           <text x="150" y="91" textAnchor="middle" className="text-[8px] font-black fill-slate-700 dark:fill-slate-300 font-mono">C</text>
         </g>
 
@@ -96,42 +96,42 @@ export const PiecewiseIntervalDiagram: React.FC<PiecewiseIntervalDiagramProps> =
         {activeStep >= 2 && (
           <g className="transition-all duration-500 ease-in-out animate-in fade-in duration-300">
             {/* Zone 1 Label */}
-            <rect x="53" y="45" width="94" height="20" rx="3" fill="#4f46e5" fillOpacity="0.08" stroke="#4f46e5" strokeWidth="1" />
-            <text x="100" y="58" textAnchor="middle" className="text-[7.5px] font-black font-mono fill-indigo-600 dark:fill-indigo-400">
+            <rect x="53" y="14" width="94" height="18" rx="3" fill="#4f46e5" fillOpacity="0.08" stroke="#4f46e5" strokeWidth="1" />
+            <text x="100" y="26" textAnchor="middle" className="text-[7.5px] font-black font-mono fill-indigo-600 dark:fill-indigo-400">
               Zone 1: 0 &le; x &lt; 5 m
             </text>
 
             {/* Zone 2 Label */}
-            <rect x="153" y="45" width="94" height="20" rx="3" fill="#3b82f6" fillOpacity="0.08" stroke="#3b82f6" strokeWidth="1" />
-            <text x="200" y="58" textAnchor="middle" className="text-[7.5px] font-black font-mono fill-blue-600 dark:fill-blue-400">
+            <rect x="153" y="14" width="94" height="18" rx="3" fill="#3b82f6" fillOpacity="0.08" stroke="#3b82f6" strokeWidth="1" />
+            <text x="200" y="26" textAnchor="middle" className="text-[7.5px] font-black font-mono fill-blue-600 dark:fill-blue-400">
               Zone 2: 5 &le; x &lt; 10 m
             </text>
 
             {/* Zone 3 Label */}
-            <rect x="253" y="45" width="94" height="20" rx="3" fill="#10b981" fillOpacity="0.08" stroke="#10b981" strokeWidth="1" />
-            <text x="300" y="58" textAnchor="middle" className="text-[7.5px] font-black font-mono fill-emerald-600 dark:fill-emerald-400">
+            <rect x="253" y="14" width="94" height="18" rx="3" fill="#10b981" fillOpacity="0.08" stroke="#10b981" strokeWidth="1" />
+            <text x="300" y="26" textAnchor="middle" className="text-[7.5px] font-black font-mono fill-emerald-600 dark:fill-emerald-400">
               Zone 3: 10 &le; x &le; 16 m
             </text>
           </g>
         )}
 
-        {/* STEP 3: Cutting Scissors/Lines */}
+        {/* STEP 3: Section lines & labels */}
         {activeStep >= 3 && (
           <g className="transition-all duration-500 ease-in-out animate-in fade-in duration-500">
-            {/* Cut 1 */}
-            <line x1="100" y1="70" x2="100" y2="105" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
+            {/* Section 1 */}
+            <line x1="100" y1="70" x2="100" y2="110" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
             <circle cx="100" cy="87.5" r="4" className="fill-red-500/10 stroke-red-500" strokeWidth="1" />
-            <text x="100" y="67" textAnchor="middle" className="text-[8px] font-black fill-rose-500 font-mono">Cut 1</text>
+            <text x="100" y="117" textAnchor="middle" className="text-[8px] font-black fill-rose-500 font-mono">Section 1</text>
 
-            {/* Cut 2 */}
-            <line x1="200" y1="70" x2="200" y2="105" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
+            {/* Section 2 */}
+            <line x1="200" y1="70" x2="200" y2="110" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
             <circle cx="200" cy="87.5" r="4" className="fill-red-500/10 stroke-red-500" strokeWidth="1" />
-            <text x="200" y="67" textAnchor="middle" className="text-[8px] font-black fill-rose-500 font-mono">Cut 2</text>
+            <text x="200" y="117" textAnchor="middle" className="text-[8px] font-black fill-rose-500 font-mono">Section 2</text>
 
-            {/* Cut 3 */}
-            <line x1="300" y1="70" x2="300" y2="105" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
+            {/* Section 3 */}
+            <line x1="300" y1="70" x2="300" y2="110" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
             <circle cx="300" cy="87.5" r="4" className="fill-red-500/10 stroke-red-500" strokeWidth="1" />
-            <text x="300" y="67" textAnchor="middle" className="text-[8px] font-black fill-rose-500 font-mono">Cut 3</text>
+            <text x="300" y="117" textAnchor="middle" className="text-[8px] font-black fill-rose-500 font-mono">Section 3</text>
           </g>
         )}
       </svg>

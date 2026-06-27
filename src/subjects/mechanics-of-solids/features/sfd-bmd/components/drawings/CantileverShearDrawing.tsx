@@ -2,10 +2,12 @@ import React from 'react';
 
 interface CantileverShearDrawingProps {
   activeStep?: number; // 0: aligned, 1: shear slip, 2: shear stress vectors exposed
+  descriptionCard?: React.ReactNode;
 }
 
 export const CantileverShearDrawing: React.FC<CantileverShearDrawingProps> = ({
   activeStep = 0,
+  descriptionCard,
 }) => {
   const isSheared = activeStep >= 1;
   const showStress = activeStep >= 2;
@@ -18,15 +20,21 @@ export const CantileverShearDrawing: React.FC<CantileverShearDrawingProps> = ({
   const transitionClass = "transition-all duration-700 ease-in-out";
 
   return (
-    <div className="w-full flex justify-center py-2 select-none animate-in fade-in duration-300">
-      <svg className="w-full max-w-[850px] h-[280px] overflow-visible" viewBox="0 0 850 280">
+    <div className="w-full flex flex-col lg:flex-row items-center justify-center gap-4 py-0.5 select-none animate-in fade-in duration-300">
+      {descriptionCard && (
+        <div className="w-full lg:w-[220px] bg-background/95 dark:bg-slate-900/95 border border-border/50 p-3 rounded-lg shadow-sm shrink-0">
+          {descriptionCard}
+        </div>
+      )}
+      <div className="flex-1 w-full max-w-[640px] overflow-visible">
+        <svg className="w-full h-auto overflow-visible" viewBox="200 15 610 245">
         <defs>
           <pattern id="grid-pattern-shear-cant" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" className="stroke-slate-200/40 dark:stroke-slate-800/40" strokeWidth="0.5" />
           </pattern>
         </defs>
 
-        <rect width="850" height="280" fill="url(#grid-pattern-shear-cant)" className="opacity-60" />
+        <rect x="200" y="15" width="610" height="245" fill="url(#grid-pattern-shear-cant)" className="opacity-60" />
 
         {/* ==================== 3D FIXED LEFT WALL BASE ==================== */}
         <g>
@@ -123,12 +131,13 @@ export const CantileverShearDrawing: React.FC<CantileverShearDrawingProps> = ({
         </g>
 
         {/* Dynamic bottom caption */}
-        <text x="510" y="248" textAnchor="middle" className="text-[11.5px] fill-muted-foreground font-medium transition-all duration-300">
+        <text x="510" y="240" textAnchor="middle" className="text-[11.5px] fill-muted-foreground font-medium transition-all duration-300">
           {activeStep === 0 && "Step 0: Straight cantilever beam showing slice plane cut in the middle."}
           {activeStep === 1 && "Step 1: Tip Load P produces relative vertical sliding (shear slip) at the slice cut."}
           {activeStep >= 2 && "Step 2: Internal shear forces (V_int) and wall reactions (R_A, M_A) exposed."}
         </text>
       </svg>
+      </div>
     </div>
   );
 };

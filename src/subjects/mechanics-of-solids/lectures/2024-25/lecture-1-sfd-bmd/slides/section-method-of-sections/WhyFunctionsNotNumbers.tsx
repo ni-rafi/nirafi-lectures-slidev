@@ -1,7 +1,7 @@
 import React from 'react';
 import { TwoColumnLayout } from '@/shared/layouts/TwoColumnLayout';
 import { useClickStepsContext } from '@/features/presentation/context/ClickStepsContext';
-import { SlideList, ClickReveal } from '@/features/presentation/components/elements';
+import { SlideList, ClickReveal, ClickHighlight } from '@/features/presentation/components/elements';
 import { MovingCutBeamDiagram } from './drawings/MovingCutBeamDiagram';
 
 export const WhyFunctionsNotNumbers: React.FC = () => {
@@ -26,8 +26,24 @@ export const WhyFunctionsNotNumbers: React.FC = () => {
             description="Scaling the method of sections for full beam profiles."
             revealMode="each-click"
             items={[
-              { revealAt: 1, title: "1. Point-by-Point is Too Slow", text: "Solving equations at single fixed locations is inefficient to map out whole beam structures." },
-              { revealAt: 2, title: "2. Introducing the x Coordinate", text: "Define coordinate variable x measured from origin (Support A). Internal forces become continuous functions V(x) and M(x)." }
+              { 
+                revealAt: 1, 
+                title: "1. Point-by-Point is Too Slow", 
+                text: (
+                  <span>
+                    Solving equations at single fixed locations is <ClickHighlight at={1} variant="paint">inefficient</ClickHighlight> to map out whole beam structures.
+                  </span>
+                ) 
+              },
+              { 
+                revealAt: 2, 
+                title: "2. Introducing the x Coordinate", 
+                text: (
+                  <span>
+                    Define coordinate variable <ClickHighlight at={2} variant="paint">x</ClickHighlight> measured from origin (Support A). Internal forces become continuous functions <ClickHighlight at={2} variant="paint">V(x)</ClickHighlight> and <ClickHighlight at={2} variant="paint">M(x)</ClickHighlight>.
+                  </span>
+                ) 
+              }
             ]}
           />
         </>
