@@ -255,7 +255,7 @@ export const IsometricSectionsBeamDrawing: React.FC<IsometricSectionsBeamDrawing
         {/* 6. INTERNAL ACTIONS ON CUT FACE (Slides dynamically with cut face) */}
         {drawCut && (
           <>
-            {/* Shear Force V vector (Slides down vertically at its exact cut position) */}
+            {/* Shear Force V vector */}
             {showShear && (
               <motion.g
                 key="shear-cut-arrow"
@@ -264,14 +264,21 @@ export const IsometricSectionsBeamDrawing: React.FC<IsometricSectionsBeamDrawing
                 exit={{ opacity: 0, y: -20, x: xCutPixel }}
                 transition={{ type: 'spring', stiffness: 120, damping: 20 }}
               >
-                <ShearVectorArrow x={-2.5} y={55} direction="down" height={30} strokeWidth={2} color="#e11d48" />
-                <text x={10} y={72} className="text-[10px] font-mono font-black fill-rose-500">
+                <ShearVectorArrow
+                  x={-2.5}
+                  y={55}
+                  direction={opacitySide === 'left' ? "up" : "down"}
+                  height={30}
+                  strokeWidth={2}
+                  color="#e11d48"
+                />
+                <text x={opacitySide === 'left' ? -35 : 10} y={72} className="text-[10px] font-mono font-black fill-rose-500">
                   V(x)
                 </text>
               </motion.g>
             )}
 
-            {/* Bending Moment M vector (Rotates in-place CCW around the beam axis at its exact cut position) */}
+            {/* Bending Moment M vector */}
             {showMoment && (
               <motion.g
                 key="moment-cut-arc"
@@ -281,8 +288,17 @@ export const IsometricSectionsBeamDrawing: React.FC<IsometricSectionsBeamDrawing
                 transition={{ type: 'spring', stiffness: 120, damping: 20 }}
                 style={{ transformOrigin: "0px 70px" }}
               >
-                <MomentVectorArc x={-2.5} y={55} direction="ccw" side="right" radius={12} strokeWidth={2} color="#4f46e5" />
-                <text x={-42} y={84} className="text-[10px] font-mono font-black fill-indigo-500 text-right">
+                <MomentVectorArc
+                  x={-2.5}
+                  y={55}
+                  direction={opacitySide === 'left' ? "cw" : "ccw"}
+                  side={opacitySide === 'left' ? "left" : "right"}
+                  arrowTip="top"
+                  radius={12}
+                  strokeWidth={2}
+                  color="#4f46e5"
+                />
+                <text x={opacitySide === 'left' ? 10 : -42} y={84} className="text-[10px] font-mono font-black fill-indigo-500 text-right">
                   M(x)
                 </text>
               </motion.g>

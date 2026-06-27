@@ -97,7 +97,7 @@ export const BeamShearDrawing: React.FC<BeamShearDrawingProps> = ({
             </foreignObject>
 
             {/* Right Segment Cut: Shear Force acts UPWARDS (V) */}
-            <path d="M 480,${125 + dy} L 480,${155 + dy} M 476,${132 + dy} L 480,${125 + dy} L 484,${132 + dy}" fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: `translateY(${dy}px)` }} />
+            <path d={`M 480,${125 + dy} L 480,${155 + dy} M 476,${132 + dy} L 480,${125 + dy} L 484,${132 + dy}`} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: `translateY(${dy}px)` }} />
             <foreignObject x="502" y={120 + dy} width="35" height="25">
               <div className="text-[10px] font-mono font-bold text-rose-500 leading-none">
                 V<sub>int</sub>

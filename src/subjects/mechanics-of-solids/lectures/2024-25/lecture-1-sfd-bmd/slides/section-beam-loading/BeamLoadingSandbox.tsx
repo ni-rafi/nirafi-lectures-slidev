@@ -4,10 +4,7 @@ import { IBeam } from '@/subjects/mechanics-of-solids/cores/sfd-bmd/types';
 import { ClickSyncedTabs, type ClickSyncedTabItem } from '@/features/presentation/components/elements';
 import { BeamLoadingSandboxDrawing } from '@/subjects/mechanics-of-solids/features/sfd-bmd/components/drawings';
 
-/**
- * Slide 14: Beam Loading Scenario Sandbox
- */
-export const Slide14: React.FC = () => {
+export const BeamLoadingSandbox: React.FC = () => {
   const solver = new SFDBmdService();
   const getSolvedReactions = (showPoint: boolean, showUdl: boolean) => {
     const supports = [
@@ -46,7 +43,7 @@ export const Slide14: React.FC = () => {
         </span>
       ),
       rightContent: (
-        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left">
+        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left select-text">
           <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Preview Loaded State</span>
           <div className="flex-1 flex items-center justify-center">
             <BeamLoadingSandboxDrawing
@@ -72,7 +69,7 @@ export const Slide14: React.FC = () => {
         </span>
       ),
       rightContent: (
-        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left">
+        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left select-text">
           <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Preview Loaded State</span>
           <div className="flex-1 flex items-center justify-center">
             <BeamLoadingSandboxDrawing
@@ -98,7 +95,7 @@ export const Slide14: React.FC = () => {
         </span>
       ),
       rightContent: (
-        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left">
+        <div className="flex flex-col justify-between w-full h-full min-h-[220px] text-left select-text">
           <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest block mb-2">Preview Loaded State</span>
           <div className="flex-1 flex items-center justify-center">
             <BeamLoadingSandboxDrawing

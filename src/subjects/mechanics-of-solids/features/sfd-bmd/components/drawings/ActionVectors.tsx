@@ -56,6 +56,7 @@ interface MomentVectorArcProps {
   radius?: number;
   strokeWidth?: number;
   className?: string;
+  arrowTip?: 'top' | 'bottom';
 }
 
 export const MomentVectorArc: React.FC<MomentVectorArcProps> = ({
@@ -67,21 +68,30 @@ export const MomentVectorArc: React.FC<MomentVectorArcProps> = ({
   radius = 20,
   strokeWidth = 2.5,
   className = '',
+  arrowTip,
 }) => {
   const dx = side === 'right' ? radius : -radius;
   const dy = radius * 0.72; // Standard aspect ratio matching CAD drawings
 
-  const startY = direction === 'ccw' ? y + dy : y - dy;
-  const endY = direction === 'ccw' ? y - dy : y + dy;
+  // Determine tip position (top or bottom)
+  const finalTip = arrowTip || (direction === 'ccw' ? 'top' : 'bottom');
 
-  // Sweep flag is 0 for y-axis mirrored arcs curving towards the beam body
-  const sweepFlag = 0;
+  // Arc path: start from opposite of tip, end at tip
+  const startY = finalTip === 'top' ? y + dy : y - dy;
+  const endY = finalTip === 'top' ? y - dy : y + dy;
+
+  // Sweep flag controls which direction the arc bulges (outwards from center)
+  const sweepFlag = side === 'right'
+    ? (finalTip === 'top' ? 0 : 1)
+    : (finalTip === 'top' ? 1 : 0);
+
   const tipX = x + dx;
 
-  // Mirrored arrowhead paths (always pointing left at the active end)
-  const headPath = direction === 'ccw'
-    ? `M ${tipX + 7},${endY} L ${tipX},${endY} L ${tipX},${endY + 7}`
-    : `M ${tipX - 6},${endY} L ${tipX},${endY} L ${tipX},${endY - 7}`;
+  // Compute arrowhead offsets dynamically based on layout quadrant
+  const headDX = side === 'right' ? 6 : -6;
+  const headDY = finalTip === 'top' ? 6 : -6;
+
+  const headPath = `M ${tipX + headDX},${endY} L ${tipX},${endY} L ${tipX},${endY + headDY}`;
 
   return (
     <g className={className}>

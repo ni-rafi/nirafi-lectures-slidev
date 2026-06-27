@@ -49,7 +49,13 @@ src/subjects/{subjectName}/
 #### Subject Structure Rules:
 1. **`cores/`**: framework-agnostic mathematical engines. Must contain unit tests in `__tests__/`.
 2. **`features/`**: Reusable interactive widgets, components, and state controllers (custom hooks/contexts) for this subject.
-3. **`lectures/`**: Slide decks (organized by session year) that compose layout templates and import components from `features/`.
+3. **`lectures/`**: Slide decks (organized by session year). For a given lecture, slide files must be structured into per-section subdirectories rather than a single flat file or large shared files:
+   - **Section Folders**: Organize slides into subdirectories named after the lecture topic: `slides/section-{section-name}/` (e.g. `slides/section-sign-conventions/`).
+   - **Filename Standard**: Individual slide components must be named after their topic (e.g. `ShearSignConvention.tsx`). Do NOT prefix filenames with slide numbers (like `Slide12_Shear.tsx`) to avoid renaming churn when slide orders shift.
+   - **Section Barrel (`index.ts`)**: Each section subdirectory must contain an `index.ts` file that imports the topic-named components and exports them mapped to slide number aliases (e.g., `export { ShearSignConvention as Slide12 }`).
+   - **Section Metadata**: Co-locate metadata in each section barrel under a `sectionMetadata` export, which matches the slide indices defined in that barrel.
+   - **Section Drawings**: Section-specific, non-reusable SVGs or figures must reside in a `drawings/` subfolder directly inside that section's directory (e.g., `section-method-of-sections/drawings/PiecewiseIntervalDiagram.tsx`) rather than the subject-wide drawings directory.
+   - **Orchestration**: The root `lecture.tsx` file imports the aliased slides and `sectionMetadata` from all section barrels and spreads/merges them into the main exports.
 
 ---
 
