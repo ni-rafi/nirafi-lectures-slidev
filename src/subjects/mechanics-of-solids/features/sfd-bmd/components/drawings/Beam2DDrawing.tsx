@@ -22,7 +22,7 @@ export const Beam2DDrawing: React.FC<Beam2DDrawingProps> = ({
   showDiscontinuities = false,
   showZones = false,
   showSections = false,
-  activeStep = 0,
+  activeStep = 99,
 }) => {
   const scale = 360 / beam.length;
   const getSvgX = (x: number) => 70 + x * scale;
@@ -48,7 +48,7 @@ export const Beam2DDrawing: React.FC<Beam2DDrawingProps> = ({
         {/* 1. DISCONTINUITY DASHED LINES */}
         {showDiscontinuities && activeStep >= 1 && (
           <g className="animate-in fade-in duration-300">
-            {keyCoords.map((x) => (
+            {keyCoords.filter((_, idx) => activeStep >= 99 || idx < activeStep).map((x) => (
               <g key={`disc-${x}`}>
                 <line x1={getSvgX(x)} y1="15" x2={getSvgX(x)} y2="80" className="stroke-indigo-500/50" strokeWidth="1" strokeDasharray="3 3" />
                 <text x={getSvgX(x)} y="12" textAnchor="middle" className="text-[8px] font-mono fill-indigo-500">x = {x}m</text>

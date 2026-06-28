@@ -32,7 +32,7 @@ export const QuizCardOrchestrator: React.FC<QuizCardOrchestratorProps> = ({
   const normalizedQuestions = questions || [
     {
       idSuffix: '',
-      questionText: questionText as any, // Cast temporarily to conform to SubQuestionDefinition
+      questionText: questionText as unknown as SubQuestionDefinition['questionText'], // Cast temporarily to conform to SubQuestionDefinition
       quizType,
       options,
     },

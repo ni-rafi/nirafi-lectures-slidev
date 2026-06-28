@@ -12,6 +12,7 @@ interface ShearForceChartProps {
   supports?: { position: number }[];
   releases?: { position: number }[];
   solverResult?: ISolverOutput;
+  activeStep?: number;
 }
 
 export const ShearForceChart: React.FC<ShearForceChartProps> = ({
@@ -20,7 +21,8 @@ export const ShearForceChart: React.FC<ShearForceChartProps> = ({
   setHoverX: propsSetHoverX,
   supports: propsSupports,
   releases: propsReleases,
-  solverResult: propsSolverResult
+  solverResult: propsSolverResult,
+  activeStep
 }) => {
   let workspaceContext: ReturnType<typeof useBeamWorkspace> | null = null;
   try {
@@ -42,6 +44,16 @@ export const ShearForceChart: React.FC<ShearForceChartProps> = ({
   const supports: { position: number }[] = propsSupports ?? workspaceContext?.supports ?? [];
   const releases: { position: number }[] = propsReleases ?? workspaceContext?.releases ?? [];
   const solverResult: ISolverOutput | undefined = propsSolverResult ?? engineContext?.solverResult;
+
+  // If activeStep is provided (from Problem 2 slide cut calculations), limit drawing X
+  let limitX = length;
+  if (activeStep !== undefined) {
+    if (activeStep === 0) limitX = 0;
+    else if (activeStep === 1) limitX = 5.0;
+    else if (activeStep === 2) limitX = 12.0;
+    else if (activeStep === 3) limitX = 17.0;
+    else if (activeStep === 4) limitX = 20.0;
+  }
 
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -164,9 +176,10 @@ export const ShearForceChart: React.FC<ShearForceChartProps> = ({
           <line x1={paddingX} y1={midY} x2={paddingX + chartW} y2={midY} stroke="var(--border)" strokeWidth={1.5} />
 
           {/* Render each interval as a separate path for custom positive/negative segment coloring */}
-          {solverResult.intervals.map((inv: IIntervalEquation, idx: number) => {
+          {solverResult.intervals.filter(inv => inv.startX < limitX).map((inv: IIntervalEquation, idx: number) => {
             const steps = 15;
-            const dx = (inv.endX - inv.startX) / steps;
+            const effectiveEndX = Math.min(inv.endX, limitX);
+            const dx = (effectiveEndX - inv.startX) / steps;
 
             const segmentPoints: { x: number; y: number }[] = [];
             for (let j = 0; j <= steps; j++) {
@@ -224,7 +237,7 @@ export const ShearForceChart: React.FC<ShearForceChartProps> = ({
           })}
 
           {/* Labels at key points */}
-          {solverResult.criticalPoints.map((cp, idx) => {
+          {solverResult.criticalPoints.filter(cp => cp.x <= limitX).map((cp, idx) => {
             const prevPt = solverResult.criticalPoints[idx - 1];
             if (idx > 0 && prevPt && Math.abs(cp.x - prevPt.x) < 0.25) return null;
             const px = toPixelX(cp.x);
